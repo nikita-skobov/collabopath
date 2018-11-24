@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^5.7.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "jest": "^23.6.0",
+    "lambda-tester": "^3.5.0",
+    "serverless-domain-manager": "^2.6.6"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.334.0",
+    "bad-words": "^3.0.0",
+    "badwords-list": "^1.0.0"
+  }
+}

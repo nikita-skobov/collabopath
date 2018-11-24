@@ -1,0 +1,7 @@
+node_modules
+frontend/dist/main.js
+backend/.gitignore
+issues/**
+clips/**
+frontend/dist/index.html
+frontend/dist/scripts/**

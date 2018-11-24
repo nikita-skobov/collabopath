@@ -1,0 +1,614 @@
+service: collabopath # NOTE: update this with your service name
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region, 'us-east-1'}
+  apiKeys:
+    ## after serverless deploy, serverless will tell you the api key
+    ## that it generated for the given api name. You would then use this generated
+    ## api key inside your other resources so they have access to your api
+    - yourapikeyname
+  ## by default API gateway uses EDGE OPTIMIZED. here I am using regional
+  ## because otherwise it adds a hidden cloudfront distribution. However, I want
+  ## to use my own cloudfront distribution in front of my API, so I set it to regional
+  ## to reduce latency
+  endpointType: REGIONAL
+package:
+  include:
+    ## this is a clientside file that contains information about which images the user is
+    ## allowed to upload. the serverside code needs this information to validate user input
+    ## by using the same file in both frontend code, and backend code we can ensure that the users
+    ## input will always be accepted by the server if it is accepted in the client.
+    - ../frontend/src/dynamicVars.js
+  exclude:
+    - package.json
+    - package-lock.json
+    - .gitignore
+    - .eslintrc.js
+    - __tests__/**
+    - node_modules/aws-sdk/**
+custom:
+  useragentsecret: ${opt:uasecret}
+  account: ${opt:account}
+  certid: ${opt:certid}
+  logbucket: ${opt:logbucket}
+  roles:
+    getPath: "${self:service}-${self:provider.stage}-getPath-role"
+    votePath: "${self:service}-${self:provider.stage}-votePath-role"
+    addPath: "${self:service}-${self:provider.stage}-addPath-role"
+    voteCount: "${self:service}-${self:provider.stage}-voteCount-role"
+    voteCheck: "${self:service}-${self:provider.stage}-voteCheck-role"
+    addSuggestion: "${self:service}-${self:provider.stage}-addSuggestion-role"
+  policies:
+    putItemSuggestionTable:
+      PolicyName: "${self:service}-putItemSuggestionTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:PutItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.suggestion}"
+    receiveMessageVoteQueue:
+      PolicyName: "${self:service}-receiveMessageVoteQueue-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: sqs:ReceiveMessage
+            Resource: "arn:aws:sqs:${opt:region, self:provider.region}:*:${self:custom.queues.vote}"
+    getQueueAttributesVoteQueue:
+      PolicyName: "${self:service}-getQueueAttributesVoteQueue-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: sqs:GetQueueAttributes
+            Resource: "arn:aws:sqs:${opt:region, self:provider.region}:*:${self:custom.queues.vote}"
+    deleteMessageVoteQueue:
+      PolicyName: "${self:service}-deleteMessageVoteQueue-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: sqs:DeleteMessage
+            Resource: "arn:aws:sqs:${opt:region, self:provider.region}:*:${self:custom.queues.vote}"
+    sendMessageVoteQueue:
+      PolicyName: "${self:service}-sendMessageVoteQueue-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: sqs:SendMessage
+            Resource: "arn:aws:sqs:${opt:region, self:provider.region}:*:${self:custom.queues.vote}"
+    invokeAsyncVoteCount:
+      PolicyName: "${self:service}-invokeAsyncVoteCount-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 
+              - lambda:InvokeAsync
+              - lambda:InvokeFunction
+            Resource: "arn:aws:lambda:${opt:region, self:provider.region}:*:function:${self:service}-${self:provider.stage}-voteCount"
+    invokeAsyncVotePath:
+      PolicyName: "${self:service}-invokeAsyncVotePath-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 
+              - lambda:InvokeAsync
+              - lambda:InvokeFunction
+            Resource: "arn:aws:lambda:${opt:region, self:provider.region}:*:function:${self:service}-${self:provider.stage}-votePath"
+    putItemMainTable:
+      PolicyName: "${self:service}-putItemMainTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:PutItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.main}"
+    getItemMainTable:
+      PolicyName: "${self:service}-getItemMainTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:GetItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.main}"
+    getItemVoteTable:
+      PolicyName: "${self:service}-getItemVoteTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:GetItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.vote}"
+    putItemVoteTable:
+      PolicyName: "${self:service}-putItemVoteTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:PutItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.vote}"
+    queryVoteTable:
+      PolicyName: "${self:service}-queryVoteTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:Query
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.vote}"      
+    queryMainTable:
+      PolicyName: "${self:service}-queryMainTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:Query
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.main}"
+  tables:
+    main: "${self:service}-${self:provider.stage}-pathobjects"
+    vote: "${self:service}-${self:provider.stage}-votes"
+    suggestion: "${self:service}-${self:provider.stage}-suggestion"
+  queues:
+    vote: "${self:service}-${self:provider.stage}-votes"
+    delay: 900 # 15 minutes
+  bucketName: "${self:provider.stage}.${self:service}.com"
+functions:
+  getPath:
+    timeout: 5
+    memorySize: 2048
+    role: getPathRole
+    handler: handler.getPath
+    environment:
+      DOMAIN: ${self:service}
+      DYNAMO_REGION: ${self:provider.region}
+      DYNAMO_TABLE: ${self:custom.tables.main}
+    events:
+      - http:
+          path: /path/{id}
+          method: GET
+          private: true
+          cors: true #probably remove this in production
+  votePath:
+    timeout: 5
+    memorySize: 2048
+    role: votePathRole
+    handler: handler.votePath
+    environment:
+      DOMAIN: ${self:service}
+      DYNAMO_REGION: ${self:provider.region}
+      DYNAMO_VOTE_TABLE: ${self:custom.tables.vote}
+    events:
+      - http:
+          path: /path/vote
+          method: POST
+          private: true
+          cors: true
+  addSuggestion:
+    timeout: 5
+    memorySize: 2048
+    role: addSuggestionRole
+    handler: handler.addSuggestion
+    environment:
+      DOMAIN: ${self:service}
+      DYNAMO_REGION: ${self:provider.region}
+      DYNAMO_SUGGESTION_TABLE: ${self:custom.tables.suggestion}
+    events:
+      - http:
+          path: /suggestion
+          method: POST
+          private: true
+          cors: true
+  addPath:
+    timeout: 5
+    memorySize: 2048
+    role: addPathRole
+    handler: handler.addPath
+    environment:
+      DOMAIN: ${self:service}
+      DYNAMO_REGION: ${self:provider.region}
+      LAMBDA_VOTE_FUNCTION: "${self:service}-${self:provider.stage}-votePath"
+      LAMBDA_REGION: ${self:provider.region}
+      DYNAMO_TABLE: ${self:custom.tables.main}
+      SQS_REGION: ${self:provider.region}
+      QUEUE_DELAY: ${self:custom.queues.delay}
+      QUEUE_URL: "https://sqs.${self:provider.region}.amazonaws.com/${self:custom.account}/${self:custom.queues.vote}"
+    events:
+      - http:
+          path: /path/add
+          private: true
+          method: POST
+          cors: true
+  voteCount:
+    timeout: 15
+    memorySize: 2048
+    role: voteCountRole
+    handler: handler.voteCount
+    environment:
+      DYNAMO_REGION: ${self:provider.region}
+      DYNAMO_TABLE: ${self:custom.tables.main}
+      DYNAMO_VOTE_TABLE: ${self:custom.tables.vote}
+      QUEUE_URL: "https://sqs.${self:provider.region}.amazonaws.com/${self:custom.account}/${self:custom.queues.vote}"
+      SQS_REGION: ${self:provider.region}
+  voteCheck:
+    timeout: 15
+    memorySize: 1024
+    role: voteCheckRole
+    handler: handler.voteCheck
+    events:
+      ## ok this is kind of a hack. Ideally you should setup a lambda function to be triggered
+      ## whenever a message appears in the SQS queue, however I was lazy, and decided that
+      ## this method will do. It simply runs every 5 minutes and checks the queue for messages
+      ## if there are any messages, it tries to process all of them, and count the votes for each
+      ## path ID that shows up in the SQS queue
+      - schedule: rate(5 minutes)
+    environment:
+      LAMBDA_VOTE_COUNT_FUNCTION: "${self:service}-${self:provider.stage}-voteCount"
+      QUEUE_URL: "https://sqs.${self:provider.region}.amazonaws.com/${self:custom.account}/${self:custom.queues.vote}"
+      SQS_REGION: ${self:provider.region}
+resources:
+  Resources:
+  ## Specifying the S3 Bucket
+    WebRedirectS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: "redirect-${self:service}.com"
+        WebsiteConfiguration:
+          RedirectAllRequestsTo:
+            HostName: "${self:service}.com"
+            Protocol: https
+    WebAppS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: index.html
+    ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    WebAppS3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: WebAppS3Bucket
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Action:
+              - s3:GetObject
+              Resource: arn:aws:s3:::${self:custom.bucketName}/*
+              Condition:
+                StringLike:
+                  ## only allow get requests to this bucket if they include a
+                  ## secret user agent string... this is an easy way to only allow
+                  ## access from a designated cloudfront distribution, but a poor
+                  ## security solution, because it relies on security by obfuscration
+                  aws:UserAgent: ${self:custom.useragentsecret}
+    ApiCloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          HttpVersion: "http2"
+          Origins:
+            - DomainName:
+                Fn::Join:
+                  - ""
+                  - - Ref: "ApiGatewayRestApi"
+                    - ".execute-api.${opt:region, self:provider.region}.amazonaws.com"
+              ## An identifier for the origin which must be unique within the distribution
+              OriginPath: "/${self:provider.stage}"
+              Id: "lambdaid=${self:provider.stage}-${self:service}"
+              OriginCustomHeaders:
+                - HeaderName: x-api-key
+                  ## the header value should be the same as the api key that serverless generates for you
+                  ## I wasn't sure how to do this programmatically, so instead I first deploy it, then
+                  ## serverless generates an api key, and I redeploy with the new value
+                  HeaderValue: someapikey #THIS NEEDS TO BE CHANGED
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginProtocolPolicy: https-only
+          Enabled: 'true'
+          Aliases:
+            - "api.${self:service}.com"
+          ## by default cloudfront uses a 5 minute error caching... so if a user requests
+          ## a path that doesnt exist, cloudfront will cache that, and even if a user creates
+          ## a path immediately afterwards, it will remain in cloudfronts cache as missing for 5 minutes
+          ## this prevents that error not only for 404 error codes, but for all error codes that
+          ## cloudfront allows. I did this because I do not believe errors should even be cached.
+          CustomErrorResponses:
+            - ErrorCode: 404
+              ErrorCachingMinTTL: 2
+            - ErrorCode: 500
+              ErrorCachingMinTTL: 2
+            - ErrorCode: 400
+              ErrorCachingMinTTL: 2
+            - ErrorCode: 403
+              ErrorCachingMinTTL: 2
+            - ErrorCode: 405
+              ErrorCachingMinTTL: 2
+            - ErrorCode: 414
+              ErrorCachingMinTTL: 2
+            - ErrorCode: 501
+              ErrorCachingMinTTL: 2
+            - ErrorCode: 502
+              ErrorCachingMinTTL: 2
+            - ErrorCode: 503
+              ErrorCachingMinTTL: 2
+            - ErrorCode: 504
+              ErrorCachingMinTTL: 2
+          DefaultCacheBehavior:
+            ## i only need get, head, options, and post, however cloudfront for some reason requires
+            ## that if you want to have POST, you must also include PUT, PATCH, DELETE...
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            ## The origin id defined above
+            TargetOriginId: "lambdaid=${self:provider.stage}-${self:service}"
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          ## The certificate to use when viewers use HTTPS to request objects.
+          ViewerCertificate:
+            AcmCertificateArn: "arn:aws:acm:us-east-1:${self:custom.account}:certificate/${self:custom.certid}"
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.1_2016
+          Logging:
+            IncludeCookies: 'false'
+            Bucket: ${self:custom.logbucket}
+            Prefix: "api-${self:provider.stage}-${self:service}"
+    RedirectCloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          HttpVersion: "http2"
+          Origins:
+            - DomainName: "redirect-${self:service}.com.s3-website.${self:provider.region}.amazonaws.com"
+              ## An identifier for the origin which must be unique within the distribution
+              Id: "S3-ID=${self:custom.bucketName}"
+              OriginCustomHeaders:
+                - HeaderName: User-Agent
+                  HeaderValue: ${self:custom.useragentsecret}
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginProtocolPolicy: http-only
+          Enabled: 'true'
+          Aliases:
+            ## redirect all requests to www.mydomainname.com to an s3 bucket
+            ## that s3 bucket redirects to mydomainname.com
+            ## a cloudfront distribution for this is a bit overkill, but for some reason
+            ## i was unable to set it up using only s3 + route53
+            - "www.${self:service}.com"
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+            ## The origin id defined above
+            TargetOriginId: "S3-ID=${self:custom.bucketName}"
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          ViewerCertificate:
+            AcmCertificateArn: "arn:aws:acm:us-east-1:${self:custom.account}:certificate/${self:custom.certid}"
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.1_2016
+          Logging:
+            IncludeCookies: 'false'
+            Bucket: ${self:custom.logbucket}
+            Prefix: "${self:provider.stage}-${self:service}"
+    WebAppCloudFrontDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          HttpVersion: "http2"
+          Origins:
+            - DomainName: "${self:custom.bucketName}.s3-website.${self:provider.region}.amazonaws.com"
+              Id: "S3-ID=${self:custom.bucketName}"
+              OriginCustomHeaders:
+                - HeaderName: User-Agent
+                  HeaderValue: ${self:custom.useragentsecret}
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                ## note this needs to be http only because it is using an s3 website bucket
+                ## as an origin. S3 as a website only allows http...
+                OriginProtocolPolicy: http-only
+          Enabled: 'true'
+          Aliases:
+            - "${self:service}.com"
+          DefaultCacheBehavior:
+            AllowedMethods:
+              - GET
+              - HEAD
+            ## The origin id defined above
+            TargetOriginId: "S3-ID=${self:custom.bucketName}"
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+          ViewerCertificate:
+            AcmCertificateArn: "arn:aws:acm:us-east-1:${self:custom.account}:certificate/${self:custom.certid}"
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.1_2016
+          Logging:
+            IncludeCookies: 'false'
+            Bucket: ${self:custom.logbucket}
+            Prefix: "${self:provider.stage}-${self:service}"
+    addSuggestionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.roles.addSuggestion}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - ${self:custom.policies.putItemSuggestionTable}
+    addPathRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.roles.addPath}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - ${self:custom.policies.getItemMainTable}
+          - ${self:custom.policies.putItemMainTable}
+          - ${self:custom.policies.queryMainTable}
+          - ${self:custom.policies.invokeAsyncVotePath}
+          - ${self:custom.policies.sendMessageVoteQueue}
+    voteCheckRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.roles.voteCheck}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - ${self:custom.policies.invokeAsyncVoteCount}
+          - ${self:custom.policies.receiveMessageVoteQueue}
+          - ${self:custom.policies.getQueueAttributesVoteQueue}
+    voteCountRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.roles.voteCount}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - ${self:custom.policies.deleteMessageVoteQueue}
+          - ${self:custom.policies.putItemMainTable}
+          - ${self:custom.policies.queryVoteTable}
+          - ${self:custom.policies.queryMainTable}
+    votePathRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.roles.votePath}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - ${self:custom.policies.getItemVoteTable}
+          - ${self:custom.policies.putItemVoteTable}
+          - ${self:custom.policies.queryVoteTable}
+    getPathRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.roles.getPath}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - ${self:custom.policies.queryMainTable}
+    VoteQueue:
+      Type: 'AWS::SQS::Queue'
+      Properties:
+        QueueName: ${self:custom.queues.vote}
+    Suggestion:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: text
+            AttributeType: S
+          -
+            AttributeName: ip
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: text
+            KeyType: HASH
+          -
+            AttributeName: ip
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tables.suggestion}
+    Vote:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: voteId
+            AttributeType: S
+          -
+            AttributeName: ip
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: voteId
+            KeyType: HASH
+          -
+            AttributeName: ip
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tables.vote}
+    Main:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: pathId
+            AttributeType: S
+          -
+            AttributeName: votes
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: pathId
+            KeyType: HASH
+          -
+            AttributeName: votes
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tables.main}
