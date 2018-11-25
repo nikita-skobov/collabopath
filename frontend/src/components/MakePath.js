@@ -477,7 +477,7 @@ const MyContent = (props) => {
             <Header className="mb2vh" style={rowSmall} as="h4"> Image Categories: </Header>
           </Grid.Row>
           <Grid.Row>
-            <Header className="mb2vh" style={rowSmall} as="h4"> Don&#8217;t see any images you like? <a target="_blank" rel="noopener noreferrer" href={supportVars.patreon}>Check out my patreon</a> where patrons can add images to the game.</Header>
+            <Header className="mb2vh" style={rowSmall} as="h4"> {`Don${"'"}t see any images you like?`} <a target="_blank" rel="noopener noreferrer" href={supportVars.patreon}>Check out my patreon</a> where patrons can add images to the game.</Header>
           </Grid.Row>
           <Grid.Row>
             <Tab menu={{ attached: false, tabular: false }} panes={imgOpts} />
