@@ -119,8 +119,8 @@ const MyContent = (props) => {
           </Grid.Row>
         )}
         <Grid.Row>
-          <Input maxLength={makePathVars.maxQuestionLength} name={ind} onChange={(a, b) => { callback(a, b, ind) }} placeholder="Left Choice" />
-          <Input maxLength={makePathVars.maxQuestionLength} name={ind} onChange={(a, b) => { callback(a, b, ind) }} placeholder="Right Choice" />
+          <Input value={data.choiceL.q} maxLength={makePathVars.maxQuestionLength} name={ind} onChange={(a, b) => { callback(a, b, ind) }} placeholder="Left Choice" />
+          <Input value={data.choiceR.q} maxLength={makePathVars.maxQuestionLength} name={ind} onChange={(a, b) => { callback(a, b, ind) }} placeholder="Right Choice" />
         </Grid.Row>
       </Grid>
     )
