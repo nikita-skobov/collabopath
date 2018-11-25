@@ -50,6 +50,15 @@ const PathID = (props) => {
         if (str === value) voteIndex = ind
       })
       refresh(voteIndex, goBack)
+    } else if (e.target.nodeName === 'BUTTON') {
+      const val = e.target.name
+      let voteIndex = null
+      votes.forEach((str, ind) => {
+        if (str === val) voteIndex = ind
+      })
+      refresh(voteIndex, true)
+      // goBack parameter is true because we
+      // are clicking a BACK button...
     }
   }
 
@@ -81,7 +90,7 @@ const PathID = (props) => {
         // only render back button when you are on a nonfinalized object
         // and you have clicked on one of the choices. it makes sense because you
         // should be able to click back and look at one of the OTHER choices
-        <Button style={style1} size="mini" compact color="blue">Back</Button>
+        <Button name={votes[currentVoteIndex]} onClick={dropDownChange} style={style1} size="mini" compact color="blue">Back</Button>
       )}
       {(!exists && !notFinalized) && (
         // only render refresh button when there is no pathObj
