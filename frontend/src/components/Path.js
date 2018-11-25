@@ -172,7 +172,15 @@ export default class Path extends Component {
           } else {
             this.setState((prevState) => {
               const tempState = prevState
-              tempState.obj = { badError: 'yes' }
+              if (err === 'FETCHERROR' && window.location.port !== '') {
+                // special case. if running on localhost, you will have a port number
+                // whereas on the live site, there is no port. in case of a fetch
+                // error, this allows the user to still see the make your own
+                // path object button
+                tempState.obj = { doesNotExist: 'yes' }
+              } else {
+                tempState.obj = { badError: 'yes' }
+              }
               return tempState
             })
           }
@@ -226,6 +234,12 @@ export default class Path extends Component {
             if (err === 'OBJNOEXIST') {
               // console.log('obj dont exist, but we set state anyway.')
               this.setState({ obj: data })
+            } else if (err === 'FETCHERROR' && window.location.port !== '') {
+              // special case. if running on localhost, you will have a port number
+              // whereas on the live site, there is no port. in case of a fetch
+              // error, this allows the user to still see the make your own
+              // path object button
+              this.setState({ obj: { doesNotExist: 'yes' } })
             } else {
               this.setState({ obj: { badError: 'yes' } })
             }
