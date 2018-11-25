@@ -81,7 +81,7 @@ const ImageChoices = (props) => {
       }
       return (
         <Grid.Row>
-          <Button color={imgSrc === src ? 'green' : null} compact style={{ padding: '0.2em 0.36em 0.2em', margin: 'auto' }} name={src} onClick={(a, b) => { callback(a, b, ind, null) }}>
+          <Button color={imgSrc === src ? 'green' : null} compact style={{ padding: '0.2em 0.36em 0.2em', margin: 'auto' }} name={imgSrc} onClick={(a, b) => { callback(a, b, ind, null) }}>
             <Image size="medium" name={imgSrc} src={imgSrc} />
           </Button>
         </Grid.Row>
