@@ -77,6 +77,12 @@ const PathID = (props) => {
       {notFinalized && (
         <Vote key={votes[currentVoteIndex]} dataStore={dataStore} currentPathId={exists} pathID={id} voteID={votes[currentVoteIndex]} />
       )}
+      {notFinalized && !exists && (
+        // only render back button when you are on a nonfinalized object
+        // and you have clicked on one of the choices. it makes sense because you
+        // should be able to click back and look at one of the OTHER choices
+        <Button style={style1} size="mini" compact color="blue">Back</Button>
+      )}
       {(!exists && !notFinalized) && (
         // only render refresh button when there is no pathObj
         <Button onClick={() => { refresh(-1, -1) }} color="blue" style={style1} size="mini" compact>
