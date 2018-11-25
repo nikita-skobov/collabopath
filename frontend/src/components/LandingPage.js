@@ -68,7 +68,13 @@ export default class LandingPage extends Component {
               <Header textAlign="center" className="em3h" as="h1" size="huge">{landingPageVars.title}</Header>
             </Grid.Row>
             <Grid.Row centered columns={1}>
-              <p>Beta Version {version}. <NavLink style={{ color: '#0063c5' }} to="/changelog">Check out the changelog</NavLink></p>
+              <p>
+                Beta Version {version}. <NavLink style={{ color: '#0063c5' }} to="/changelog">Check out the changelog</NavLink>
+                <br />
+                For chatting with other users, and reporting offensive content check out our <a style={{ color: '#0063c5' }} href="https://discord.gg/rwSrC4c" target="_blank" rel="noopener noreferrer">Discord</a>
+                <br />
+                If you want to help with the site, or just want to look at the code, check out our <a style={{ color: '#0063c5' }} href="https://github.com/nikita-skobov/collabopath" target="_blank" rel="noopener noreferrer">Github</a>
+              </p>
             </Grid.Row>
             <Grid.Row centered columns={1}>
               <Header textAlign="center" className="ps15vw" as="h2" size="small">{landingPageVars.body}</Header>
