@@ -2,7 +2,7 @@
 
 Almost everything is properly defined within the serverless.yml file. You just need to change the service name to your domain name, and then provide the proper command line arguments. I go over this [on the README inside the root of this repo](../README.md)
 
-If you want to use the serverless.yml setup, but you DO NOT have a domain, then you will need to modify a few things.
+### If you want to use the serverless.yml setup, but you DO NOT have a domain, then you will need to modify a few things.
 
 First, you will need to get rid of all references to cloudfront distributions, and S3 buckets so either comment out, or remove the following resource blocks:
 ```
