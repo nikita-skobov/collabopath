@@ -71,7 +71,7 @@ export default class LandingPage extends Component {
               <p>
                 Beta Version {version}. <NavLink style={{ color: '#0063c5' }} to="/changelog">Check out the changelog</NavLink>
                 <br />
-                For chatting with other users, and reporting offensive content check out our <a style={{ color: '#0063c5' }} href="https://discord.gg/rwSrC4c" target="_blank" rel="noopener noreferrer">Discord!</a>
+                For chatting with other users, and reporting offensive content check out our <a style={{ color: '#0063c5' }} href="https://discord.gg/rwSrC4c" target="_blank" rel="noopener noreferrer">Discord</a>
                 <br />
                 If you want to help with the site, or just want to look at the code, check out our <a style={{ color: '#0063c5' }} href="https://github.com/nikita-skobov/collabopath" target="_blank" rel="noopener noreferrer">Github</a>
               </p>
