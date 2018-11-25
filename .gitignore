@@ -4,5 +4,7 @@ backend/.gitignore
 backend/.serverless
 issues/**
 clips/**
+frontend/dist/about
+frontend/dist/support
 frontend/dist/index.html
 frontend/dist/scripts/**
