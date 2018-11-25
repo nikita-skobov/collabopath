@@ -119,8 +119,8 @@ const MyContent = (props) => {
           </Grid.Row>
         )}
         <Grid.Row>
-          <Input maxLength={makePathVars.maxQuestionLength} name={ind} onChange={(a, b) => { callback(a, b, ind) }} placeholder="Left Choice" />
-          <Input maxLength={makePathVars.maxQuestionLength} name={ind} onChange={(a, b) => { callback(a, b, ind) }} placeholder="Right Choice" />
+          <Input value={data.choiceL.q} maxLength={makePathVars.maxQuestionLength} name={ind} onChange={(a, b) => { callback(a, b, ind) }} placeholder="Left Choice" />
+          <Input value={data.choiceR.q} maxLength={makePathVars.maxQuestionLength} name={ind} onChange={(a, b) => { callback(a, b, ind) }} placeholder="Right Choice" />
         </Grid.Row>
       </Grid>
     )
@@ -153,7 +153,7 @@ const MyContent = (props) => {
           </Grid.Row>
         )}
         <Grid.Row>
-          <TextArea maxLength={makePathVars.maxTextLength} rows={8} style={{ width: '80%' }} autoHeight onChange={(a, b) => { callback(a, b, ind) }} placeholder="Continue the story..." />
+          <TextArea value={data[choice].text} maxLength={makePathVars.maxTextLength} rows={8} style={{ width: '80%' }} autoHeight onChange={(a, b) => { callback(a, b, ind) }} placeholder="Continue the story..." />
         </Grid.Row>
       </Grid>
     )
@@ -697,8 +697,14 @@ export default class MakePath extends Component {
     if (ind === 0) {
       if (obj.placeholder === 'Right Choice') this.pathObj.choiceR.q = obj.value
       if (obj.placeholder === 'Left Choice') this.pathObj.choiceL.q = obj.value
+      this.forceUpdate() // so that the value of the inputs will change.
+      // if we dont forceUpdate, the MyContent component will not
+      // change the value, and the user cant see what they type
     } else if (ind === 2) {
       this.pathObj.choiceL.text = obj.value
+      this.forceUpdate()
+      // re-renders the MyContent component, which sets the value of
+      // the text area to the users input.
     } else if (ind === 3 || ind === 7) {
       const { name, innerHTML } = e.target
       const choice = (ind === 3 ? 'choiceL' : 'choiceR')
@@ -730,6 +736,9 @@ export default class MakePath extends Component {
       this.forceUpdate()
     } else if (ind === 6) {
       this.pathObj.choiceR.text = obj.value
+      this.forceUpdate()
+      // re-renders the MyContent component, which sets the value of
+      // the text area to the users input.
     } else if (ind === 8) {
       const { name } = e.target
       this.pathObj.choiceR.image = name
