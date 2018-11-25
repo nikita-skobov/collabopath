@@ -1,6 +1,7 @@
 node_modules
 frontend/dist/main.js
 backend/.gitignore
+backend/.serverless
 issues/**
 clips/**
 frontend/dist/index.html
