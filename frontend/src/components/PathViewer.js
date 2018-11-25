@@ -6,6 +6,7 @@ import {
   Container,
   Header,
   Form,
+  Button,
 } from 'semantic-ui-react'
 
 import Slot from './Slot'
@@ -55,7 +56,10 @@ export default class PathViewer extends Component {
     this.stages = {
       0: {
         question: 'What is your name?',
-        element: (<input style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter name here" />),
+        element: [
+          <input style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter name here" />,
+          <Button compact style={{ marginTop: '1em' }} icon="angle right" />,
+        ],
       },
       1: {
         question: 'Allocate your stats',
@@ -192,11 +196,11 @@ export default class PathViewer extends Component {
                       {this.stages[stage].question}
                     </Header>
                     <Form onSubmit={this.formSubmit}>
-                      <div className="ui massive focus transparent input">
-                        <Transition onHide={this.onHideInner} animation="fly down" visible={inputVisible} duration={this.innerTransitionDuration}>
+                      <Transition onHide={this.onHideInner} animation="fly down" visible={inputVisible} duration={this.innerTransitionDuration}>
+                        <div className="ui massive focus transparent input">
                           {this.stages[stage].element}
-                        </Transition>
-                      </div>
+                        </div>
+                      </Transition>
                     </Form>
                   </Container>
                 </Grid.Row>
