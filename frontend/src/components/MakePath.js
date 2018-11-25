@@ -702,6 +702,9 @@ export default class MakePath extends Component {
       // change the value, and the user cant see what they type
     } else if (ind === 2) {
       this.pathObj.choiceL.text = obj.value
+      this.forceUpdate()
+      // re-renders the MyContent component, which sets the value of
+      // the text area to the users input.
     } else if (ind === 3 || ind === 7) {
       const { name, innerHTML } = e.target
       const choice = (ind === 3 ? 'choiceL' : 'choiceR')
@@ -733,6 +736,9 @@ export default class MakePath extends Component {
       this.forceUpdate()
     } else if (ind === 6) {
       this.pathObj.choiceR.text = obj.value
+      this.forceUpdate()
+      // re-renders the MyContent component, which sets the value of
+      // the text area to the users input.
     } else if (ind === 8) {
       const { name } = e.target
       this.pathObj.choiceR.image = name
