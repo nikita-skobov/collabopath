@@ -153,7 +153,7 @@ const MyContent = (props) => {
           </Grid.Row>
         )}
         <Grid.Row>
-          <TextArea maxLength={makePathVars.maxTextLength} rows={8} style={{ width: '80%' }} autoHeight onChange={(a, b) => { callback(a, b, ind) }} placeholder="Continue the story..." />
+          <TextArea value={data[choice].text} maxLength={makePathVars.maxTextLength} rows={8} style={{ width: '80%' }} autoHeight onChange={(a, b) => { callback(a, b, ind) }} placeholder="Continue the story..." />
         </Grid.Row>
       </Grid>
     )
