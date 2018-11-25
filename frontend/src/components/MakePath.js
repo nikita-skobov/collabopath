@@ -697,6 +697,9 @@ export default class MakePath extends Component {
     if (ind === 0) {
       if (obj.placeholder === 'Right Choice') this.pathObj.choiceR.q = obj.value
       if (obj.placeholder === 'Left Choice') this.pathObj.choiceL.q = obj.value
+      this.forceUpdate() // so that the value of the inputs will change.
+      // if we dont forceUpdate, the MyContent component will not
+      // change the value, and the user cant see what they type
     } else if (ind === 2) {
       this.pathObj.choiceL.text = obj.value
     } else if (ind === 3 || ind === 7) {
