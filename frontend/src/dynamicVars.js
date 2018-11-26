@@ -157,6 +157,17 @@ module.exports.Changelog = [
     ],
   },
   {
+    version: '0.9.2',
+    changes: [
+      'This is a hotfix update',
+      'Fixed bug where you couldn\'t select the last image in a list if you were using Firefox',
+      'Added a button to the "What is your name?" form, so mobile users have a way of proceding',
+      'Fixed the issue where the path creation modal was not preserving user input when going back',
+      'Added discord, and github links to the front page',
+      'Added a back button when viewing non-finalized objects (the back button has the same functionality as clicking on the dropdown menu, but having a button that says "Back" is more intuitive',
+    ],
+  },
+  {
     version: '0.9.1',
     changes: [
       'Added concept modals to explain new parts of the site in small steps',
