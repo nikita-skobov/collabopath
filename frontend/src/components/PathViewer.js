@@ -115,9 +115,10 @@ export default class PathViewer extends Component {
     if (stage === 911 || stage === 912) {
       // picking a path ID
       // first verify it is a valid path id
+      let path = []
       try {
         // checking for illegal characters, bad formatting
-        decodePath(this.inputValue)
+        path = decodePath(this.inputValue)
         this.invalidPathId = false
       } catch (e) {
         // decodePath throws error if path id is invalid
@@ -151,14 +152,45 @@ export default class PathViewer extends Component {
         waitingForResponse = true
         this.dataStore.fetchObject(this.inputValue, (err) => {
           if (!err) {
-            this.invalidPathId = false
-            this.startAtPathId = this.inputValue
+            // set the path in the datastore to contain
+            // the full path history of each step
+            path.forEach((str) => {
+              str.split('').forEach((char) => {
+                this.dataStore.appendPath(char)
+              })
+            })
+
+            // then get the PREVIOUS path from the users input
+            // by removing the last element, and encoding it
+            const dir = this.dataStore.popPath()
+            const previousId = this.dataStore.getEncodedPath()
+            this.dataStore.appendPath(dir)
+
+            // then download the PREVIOUS path so we have it in
+            // memory to display the text/image intiially
+            this.dataStore.fetchObject(previousId, (err2) => {
+              if (!err2) {
+                this.invalidPathId = false
+                this.startAtPathId = this.inputValue
+              } else {
+                this.invalidPathId = true
+              }
+              this.dataStore.dangerouslySetDontShowConcepts(false)
+              this.setState({ visible: false })
+            })
           } else {
             this.invalidPathId = true
+            this.dataStore.dangerouslySetDontShowConcepts(false)
+            this.setState({ visible: false })
           }
-
-          this.dataStore.dangerouslySetDontShowConcepts(false)
-          this.setState({ visible: false })
+        })
+      } else {
+        // set the path in the datastore to contain
+        // the full path history of each step
+        path.forEach((str) => {
+          str.split('').forEach((char) => {
+            this.dataStore.appendPath(char)
+          })
         })
       }
     } else if (stage === 0) {
@@ -240,14 +272,6 @@ export default class PathViewer extends Component {
             stage = '.'
           } else {
             // special case, start at specific path id:
-            // set the path in the datastore to contain
-            // the full path history of each step
-            const arr = decodePath(this.startAtPathId)
-            arr.forEach((str) => {
-              str.split('').forEach((char) => {
-                this.dataStore.appendPath(char)
-              })
-            })
 
             // then get the PREVIOUS path from the users input
             // by removing the last element, and encoding it
@@ -255,13 +279,11 @@ export default class PathViewer extends Component {
             const previousId = this.dataStore.getEncodedPath()
             this.dataStore.setStage(previousId)
             this.dataStore.setDirection(dir, previousId)
-            console.log(`previous id: ${previousId}`)
-            console.log(`previous direction: ${dir}`)
 
             // then reset the path array to its proper value:
             this.dataStore.appendPath(dir)
-
             stage = this.startAtPathId
+
             // reset vars
             this.inputValue = null
             this.invalidPathId = false
