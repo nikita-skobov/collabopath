@@ -108,7 +108,6 @@ export default class PathViewer extends Component {
   }
 
   onHideInner() {
-    console.log('onhide inner')
     // this gets called when the inner transition fades away (the input bounces up)
     // when it finishes, we set visible to false, causing the component to re-render
     // but this time the outter transition element fades out instead of fading in.
@@ -220,7 +219,6 @@ export default class PathViewer extends Component {
   
 
   onHideOuter() {
-    console.log('onhide outer')
     // this gets called when the outer transition fades away
     // upon finishing fading away, we should increment the state to render the next
     // question/input, and reset the visible flags.
@@ -267,7 +265,6 @@ export default class PathViewer extends Component {
   }
 
   formSubmit(e, item) {
-    console.log('form submit')
     const { stage } = this.state
     if (stage === 0 || stage === 911 || stage === 912) {
       const val = e.target.children[0].children[0].value
@@ -281,7 +278,6 @@ export default class PathViewer extends Component {
 
 
   render() {
-    console.log('rendering')
     const { stage, visible, inputVisible } = this.state
     if (typeof stage === 'number') {
       return (
