@@ -132,6 +132,9 @@ function Brain() {
     startGame: () => {
       gameRunning = true
     },
+    dangerouslySetStage: (s) => {
+      stage = s
+    },
     setStage: (s) => {
       let changedS = s
       if (typeof s === 'number') {
