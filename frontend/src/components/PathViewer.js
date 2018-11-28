@@ -13,7 +13,7 @@ import Slot from './Slot'
 import ChooseStartingItem from './ChooseStartingItem'
 import StatAllocate from './StatAllocate'
 import Path from './Path'
-import { PathViewer as pathViewerVars } from '../dynamicVars'
+import { PathViewer as pathViewerVars, decodePath } from '../dynamicVars'
 
 export default class PathViewer extends Component {
   constructor(props) {
@@ -37,6 +37,7 @@ export default class PathViewer extends Component {
     this.transitionDuration = pathViewerVars.outerTransitionDuration
     this.innerTransitionDuration = pathViewerVars.innerTransitionDuration
     this.inputValue = null
+    this.invalidPathId = false
     
     this.formSubmit = this.formSubmit.bind(this)
     this.onHideInner = this.onHideInner.bind(this)
@@ -54,6 +55,13 @@ export default class PathViewer extends Component {
     } = pathViewerVars
     
     this.stages = {
+      912: {
+        question: 'Oops, that path ID doesn\'t exist. Try again',
+        element: [
+          <input key={912} style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter Path ID here" />,
+          <Button compact style={{ marginTop: '1em' }} icon="angle right" />,
+        ],
+      },
       911: {
         question: 'Where would you like to start?',
         element: [
@@ -99,14 +107,25 @@ export default class PathViewer extends Component {
   }
 
   onHideInner() {
+    console.log('onhide inner')
     // this gets called when the inner transition fades away (the input bounces up)
     // when it finishes, we set visible to false, causing the component to re-render
     // but this time the outter transition element fades out instead of fading in.
     const { stage } = this.state
     const callback = this.dataStore.tell('App').changeGameBarState
-    if (stage === 911) {
+    if (stage === 911 || stage === 912) {
       // picking a path ID
+      // first verify it is a valid path id
       console.log(this.inputValue)
+      try {
+        const path = decodePath(this.inputValue)
+        console.log(path)
+        this.invalidPathId = false
+      } catch (e) {
+        // decodePath throws error if path id is invalid
+        this.invalidPathId = true
+        console.log(e)
+      }
     } else if (stage === 0) {
       if (this.inputValue === '') {
         this.inputValue = pathViewerVars.defaultName
@@ -161,14 +180,20 @@ export default class PathViewer extends Component {
   
 
   onHideOuter() {
+    console.log('onhide outer')
     // this gets called when the outer transition fades away
     // upon finishing fading away, we should increment the state to render the next
     // question/input, and reset the visible flags.
     this.setState((prevState) => {
       let { stage } = prevState
-      if (stage === 911) {
+      if (stage === 911 || stage === 912) {
         // special case, set stage to 0
-        stage = 0
+        if (this.invalidPathId) {
+          // if path is invalid, try again
+          stage = 912
+        } else {
+          stage = 0
+        }
       } else {
         stage += 1
         if (stage === 2) {
@@ -184,8 +209,9 @@ export default class PathViewer extends Component {
   }
 
   formSubmit(e, item) {
+    console.log('form submit')
     const { stage } = this.state
-    if (stage === 0 || stage === 911) {
+    if (stage === 0 || stage === 911 || stage === 912) {
       const val = e.target.children[0].children[0].value
       this.inputValue = val
       this.setState({ inputVisible: false })
@@ -197,6 +223,7 @@ export default class PathViewer extends Component {
 
 
   render() {
+    console.log('rendering')
     const { stage, visible, inputVisible } = this.state
     if (typeof stage === 'number') {
       return (
