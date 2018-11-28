@@ -117,29 +117,30 @@ export default class PathViewer extends Component {
     if (stage === 911 || stage === 912) {
       // picking a path ID
       // first verify it is a valid path id
-      console.log(this.inputValue)
       try {
         // checking for illegal characters, bad formatting
         const path = decodePath(this.inputValue)
-        console.log(path)
+        this.invalidPathId = false
       } catch (e) {
         // decodePath throws error if path id is invalid
         this.invalidPathId = true
-        console.log(e)
       }
 
+      let shouldFetch = false
+      // set to false because it should be reset to true
+      // if we DO have this path object
       if (!this.invalidPathId) {
         // checking if we already have that path
-        // set to false because it should be reset to true
-        // if we DO have this path object
-        this.invalidPathId = false
         if (!this.dataStore.getPathObj(this.inputValue)) {
           // it returns null if none found
-          this.invalidPathId = true
+          shouldFetch = true
+        } else {
+          // if it doesnt return null, that means we have that path obj
+          this.invalidPathId = false
         }
       }
 
-      if (this.invalidPathId) {
+      if (shouldFetch) {
         // if the decodePath was successful, but we DONT
         // have the path then we need to fetch it
 
@@ -147,10 +148,10 @@ export default class PathViewer extends Component {
         // dont show concept on the following fetch object call
         // checking if path exists in the database
         waitingForResponse = true
-        this.dataStore.fetchObject(this.inputValue, (err, obj) => {
-          console.log(err)
-          console.log(obj)
-          if (err) this.invalidPathId = true
+        this.dataStore.fetchObject(this.inputValue, (err) => {
+          if (!err) this.invalidPathId = false
+          else this.invalidPathId = true
+          this.dataStore.dangerouslySetDontShowConcepts(false)
           this.setState({ visible: false })
         })
       }
