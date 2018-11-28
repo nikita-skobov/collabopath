@@ -19,7 +19,7 @@ export default class PathViewer extends Component {
   constructor(props) {
     // console.log('CONSTRUCTING PATH VIEWER')
     super(props)
-    
+
     this.dataStore = props.dataStore
 
     let stage = this.dataStore.getStage()
@@ -33,20 +33,18 @@ export default class PathViewer extends Component {
       visible: true,
       inputVisible: true,
     }
-    
+
     this.transitionDuration = pathViewerVars.outerTransitionDuration
     this.innerTransitionDuration = pathViewerVars.innerTransitionDuration
     this.inputValue = null
     this.invalidPathId = false
     this.startAtPathId = null
-    
+
     this.formSubmit = this.formSubmit.bind(this)
     this.onHideInner = this.onHideInner.bind(this)
     this.onHideOuter = this.onHideOuter.bind(this)
-    
+
     const {
-      healthMax,
-      healthMin,
       intelligenceMax,
       intelligenceMin,
       sanityMax,
@@ -54,7 +52,7 @@ export default class PathViewer extends Component {
       staminaMax,
       staminaMin,
     } = pathViewerVars
-    
+
     this.stages = {
       912: {
         question: 'Oops, that path ID doesn\'t exist. Try again',
@@ -119,7 +117,7 @@ export default class PathViewer extends Component {
       // first verify it is a valid path id
       try {
         // checking for illegal characters, bad formatting
-        const path = decodePath(this.inputValue)
+        decodePath(this.inputValue)
         this.invalidPathId = false
       } catch (e) {
         // decodePath throws error if path id is invalid
@@ -216,7 +214,6 @@ export default class PathViewer extends Component {
       this.setState({ visible: false })
     }
   }
-  
 
   onHideOuter() {
     // this gets called when the outer transition fades away
@@ -275,7 +272,6 @@ export default class PathViewer extends Component {
       this.onHideInner()
     }
   }
-
 
   render() {
     const { stage, visible, inputVisible } = this.state
