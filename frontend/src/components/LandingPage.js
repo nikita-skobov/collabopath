@@ -71,7 +71,7 @@ export default class LandingPage extends Component {
             <Grid.Row centered columns={1}>
               <Header textAlign="center" className="em3h" as="h1" size="huge">{landingPageVars.title}</Header>
             </Grid.Row>
-            <Grid.Row centered columns={1}>
+            <Grid.Row className="ps3em" centered columns={1}>
               <p>
                 Beta Version {version}. <NavLink style={{ color: '#0063c5' }} to="/changelog">Check out the changelog</NavLink>
                 <br />
