@@ -117,6 +117,10 @@ export default class PathViewer extends Component {
       // first verify it is a valid path id
       let path = []
       try {
+        // 0, and 1 path IDs are special cases. they dont work
+        if (this.inputValue === '0' || this.inputValue === '1') {
+          throw new Error('cant start at 0, or 1, sorry. too buggy')
+        }
         // checking for illegal characters, bad formatting
         path = decodePath(this.inputValue)
         this.invalidPathId = false
