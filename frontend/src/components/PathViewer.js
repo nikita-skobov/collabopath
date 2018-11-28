@@ -57,14 +57,14 @@ export default class PathViewer extends Component {
       911: {
         question: 'Where would you like to start?',
         element: [
-          <input style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter Path ID here" />,
+          <input key={911} style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter Path ID here" />,
           <Button compact style={{ marginTop: '1em' }} icon="angle right" />,
         ],
       },
       0: {
         question: 'What is your name?',
         element: [
-          <input style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter name here" />,
+          <input key={0} style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter name here" />,
           <Button compact style={{ marginTop: '1em' }} icon="angle right" />,
         ],
       },
@@ -104,7 +104,10 @@ export default class PathViewer extends Component {
     // but this time the outter transition element fades out instead of fading in.
     const { stage } = this.state
     const callback = this.dataStore.tell('App').changeGameBarState
-    if (stage === 0) {
+    if (stage === 911) {
+      // picking a path ID
+      console.log(this.inputValue)
+    } else if (stage === 0) {
       if (this.inputValue === '') {
         this.inputValue = pathViewerVars.defaultName
       } else if (!/\S/.test(this.inputValue)) {
@@ -163,12 +166,17 @@ export default class PathViewer extends Component {
     // question/input, and reset the visible flags.
     this.setState((prevState) => {
       let { stage } = prevState
-      stage += 1
-      if (stage === 2) {
-        stage = 5
-      }
-      if (stage === 6) {
-        stage = '.'
+      if (stage === 911) {
+        // special case, set stage to 0
+        stage = 0
+      } else {
+        stage += 1
+        if (stage === 2) {
+          stage = 5
+        }
+        if (stage === 6) {
+          stage = '.'
+        }
       }
       this.dataStore.setStage(stage)
       return { stage, visible: true, inputVisible: true }
@@ -177,7 +185,7 @@ export default class PathViewer extends Component {
 
   formSubmit(e, item) {
     const { stage } = this.state
-    if (stage === 0) {
+    if (stage === 0 || stage === 911) {
       const val = e.target.children[0].children[0].value
       this.inputValue = val
       this.setState({ inputVisible: false })
