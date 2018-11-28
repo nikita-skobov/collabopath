@@ -13,13 +13,13 @@ import Slot from './Slot'
 import ChooseStartingItem from './ChooseStartingItem'
 import StatAllocate from './StatAllocate'
 import Path from './Path'
-import { PathViewer as pathViewerVars } from '../dynamicVars'
+import { PathViewer as pathViewerVars, decodePath } from '../dynamicVars'
 
 export default class PathViewer extends Component {
   constructor(props) {
     // console.log('CONSTRUCTING PATH VIEWER')
     super(props)
-    
+
     this.dataStore = props.dataStore
 
     let stage = this.dataStore.getStage()
@@ -33,18 +33,18 @@ export default class PathViewer extends Component {
       visible: true,
       inputVisible: true,
     }
-    
+
     this.transitionDuration = pathViewerVars.outerTransitionDuration
     this.innerTransitionDuration = pathViewerVars.innerTransitionDuration
     this.inputValue = null
-    
+    this.invalidPathId = false
+    this.startAtPathId = null
+
     this.formSubmit = this.formSubmit.bind(this)
     this.onHideInner = this.onHideInner.bind(this)
     this.onHideOuter = this.onHideOuter.bind(this)
-    
+
     const {
-      healthMax,
-      healthMin,
       intelligenceMax,
       intelligenceMin,
       sanityMax,
@@ -52,12 +52,26 @@ export default class PathViewer extends Component {
       staminaMax,
       staminaMin,
     } = pathViewerVars
-    
+
     this.stages = {
+      912: {
+        question: 'Oops, that path ID doesn\'t exist. Try again',
+        element: [
+          <input key={912} style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter Path ID here" />,
+          <Button compact style={{ marginTop: '1em' }} icon="angle right" />,
+        ],
+      },
+      911: {
+        question: 'Where would you like to start?',
+        element: [
+          <input key={911} style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter Path ID here" />,
+          <Button compact style={{ marginTop: '1em' }} icon="angle right" />,
+        ],
+      },
       0: {
         question: 'What is your name?',
         element: [
-          <input style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter name here" />,
+          <input key={0} style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter name here" />,
           <Button compact style={{ marginTop: '1em' }} icon="angle right" />,
         ],
       },
@@ -97,7 +111,93 @@ export default class PathViewer extends Component {
     // but this time the outter transition element fades out instead of fading in.
     const { stage } = this.state
     const callback = this.dataStore.tell('App').changeGameBarState
-    if (stage === 0) {
+    let waitingForResponse = false
+    if (stage === 911 || stage === 912) {
+      // picking a path ID
+      // first verify it is a valid path id
+      let path = []
+      try {
+        // 0, and 1 path IDs are special cases. they dont work
+        if (this.inputValue === '0' || this.inputValue === '1') {
+          throw new Error('cant start at 0, or 1, sorry. too buggy')
+        }
+        // checking for illegal characters, bad formatting
+        path = decodePath(this.inputValue)
+        this.invalidPathId = false
+      } catch (e) {
+        // decodePath throws error if path id is invalid
+        this.invalidPathId = true
+      }
+
+      let shouldFetch = false
+      // set to false because it should be reset to true
+      // if we DO have this path object
+      if (!this.invalidPathId) {
+        // checking if we already have that path
+        const has = Object.prototype.hasOwnProperty
+        const obj = this.dataStore.getPathObj(this.inputValue)
+        if (!obj || has.call(obj, 'doesNotExist')) {
+          // it returns null if none found
+          shouldFetch = true
+        } else {
+          // if it doesnt return null, that means we have that path obj
+          this.invalidPathId = false
+          this.startAtPathId = this.inputValue
+        }
+      }
+
+      if (shouldFetch) {
+        // if the decodePath was successful, but we DONT
+        // have the path then we need to fetch it
+
+        this.dataStore.dangerouslySetDontShowConcepts(true)
+        // dont show concept on the following fetch object call
+        // checking if path exists in the database
+        waitingForResponse = true
+        this.dataStore.fetchObject(this.inputValue, (err) => {
+          if (!err) {
+            // set the path in the datastore to contain
+            // the full path history of each step
+            path.forEach((str) => {
+              str.split('').forEach((char) => {
+                this.dataStore.appendPath(char)
+              })
+            })
+
+            // then get the PREVIOUS path from the users input
+            // by removing the last element, and encoding it
+            const dir = this.dataStore.popPath()
+            const previousId = this.dataStore.getEncodedPath()
+            this.dataStore.appendPath(dir)
+
+            // then download the PREVIOUS path so we have it in
+            // memory to display the text/image intiially
+            this.dataStore.fetchObject(previousId, (err2) => {
+              if (!err2) {
+                this.invalidPathId = false
+                this.startAtPathId = this.inputValue
+              } else {
+                this.invalidPathId = true
+              }
+              this.dataStore.dangerouslySetDontShowConcepts(false)
+              this.setState({ visible: false })
+            })
+          } else {
+            this.invalidPathId = true
+            this.dataStore.dangerouslySetDontShowConcepts(false)
+            this.setState({ visible: false })
+          }
+        })
+      } else {
+        // set the path in the datastore to contain
+        // the full path history of each step
+        path.forEach((str) => {
+          str.split('').forEach((char) => {
+            this.dataStore.appendPath(char)
+          })
+        })
+      }
+    } else if (stage === 0) {
       if (this.inputValue === '') {
         this.inputValue = pathViewerVars.defaultName
       } else if (!/\S/.test(this.inputValue)) {
@@ -146,9 +246,10 @@ export default class PathViewer extends Component {
         val: this.inputValue,
       })
     }
-    this.setState({ visible: false })
+    if (!waitingForResponse) {
+      this.setState({ visible: false })
+    }
   }
-  
 
   onHideOuter() {
     // this gets called when the outer transition fades away
@@ -156,12 +257,43 @@ export default class PathViewer extends Component {
     // question/input, and reset the visible flags.
     this.setState((prevState) => {
       let { stage } = prevState
-      stage += 1
-      if (stage === 2) {
-        stage = 5
-      }
-      if (stage === 6) {
-        stage = '.'
+      if (stage === 911 || stage === 912) {
+        // special case, set stage to 0
+        if (this.invalidPathId) {
+          // if path is invalid, try again
+          stage = 912
+        } else {
+          stage = 0
+        }
+      } else {
+        stage += 1
+        if (stage === 2) {
+          stage = 5
+        }
+        if (stage === 6) {
+          if (this.startAtPathId === null) {
+            // default case, start from beginning
+            stage = '.'
+          } else {
+            // special case, start at specific path id:
+
+            // then get the PREVIOUS path from the users input
+            // by removing the last element, and encoding it
+            const dir = this.dataStore.popPath()
+            const previousId = this.dataStore.getEncodedPath()
+            this.dataStore.setStage(previousId)
+            this.dataStore.setDirection(dir, previousId)
+
+            // then reset the path array to its proper value:
+            this.dataStore.appendPath(dir)
+            stage = this.startAtPathId
+
+            // reset vars
+            this.inputValue = null
+            this.invalidPathId = false
+            this.startAtPathId = null
+          }
+        }
       }
       this.dataStore.setStage(stage)
       return { stage, visible: true, inputVisible: true }
@@ -170,7 +302,7 @@ export default class PathViewer extends Component {
 
   formSubmit(e, item) {
     const { stage } = this.state
-    if (stage === 0) {
+    if (stage === 0 || stage === 911 || stage === 912) {
       const val = e.target.children[0].children[0].value
       this.inputValue = val
       this.setState({ inputVisible: false })
@@ -179,7 +311,6 @@ export default class PathViewer extends Component {
       this.onHideInner()
     }
   }
-
 
   render() {
     const { stage, visible, inputVisible } = this.state
