@@ -277,6 +277,7 @@ function Brain() {
     isConceptActive: name => activeConcept === name,
     setActiveConcept: (name) => { activeConcept = name },
     dontShowConcepts: () => { dontShowConcepts = true },
+    dangerouslySetDontShowConcepts: (b) => { dontShowConcepts = b },
 
     setConditionalCalculatedAt: (id, pass) => {
       conditionCalculated[id] = pass

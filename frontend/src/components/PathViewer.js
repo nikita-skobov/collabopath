@@ -113,18 +113,46 @@ export default class PathViewer extends Component {
     // but this time the outter transition element fades out instead of fading in.
     const { stage } = this.state
     const callback = this.dataStore.tell('App').changeGameBarState
+    let waitingForResponse = false
     if (stage === 911 || stage === 912) {
       // picking a path ID
       // first verify it is a valid path id
       console.log(this.inputValue)
       try {
+        // checking for illegal characters, bad formatting
         const path = decodePath(this.inputValue)
         console.log(path)
-        this.invalidPathId = false
       } catch (e) {
         // decodePath throws error if path id is invalid
         this.invalidPathId = true
         console.log(e)
+      }
+
+      if (!this.invalidPathId) {
+        // checking if we already have that path
+        // set to false because it should be reset to true
+        // if we DO have this path object
+        this.invalidPathId = false
+        if (!this.dataStore.getPathObj(this.inputValue)) {
+          // it returns null if none found
+          this.invalidPathId = true
+        }
+      }
+
+      if (this.invalidPathId) {
+        // if the decodePath was successful, but we DONT
+        // have the path then we need to fetch it
+
+        this.dataStore.dangerouslySetDontShowConcepts(true)
+        // dont show concept on the following fetch object call
+        // checking if path exists in the database
+        waitingForResponse = true
+        this.dataStore.fetchObject(this.inputValue, (err, obj) => {
+          console.log(err)
+          console.log(obj)
+          if (err) this.invalidPathId = true
+          this.setState({ visible: false })
+        })
       }
     } else if (stage === 0) {
       if (this.inputValue === '') {
@@ -175,7 +203,9 @@ export default class PathViewer extends Component {
         val: this.inputValue,
       })
     }
-    this.setState({ visible: false })
+    if (!waitingForResponse) {
+      this.setState({ visible: false })
+    }
   }
   
 
