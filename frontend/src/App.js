@@ -39,8 +39,9 @@ export default class App extends Component {
       this.dataStore.startGame()
       this.setState({ page: 'Initial' })
     } else if (which === 'any') {
-      alert('THIS FEATURE NOT IMPLEMENTED YET2222')
-      this.setState({ page: 'LandingPage' })
+      this.dataStore.startGame()
+      this.dataStore.dangerouslySetStage(911)
+      this.setState({ page: 'Initial' })
     }
   }
 

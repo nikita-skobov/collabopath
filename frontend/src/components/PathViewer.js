@@ -54,6 +54,13 @@ export default class PathViewer extends Component {
     } = pathViewerVars
     
     this.stages = {
+      911: {
+        question: 'Where would you like to start?',
+        element: [
+          <input style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter Path ID here" />,
+          <Button compact style={{ marginTop: '1em' }} icon="angle right" />,
+        ],
+      },
       0: {
         question: 'What is your name?',
         element: [
