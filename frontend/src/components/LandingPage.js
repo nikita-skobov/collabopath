@@ -46,6 +46,10 @@ export default class LandingPage extends Component {
     } else if (name === 'suggestions') {
       const { suggestions } = this.state
       this.setState({ suggestions: !suggestions })
+    } else if (name === 'any') {
+      this.pageChoice = name
+      const { visible } = this.state
+      this.setState({ visible: !visible })
     }
   }
 
@@ -82,6 +86,11 @@ export default class LandingPage extends Component {
             <Grid.Row className="ps3em" centered columns={1}>
               <Button size="huge" name="begin" color="green" onClick={this.handleButton}>
                 Click Here to start from the beginninng
+              </Button>
+            </Grid.Row>
+            <Grid.Row className="ps3em" centered columns={1}>
+              <Button size="big" name="any" color="gray" onClick={this.handleButton}>
+                Click Here to start from a specific id
               </Button>
             </Grid.Row>
             <Grid.Row centered columns={1}>
