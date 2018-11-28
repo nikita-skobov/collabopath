@@ -240,14 +240,27 @@ export default class PathViewer extends Component {
             stage = '.'
           } else {
             // special case, start at specific path id:
-            this.dataStore.setStage('.')
-            this.dataStore.setDirection('0', '.')
+            // set the path in the datastore to contain
+            // the full path history of each step
             const arr = decodePath(this.startAtPathId)
             arr.forEach((str) => {
               str.split('').forEach((char) => {
                 this.dataStore.appendPath(char)
               })
             })
+
+            // then get the PREVIOUS path from the users input
+            // by removing the last element, and encoding it
+            const dir = this.dataStore.popPath()
+            const previousId = this.dataStore.getEncodedPath()
+            this.dataStore.setStage(previousId)
+            this.dataStore.setDirection(dir, previousId)
+            console.log(`previous id: ${previousId}`)
+            console.log(`previous direction: ${dir}`)
+
+            // then reset the path array to its proper value:
+            this.dataStore.appendPath(dir)
+
             stage = this.startAtPathId
             // reset vars
             this.inputValue = null
