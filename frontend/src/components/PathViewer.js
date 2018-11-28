@@ -38,6 +38,7 @@ export default class PathViewer extends Component {
     this.innerTransitionDuration = pathViewerVars.innerTransitionDuration
     this.inputValue = null
     this.invalidPathId = false
+    this.startAtPathId = null
     
     this.formSubmit = this.formSubmit.bind(this)
     this.onHideInner = this.onHideInner.bind(this)
@@ -131,12 +132,15 @@ export default class PathViewer extends Component {
       // if we DO have this path object
       if (!this.invalidPathId) {
         // checking if we already have that path
-        if (!this.dataStore.getPathObj(this.inputValue)) {
+        const has = Object.prototype.hasOwnProperty
+        const obj = this.dataStore.getPathObj(this.inputValue)
+        if (!obj || has.call(obj, 'doesNotExist')) {
           // it returns null if none found
           shouldFetch = true
         } else {
           // if it doesnt return null, that means we have that path obj
           this.invalidPathId = false
+          this.startAtPathId = this.inputValue
         }
       }
 
@@ -149,8 +153,13 @@ export default class PathViewer extends Component {
         // checking if path exists in the database
         waitingForResponse = true
         this.dataStore.fetchObject(this.inputValue, (err) => {
-          if (!err) this.invalidPathId = false
-          else this.invalidPathId = true
+          if (!err) {
+            this.invalidPathId = false
+            this.startAtPathId = this.inputValue
+          } else {
+            this.invalidPathId = true
+          }
+
           this.dataStore.dangerouslySetDontShowConcepts(false)
           this.setState({ visible: false })
         })
@@ -231,7 +240,25 @@ export default class PathViewer extends Component {
           stage = 5
         }
         if (stage === 6) {
-          stage = '.'
+          if (this.startAtPathId === null) {
+            // default case, start from beginning
+            stage = '.'
+          } else {
+            // special case, start at specific path id:
+            this.dataStore.setStage('.')
+            this.dataStore.setDirection('0', '.')
+            const arr = decodePath(this.startAtPathId)
+            arr.forEach((str) => {
+              str.split('').forEach((char) => {
+                this.dataStore.appendPath(char)
+              })
+            })
+            stage = this.startAtPathId
+            // reset vars
+            this.inputValue = null
+            this.invalidPathId = false
+            this.startAtPathId = null
+          }
         }
       }
       this.dataStore.setStage(stage)
