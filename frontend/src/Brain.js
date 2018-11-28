@@ -310,12 +310,14 @@ function Brain() {
     },
     popPath: () => {
       let last = pathArray[pathArray.length - 1]
+      const lastChar = last.charAt(last.length - 1)
       last = last.slice(0, -1)
       if (last.length === 0) {
         pathArray.pop()
       } else {
         pathArray[pathArray.length - 1] = last
       }
+      return lastChar
     },
     getEncodedPath: () => {
       const str = encodePath(pathArray)
