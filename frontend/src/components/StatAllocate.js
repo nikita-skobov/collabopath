@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Grid, Button, Header, Icon } from 'semantic-ui-react'
+import { Grid, Button, Header, Icon, Popup } from 'semantic-ui-react'
 
 export default class StatAllocate extends Component {
   constructor(props) {
@@ -49,13 +49,24 @@ export default class StatAllocate extends Component {
   render() {
     const { pointsRemaining } = this.state
     const stats = ['health', 'intelligence', 'stamina', 'sanity']
+    const statHints = {
+      health: 'You lose health from in-game effects. If your health reaches 0, you lose!',
+      intelligence: 'If your intelligence is at 0, you will start to lose health',
+      stamina: 'Every step you take consumes 1 unit of stamina. If your stamina hits 0, you start losing health',
+      sanity: 'If your sanity reaches 0, you start to lose intelligence',
+    }
     return (
       <Grid className="ps5vw">
         <Grid.Row centered>You have {pointsRemaining} points</Grid.Row>
         {stats.map(stat => (
           <Grid.Row centered columns={2}>
-            <Grid.Column>
+            <Grid.Column className="fs08em">
               {stat}
+              <Popup
+                trigger={<Icon name="question circle" />}
+                content={statHints[stat]}
+                size="small"
+              />
             </Grid.Column>
             <Grid.Column>
               <Grid centered columns="equal">
