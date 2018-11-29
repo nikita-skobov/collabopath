@@ -56,6 +56,7 @@ export default class StatAllocate extends Component {
           <Grid.Row centered columns={2}>
             <Grid.Column>
               {stat}
+              <Icon name="question circle" fitted />
             </Grid.Column>
             <Grid.Column>
               <Grid centered columns="equal">
