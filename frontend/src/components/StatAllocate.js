@@ -49,6 +49,12 @@ export default class StatAllocate extends Component {
   render() {
     const { pointsRemaining } = this.state
     const stats = ['health', 'intelligence', 'stamina', 'sanity']
+    const statHints = {
+      health: 'You lose health from in-game effects. If your health reaches 0, you lose!',
+      intelligence: 'If your intelligence is at 0, you will start to lose health',
+      stamina: 'Every step you take consumes 1 unit of stamina. If your stamina hits 0, you start losing health',
+      sanity: 'If your sanity reaches 0, you start to lose intelligence',
+    }
     return (
       <Grid className="ps5vw">
         <Grid.Row centered>You have {pointsRemaining} points</Grid.Row>
@@ -58,7 +64,7 @@ export default class StatAllocate extends Component {
               {stat}
               <Popup
                 trigger={<Icon name="question circle" />}
-                content="this is a stat attribute"
+                content={statHints[stat]}
                 size="small"
               />
             </Grid.Column>
