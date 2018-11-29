@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Grid, Button, Header, Icon } from 'semantic-ui-react'
+import { Grid, Button, Header, Icon, Popup } from 'semantic-ui-react'
 
 export default class StatAllocate extends Component {
   constructor(props) {
@@ -56,7 +56,11 @@ export default class StatAllocate extends Component {
           <Grid.Row centered columns={2}>
             <Grid.Column className="fs08em">
               {stat}
-              <Icon name="question circle" />
+              <Popup
+                trigger={<Icon name="question circle" />}
+                content="this is a stat attribute"
+                size="small"
+              />
             </Grid.Column>
             <Grid.Column>
               <Grid centered columns="equal">
