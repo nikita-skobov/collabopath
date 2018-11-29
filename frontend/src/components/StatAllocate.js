@@ -54,9 +54,9 @@ export default class StatAllocate extends Component {
         <Grid.Row centered>You have {pointsRemaining} points</Grid.Row>
         {stats.map(stat => (
           <Grid.Row centered columns={2}>
-            <Grid.Column>
+            <Grid.Column className="fs08em">
               {stat}
-              <Icon name="question circle" fitted />
+              <Icon name="question circle" />
             </Grid.Column>
             <Grid.Column>
               <Grid centered columns="equal">
