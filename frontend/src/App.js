@@ -26,6 +26,7 @@ export default class App extends Component {
       modalOpen: false,
       conceptType: null,
       startChoice: null,
+      transitionVisible: true,
     }
 
     this.transitionDuration = pathViewerVars.outerTransitionDuration
@@ -82,7 +83,7 @@ export default class App extends Component {
   }
 
   render() {
-    const { page, modalOpen, conceptType } = this.state
+    const { page, modalOpen, conceptType, transitionVisible } = this.state
     if (page === 'LandingPage') {
       return (
         <div>
@@ -92,7 +93,7 @@ export default class App extends Component {
     }
     if (page === 'Warning') {
       return (
-        <Transition animation="scale" transitionOnMount duration={this.transitionDuration}>
+        <Transition animation="scale" visible={transitionVisible} transitionOnMount duration={this.transitionDuration}>
           <Grid style={{ marginTop: '25vh' }} verticalAlign="middle" columns={1} centered>
             <Grid.Row className="ps3em">
               <Header className="em3h" as="h1">Warning</Header>
