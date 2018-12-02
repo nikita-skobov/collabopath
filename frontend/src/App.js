@@ -14,6 +14,8 @@ import GameBar from './components/GameBar'
 import PathViewer from './components/PathViewer'
 import Concept from './components/Concept'
 
+import { PathViewer as pathViewerVars } from './dynamicVars'
+
 export default class App extends Component {
   constructor(props) {
     super(props)
@@ -25,6 +27,8 @@ export default class App extends Component {
       conceptType: null,
       startChoice: null,
     }
+
+    this.transitionDuration = pathViewerVars.outerTransitionDuration
 
     this.nextPage = this.nextPage.bind(this)
     this.changeGameBarState = this.changeGameBarState.bind(this)
