@@ -17,6 +17,7 @@ export default class App extends Component {
       page: this.dataStore.gameStarted() ? 'Initial' : 'LandingPage',
       modalOpen: false,
       conceptType: null,
+      startChoice: null,
     }
 
     this.nextPage = this.nextPage.bind(this)
@@ -35,14 +36,15 @@ export default class App extends Component {
   }
 
   nextPage(which) {
-    if (which === 'begin') {
-      this.dataStore.startGame()
-      this.setState({ page: 'Initial' })
-    } else if (which === 'any') {
-      this.dataStore.startGame()
-      this.dataStore.dangerouslySetStage(911)
-      this.setState({ page: 'Initial' })
-    }
+    this.setState({ startChoice: which, page: 'Warning' })
+    // if (which === 'begin') {
+    //   this.dataStore.startGame()
+    //   this.setState({ page: 'Initial' })
+    // } else if (which === 'any') {
+    //   this.dataStore.startGame()
+    //   this.dataStore.dangerouslySetStage(911)
+    //   this.setState({ page: 'Initial' })
+    // }
   }
 
   changeGameBarState(obj) {
@@ -75,6 +77,13 @@ export default class App extends Component {
       return (
         <div>
           <LandingPage callback={this.nextPage} />
+        </div>
+      )
+    }
+    if (page === 'Warning') {
+      return (
+        <div>
+          <h1>this is a warning</h1>
         </div>
       )
     }
