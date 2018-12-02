@@ -27,6 +27,7 @@ export default class App extends Component {
       conceptType: null,
       startChoice: null,
       transitionVisible: true,
+      warningChoice: null,
     }
 
     this.transitionDuration = pathViewerVars.outerTransitionDuration
@@ -45,7 +46,7 @@ export default class App extends Component {
   handleWarning(e) {
     e.preventDefault()
     const { name } = e.target
-    console.log(name)
+    this.setState({ warningChoice: name, transitionVisible: false })
   }
 
   resetGame() {
