@@ -131,6 +131,8 @@ export default class App extends Component {
             <Grid.Row>
               <Button name="deny" onClick={this.handleWarning} color="red" size="small">{`Nevermind. I don${"'"}t want to play`}</Button>
             </Grid.Row>
+            <Grid.Row />
+            <Grid.Row />
           </Grid>
         </Transition>
       )
