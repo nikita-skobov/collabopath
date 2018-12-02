@@ -39,8 +39,29 @@ export default class App extends Component {
     this.newConceptModal = this.newConceptModal.bind(this)
     this.closeConceptModal = this.closeConceptModal.bind(this)
     this.handleWarning = this.handleWarning.bind(this)
+    this.onTransitionHide = this.onTransitionHide.bind(this)
 
     this.dataStore.rememberMe('App', this)
+  }
+
+  onTransitionHide() {
+    const { warningChoice, startChoice } = this.state
+    if (warningChoice === 'accept') {
+      if (startChoice === 'begin') {
+        this.dataStore.startGame()
+        this.setState({ page: 'Initial' })
+      } else if (startChoice === 'any') {
+        this.dataStore.startGame()
+        this.dataStore.dangerouslySetStage(911)
+        this.setState({ page: 'Initial' })
+      }
+    } else {
+      // user does not want to play, so put them back at landing page
+      this.setState({
+        transitionVisible: true,
+        page: 'LandingPage',
+      })
+    }
   }
 
   handleWarning(e) {
@@ -48,6 +69,7 @@ export default class App extends Component {
     const { name } = e.target
     this.setState({ warningChoice: name, transitionVisible: false })
   }
+
 
   resetGame() {
     // console.log('inside reset game?')
@@ -101,7 +123,7 @@ export default class App extends Component {
     }
     if (page === 'Warning') {
       return (
-        <Transition animation="scale" visible={transitionVisible} transitionOnMount duration={this.transitionDuration}>
+        <Transition onHide={this.onTransitionHide} animation="scale" visible={transitionVisible} transitionOnMount duration={this.transitionDuration}>
           <Grid style={{ marginTop: '25vh' }} verticalAlign="middle" columns={1} centered>
             <Grid.Row className="ps3em">
               <Header className="em3h" as="h1">Warning</Header>
