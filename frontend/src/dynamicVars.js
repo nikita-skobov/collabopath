@@ -149,11 +149,12 @@ module.exports.MakePath = {
 
 module.exports.Changelog = [
   {
-    version: '1.0.0',
-    notdone: 1,
+    version: '0.9.3',
     changes: [
-      'Add a way for users to explore paths without having to start from the beginning',
-      'This list is still in progress... If you have any more suggestions for 1.0.0 features, please let me know via the suggestion form, by email, or by twitter.',
+      'Fixed some display issues where content would go off screen on mobile devices',
+      'Added feature to start from any path by giving a path ID (note this does not work for path ID 0, or 1 because they are a special case)',
+      'Added tooltips above the stat allocate page that explains what the stat attributes do',
+      'Added an explicit content warning that requires user to agree before proceding to the game',
     ],
   },
   {
