@@ -37,8 +37,15 @@ export default class App extends Component {
     this.resetGame = this.resetGame.bind(this)
     this.newConceptModal = this.newConceptModal.bind(this)
     this.closeConceptModal = this.closeConceptModal.bind(this)
+    this.handleWarning = this.handleWarning.bind(this)
 
     this.dataStore.rememberMe('App', this)
+  }
+
+  handleWarning(e) {
+    e.preventDefault()
+    const { name } = e.target
+    console.log(name)
   }
 
   resetGame() {
@@ -104,10 +111,10 @@ export default class App extends Component {
               </Header>
             </Grid.Row>
             <Grid.Row>
-              <Button color="green">I accept that I might see some offensive content</Button>
+              <Button name="accept" onClick={this.handleWarning} color="green">I accept that I might see some offensive content</Button>
             </Grid.Row>
             <Grid.Row>
-              <Button color="red" size="small">{`Nevermind. I don${"'"}t want to play`}</Button>
+              <Button name="deny" onClick={this.handleWarning} color="red" size="small">{`Nevermind. I don${"'"}t want to play`}</Button>
             </Grid.Row>
           </Grid>
         </Transition>
