@@ -78,14 +78,6 @@ export default class App extends Component {
 
   nextPage(which) {
     this.setState({ startChoice: which, page: 'Warning' })
-    // if (which === 'begin') {
-    //   this.dataStore.startGame()
-    //   this.setState({ page: 'Initial' })
-    // } else if (which === 'any') {
-    //   this.dataStore.startGame()
-    //   this.dataStore.dangerouslySetStage(911)
-    //   this.setState({ page: 'Initial' })
-    // }
   }
 
   changeGameBarState(obj) {
