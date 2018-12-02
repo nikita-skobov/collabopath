@@ -155,6 +155,7 @@ module.exports.Changelog = [
       'Added feature to start from any path by giving a path ID (note this does not work for path ID 0, or 1 because they are a special case)',
       'Added tooltips above the stat allocate page that explains what the stat attributes do',
       'Added an explicit content warning that requires user to agree before proceding to the game',
+      'Added more images to choose from',
     ],
   },
   {
