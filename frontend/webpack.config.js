@@ -35,7 +35,7 @@ module.exports = {
   // ],
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'scripts/bundle.[hash].js',
+    filename: 'scripts/bundle.[contenthash].js',
     // chunkFileName: 'bundle.[contenthash].js',
   },
   plugins: [
