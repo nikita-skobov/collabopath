@@ -96,6 +96,12 @@ export default class App extends Component {
               This game has content created by other users. Some of the paths you encounter might have offensive content. If you see any offensive content please report it on our <a style={{ color: '#0063c5' }} href="https://discord.gg/rwSrC4c" target="_blank" rel="noopener noreferrer">Discord</a>
             </Header>
           </Grid.Row>
+          <Grid.Row>
+            <Button color="green">I accept that I might see some offensive content</Button>
+          </Grid.Row>
+          <Grid.Row>
+            <Button color="red" size="small">{`Nevermind. I don${"'"}t want to play`}</Button>
+          </Grid.Row>
         </Grid>
       )
     }
