@@ -51,11 +51,11 @@ export default class App extends Component {
       // initial button choice
       if (startChoice === 'begin') {
         this.dataStore.startGame()
-        this.setState({ page: 'Initial' })
+        this.setState({ page: 'Initial', transitionVisible: true })
       } else if (startChoice === 'any') {
         this.dataStore.startGame()
         this.dataStore.dangerouslySetStage(911)
-        this.setState({ page: 'Initial' })
+        this.setState({ page: 'Initial', transitionVisible: true })
       }
     } else {
       // user does not want to play, so put them back at landing page
