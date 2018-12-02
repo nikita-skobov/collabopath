@@ -47,6 +47,8 @@ export default class App extends Component {
   onTransitionHide() {
     const { warningChoice, startChoice } = this.state
     if (warningChoice === 'accept') {
+      // user accpets, so take them to the correct page based on their
+      // initial button choice
       if (startChoice === 'begin') {
         this.dataStore.startGame()
         this.setState({ page: 'Initial' })
@@ -72,7 +74,6 @@ export default class App extends Component {
 
 
   resetGame() {
-    // console.log('inside reset game?')
     this.setState({ page: 'LandingPage' })
   }
 
