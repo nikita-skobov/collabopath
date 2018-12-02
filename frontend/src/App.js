@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { Modal } from 'semantic-ui-react'
+import {
+  Modal,
+  Header,
+  Grid,
+  Button,
+} from 'semantic-ui-react'
 
 import LandingPage from './components/LandingPage'
 import GameBar from './components/GameBar'
