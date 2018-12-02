@@ -6,6 +6,7 @@ import {
   Header,
   Grid,
   Button,
+  Transition,
 } from 'semantic-ui-react'
 
 import LandingPage from './components/LandingPage'
@@ -87,22 +88,24 @@ export default class App extends Component {
     }
     if (page === 'Warning') {
       return (
-        <Grid style={{ marginTop: '25vh' }} verticalAlign="middle" columns={1} centered>
-          <Grid.Row className="ps3em">
-            <Header className="em3h" as="h1">Warning</Header>
-          </Grid.Row>
-          <Grid.Row>
-            <Header className="ps3em" as="h2">
-              This game has content created by other users. Some of the paths you encounter might have offensive content. If you see any offensive content please report it on our <a style={{ color: '#0063c5' }} href="https://discord.gg/rwSrC4c" target="_blank" rel="noopener noreferrer">Discord</a>
-            </Header>
-          </Grid.Row>
-          <Grid.Row>
-            <Button color="green">I accept that I might see some offensive content</Button>
-          </Grid.Row>
-          <Grid.Row>
-            <Button color="red" size="small">{`Nevermind. I don${"'"}t want to play`}</Button>
-          </Grid.Row>
-        </Grid>
+        <Transition animation="scale" transitionOnMount duration={this.transitionDuration}>
+          <Grid style={{ marginTop: '25vh' }} verticalAlign="middle" columns={1} centered>
+            <Grid.Row className="ps3em">
+              <Header className="em3h" as="h1">Warning</Header>
+            </Grid.Row>
+            <Grid.Row>
+              <Header className="ps3em" as="h2">
+                This game has content created by other users. Some of the paths you encounter might have offensive content. If you see any offensive content please report it on our <a style={{ color: '#0063c5' }} href="https://discord.gg/rwSrC4c" target="_blank" rel="noopener noreferrer">Discord</a>
+              </Header>
+            </Grid.Row>
+            <Grid.Row>
+              <Button color="green">I accept that I might see some offensive content</Button>
+            </Grid.Row>
+            <Grid.Row>
+              <Button color="red" size="small">{`Nevermind. I don${"'"}t want to play`}</Button>
+            </Grid.Row>
+          </Grid>
+        </Transition>
       )
     }
     return (
