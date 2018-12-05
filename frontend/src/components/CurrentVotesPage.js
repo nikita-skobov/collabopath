@@ -44,7 +44,7 @@ export default class CurrentVotesPage extends Component {
     const maxHeight = isMobile ? 'mh50' : 'mh100'
     // if mobile, max height of this grid should take 50% of screen, otherwise 100
 
-    const chatMarginTop = isMobile ? 'mtn20vh' : ''
+    const chatMarginTop = isMobile ? 'mtn18vh' : ''
 
     return (
       <Grid stackable columns={2} className="ms0 mtb0 h75">
