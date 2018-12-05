@@ -42,6 +42,14 @@ custom:
     voteCheck: "${self:service}-${self:provider.stage}-voteCheck-role"
     addSuggestion: "${self:service}-${self:provider.stage}-addSuggestion-role"
   policies:
+    scanCurrentVoteTable:
+      PolicyName: "${self:service}-deleteItemCurrentVoteTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:Scan
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.current_vote}"
     deleteItemCurrentVoteTable:
       PolicyName: "${self:service}-deleteItemCurrentVoteTable-policy"
       PolicyDocument:
@@ -565,7 +573,7 @@ resources:
                   - lambda.amazonaws.com
               Action: sts:AssumeRole
         Policies:
-          - ${self:custom.policies.queryMainTable}
+          - ${self:custom.policies.scanCurrentVoteTable}
     votePathRole:
       Type: AWS::IAM::Role
       Properties:
