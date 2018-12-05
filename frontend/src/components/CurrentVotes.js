@@ -1,4 +1,4 @@
-/* global fetch */
+/* global fetch window */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
@@ -58,8 +58,11 @@ export default class CurrentVotes extends Component {
       )
     }
 
+    const maxHeight = window.innerHeight > window.innerWidth ? 'mh50' : 'mh100'
+    // if mobile, max height of this grid should take 50% of screen, otherwise 100
+
     return (
-      <Grid className="ms0 mtb0 mh100">
+      <Grid className={`ms0 mtb0 ${maxHeight}`}>
         {list.map((item) => {
           const timeNow = new Date(new Date().getTime()).getTime()
           const timeThen = new Date(parseInt(item.dateNum, 10)).getTime()
