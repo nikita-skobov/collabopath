@@ -1169,6 +1169,7 @@ module.exports.encodePath = encodePath
 // to add more path objects, just modify the module.exports.pathObjects object
 // above, and add your own objects there.
 module.exports.getPathObjEndpoint = 'https://api.collabopath.com/path/'
+module.exports.getVotesEndpoint = 'https://api.collabopath.com/path/votes'
 module.exports.votePathObjEndpoint = 'https://api.collabopath.com/path/vote'
 module.exports.addPathObjEndpoint = 'https://api.collabopath.com/path/add'
 module.exports.suggestionEndpoint = 'https://api.collabopath.com/suggestion'
