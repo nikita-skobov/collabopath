@@ -46,6 +46,22 @@ module.exports = function addPathObj(pathId, obj, ip) {
           DelaySeconds: process.env.QUEUE_DELAY,
         }
         await functions.sendMessage(queueParams)
+
+        // if first vote, add an entry to the current vote table
+        // so the getVotes route can easily scan that table and return all the path IDs
+        // that are currently being voted. they get deleted once they are finalized
+        const currentVoteParams = {
+          Item: {
+            pathId: {
+              S: pathId,
+            },
+            dateNum: {
+              N: rightNow.getTime().toString(),
+            },
+          },
+          TableName: process.env.DYNAMO_CURRENT_VOTE_TABLE,
+        }
+        await functions.putObject(currentVoteParams)
       }
       await functions.putObject(params)
       return res(voteID)
