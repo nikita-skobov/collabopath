@@ -34,6 +34,7 @@ custom:
   certid: ${opt:certid}
   logbucket: ${opt:logbucket}
   roles:
+    getVotes: "${self:service}-${self:provider.stage}-getVotes-role"
     getPath: "${self:service}-${self:provider.stage}-getPath-role"
     votePath: "${self:service}-${self:provider.stage}-votePath-role"
     addPath: "${self:service}-${self:provider.stage}-addPath-role"
@@ -529,6 +530,20 @@ resources:
           - ${self:custom.policies.deleteMessageVoteQueue}
           - ${self:custom.policies.putItemMainTable}
           - ${self:custom.policies.queryVoteTable}
+          - ${self:custom.policies.queryMainTable}
+    getVotesRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.roles.getVotes}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
           - ${self:custom.policies.queryMainTable}
     votePathRole:
       Type: AWS::IAM::Role
