@@ -46,6 +46,14 @@ export default class CurrentVotes extends Component {
       )
     }
 
+    if (list.length === 0) {
+      return (
+        <div>
+          There are no paths being voted on right now
+        </div>
+      )
+    }
+
     return (
       <div>
         <p>here are the items:</p>
