@@ -58,7 +58,7 @@ export default class CurrentVotes extends Component {
             />
           </Grid.Row>
           <Grid.Row>
-            <Loader active inline> Loading Next Path </Loader>
+            <Loader style={{ margin: 'auto' }} active inline> Loading Recent Paths </Loader>
           </Grid.Row>
           <Grid.Row className="ptb0">
             <Card
