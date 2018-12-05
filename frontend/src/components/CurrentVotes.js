@@ -32,7 +32,6 @@ export default class CurrentVotes extends Component {
     } else if (name === 'back') {
       this.dataStore.tell('App').nextPage(null, 'LandingPage')
     } else {
-      console.log(name)
       // name is the path id
       this.dataStore.setJumpId(name)
       this.dataStore.tell('App').nextPage(null, 'Initial')
