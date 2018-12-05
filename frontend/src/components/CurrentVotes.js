@@ -29,6 +29,10 @@ export default class CurrentVotes extends Component {
     if (name === 'refresh') {
       this.setState({ currentlyFetching: true })
       this.fetchList()
+    } else {
+      console.log(name)
+      // name is the path id
+      this.dataStore.tell('App').nextPage(null, 'Initial')
     }
   }
 
@@ -124,7 +128,7 @@ export default class CurrentVotes extends Component {
                 style={{ margin: 'auto', width: '90%' }}
                 header={`Path ID: ${item.pathId}`}
                 meta={`Voting started about ${minDiff} minutes ago`}
-                description={<Button size="mini" color="blue">View</Button>}
+                description={<Button name={item.pathId} onClick={this.handleButton} size="mini" color="blue">View</Button>}
               />
             </Grid.Row>
           )
