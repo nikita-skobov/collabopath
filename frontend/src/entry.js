@@ -19,6 +19,7 @@ import About from './components/About'
 import ErrorPage from './components/ErrorPage'
 import Changelog from './components/Changelog'
 import Support from './components/Support'
+import CurrentVotes from './components/CurrentVotes'
 
 const reactContainer = document.getElementById('react-container')
 
@@ -68,6 +69,7 @@ ReactDOM.render((
         <Route path="/support" render={supportRender} />
         <Route path="/about" render={AboutRender} />
         <Route path="/changelog" component={Changelog} />
+        <Route path="/currentvotes" component={CurrentVotes} />
         <Route component={ErrorPage} />
       </Switch>
     </div>
