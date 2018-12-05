@@ -92,6 +92,8 @@ export default class CurrentVotes extends Component {
       )
     }
 
+    const moreThan4 = list.length > 4
+
     return (
       <Grid className="ms0 mtb0">
         <Grid.Row className="ptb0">
@@ -116,12 +118,14 @@ export default class CurrentVotes extends Component {
             </Grid.Row>
           )
         })}
-        <Grid.Row className="ptb0">
-          <Card
-            style={{ margin: 'auto', width: '90%' }}
-            header={<Button onClick={this.handleButton} fluid name="refresh" color="blue">Refresh</Button>}
-          />
-        </Grid.Row>
+        {moreThan4 && (
+          <Grid.Row className="ptb0">
+            <Card
+              style={{ margin: 'auto', width: '90%' }}
+              header={<Button onClick={this.handleButton} fluid name="refresh" color="blue">Refresh</Button>}
+            />
+          </Grid.Row>
+        )}
       </Grid>
     )
   }
