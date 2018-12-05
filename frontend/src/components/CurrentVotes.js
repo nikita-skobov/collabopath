@@ -64,9 +64,14 @@ export default class CurrentVotes extends Component {
           const timeNow = new Date(new Date().getTime()).getTime()
           const timeThen = new Date(parseInt(item.dateNum, 10)).getTime()
           const minDiff = Math.ceil((timeNow - timeThen) / 1000 / 60)
+
           return (
             <Grid.Row className="ptb0">
-              <Card header={`Path ID: ${item.pathId}`} description={`Voting started about ${minDiff} minutes ago`} />
+              <Card
+                header={`Path ID: ${item.pathId}`}
+                meta={`Voting started about ${minDiff} minutes ago`}
+                description={<Button size="mini" color="blue">View</Button>}
+              />
             </Grid.Row>
           )
         })}
