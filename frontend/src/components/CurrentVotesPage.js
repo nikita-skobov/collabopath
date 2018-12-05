@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+import { Grid } from 'semantic-ui-react'
+
 import CurrentVotes from './CurrentVotes'
 
 export default class CurrentVotesPage extends Component {
@@ -12,10 +14,14 @@ export default class CurrentVotesPage extends Component {
 
   render() {
     return (
-      <div>
-        <CurrentVotes dataStore={this.dataStore} />
-        <div>chat</div>
-      </div>
+      <Grid className="ms0">
+        <Grid.Row>
+          <CurrentVotes dataStore={this.dataStore} />
+        </Grid.Row>
+        <Grid.Row>
+          <div>chat</div>
+        </Grid.Row>
+      </Grid>
     )
   }
 }
