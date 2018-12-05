@@ -42,6 +42,14 @@ custom:
     voteCheck: "${self:service}-${self:provider.stage}-voteCheck-role"
     addSuggestion: "${self:service}-${self:provider.stage}-addSuggestion-role"
   policies:
+    deleteItemCurrentVoteTable:
+      PolicyName: "${self:service}-deleteItemCurrentVoteTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:DeleteItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.current_vote}"
     putItemCurrentVoteTable:
       PolicyName: "${self:service}-putItemCurrentVoteTable-policy"
       PolicyDocument:
@@ -257,6 +265,7 @@ functions:
     environment:
       DYNAMO_REGION: ${self:provider.region}
       DYNAMO_TABLE: ${self:custom.tables.main}
+      DYNAMO_CURRENT_VOTE_TABLE: ${self:custom.tables.current_vote}
       DYNAMO_VOTE_TABLE: ${self:custom.tables.vote}
       QUEUE_URL: "https://sqs.${self:provider.region}.amazonaws.com/${self:custom.account}/${self:custom.queues.vote}"
       SQS_REGION: ${self:provider.region}
@@ -538,6 +547,7 @@ resources:
                   - lambda.amazonaws.com
               Action: sts:AssumeRole
         Policies:
+          - ${self:custom.policies.deleteItemCurrentVoteTable}
           - ${self:custom.policies.deleteMessageVoteQueue}
           - ${self:custom.policies.putItemMainTable}
           - ${self:custom.policies.queryVoteTable}
