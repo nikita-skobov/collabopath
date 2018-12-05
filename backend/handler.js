@@ -63,7 +63,7 @@ module.exports.getVotes = async (event, context) => {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': `https://${process.env.DOMAIN}.com`, // Required for CORS support to work
     'Access-Control-Allow-Credentials': true, // Required for cookies, authorization headers with HTTPS
-    'Cache-Control': 'max-age=60', // this route shouldnt be cached for very long
+    'Cache-Control': 'max-age=30', // this route shouldnt be cached for very long
   }
   let statusCode = 500
   let body = { error: 'Unable to complete request: getVotes' }
