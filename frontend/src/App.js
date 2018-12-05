@@ -113,7 +113,7 @@ export default class App extends Component {
     if (page === 'LandingPage') {
       return (
         <div>
-          <LandingPage callback={this.nextPage} />
+          <LandingPage dataStore={this.dataStore} callback={this.nextPage} />
         </div>
       )
     }
