@@ -29,8 +29,9 @@ export default class CurrentVotes extends Component {
     if (name === 'refresh') {
       this.setState({ currentlyFetching: true })
       this.fetchList()
+    } else if (name === 'back') {
+      this.dataStore.tell('App').nextPage(null, 'LandingPage')
     } else {
-      console.log(name)
       // name is the path id
       this.dataStore.setJumpId(name)
       this.dataStore.tell('App').nextPage(null, 'Initial')
@@ -60,7 +61,12 @@ export default class CurrentVotes extends Component {
           <Grid.Row className="ptb0">
             <Card
               style={{ margin: 'auto', width: '90%' }}
-              header={<Button disabled name="refresh" fluid color="blue">Refresh</Button>}
+              header={(
+                <Button.Group fluid>
+                  <Button onClick={this.handleButton} disabled name="back" color="blue">Back</Button>
+                  <Button onClick={this.handleButton} disabled name="refresh" color="blue">Refresh</Button>
+                </Button.Group>
+              )}
             />
           </Grid.Row>
           <Grid.Row>
@@ -76,7 +82,12 @@ export default class CurrentVotes extends Component {
           <Grid.Row className="ptb0">
             <Card
               style={{ margin: 'auto', width: '90%' }}
-              header={<Button onClick={this.handleButton} name="refresh" fluid color="red">Try Again</Button>}
+              header={(
+                <Button.Group fluid>
+                  <Button onClick={this.handleButton} name="back" color="blue">Back</Button>
+                  <Button onClick={this.handleButton} name="refresh" color="red">Try Again</Button>
+                </Button.Group>
+              )}
             />
           </Grid.Row>
           <Grid.Row className="ptb0">
@@ -95,7 +106,12 @@ export default class CurrentVotes extends Component {
           <Grid.Row className="ptb0">
             <Card
               style={{ margin: 'auto', width: '90%' }}
-              header={<Button name="refresh" fluid color="blue">Refresh</Button>}
+              header={(
+                <Button.Group fluid>
+                  <Button onClick={this.handleButton} name="back" color="blue">Back</Button>
+                  <Button onClick={this.handleButton} name="refresh" color="blue">Refresh</Button>
+                </Button.Group>
+              )}
             />
           </Grid.Row>
           <Grid.Row className="ptb0">
@@ -115,7 +131,12 @@ export default class CurrentVotes extends Component {
         <Grid.Row className="ptb0">
           <Card
             style={{ margin: 'auto', width: '90%' }}
-            header={<Button onClick={this.handleButton} name="refresh" fluid color="blue">Refresh</Button>}
+            header={(
+              <Button.Group fluid>
+                <Button onClick={this.handleButton} name="back" color="blue">Back</Button>
+                <Button onClick={this.handleButton} name="refresh" color="blue">Refresh</Button>
+              </Button.Group>
+            )}
           />
         </Grid.Row>
         {list.map((item) => {

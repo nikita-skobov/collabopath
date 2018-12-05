@@ -110,9 +110,8 @@ export default class App extends Component {
   }
 
   render() {
-    console.log('rendering app')
     const { page, modalOpen, conceptType, transitionVisible } = this.state
-    console.log(page)
+
     if (page === 'LandingPage') {
       return (
         <div>
