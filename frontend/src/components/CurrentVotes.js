@@ -52,14 +52,28 @@ export default class CurrentVotes extends Component {
 
     if (list.length === 0) {
       return (
-        <div>
-          There are no paths being voted on right now
-        </div>
+        <Grid className="ms0 mtb0">
+          <Grid.Row className="ptb0">
+            <h1>There are no paths currently being voted on</h1>
+          </Grid.Row>
+          <Grid.Row className="ptb0">
+            <Card
+              style={{ margin: 'auto', width: '90%' }}
+              header={<Button fluid name="refresh" color="blue">Refresh</Button>}
+            />
+          </Grid.Row>
+        </Grid>
       )
     }
 
     return (
       <Grid className="ms0 mtb0">
+        <Grid.Row className="ptb0">
+          <Card
+            style={{ margin: 'auto', width: '90%' }}
+            header={<Button name="refresh" fluid color="blue">Refresh</Button>}
+          />
+        </Grid.Row>
         {list.map((item) => {
           const timeNow = new Date(new Date().getTime()).getTime()
           const timeThen = new Date(parseInt(item.dateNum, 10)).getTime()
@@ -76,6 +90,12 @@ export default class CurrentVotes extends Component {
             </Grid.Row>
           )
         })}
+        <Grid.Row className="ptb0">
+          <Card
+            style={{ margin: 'auto', width: '90%' }}
+            header={<Button fluid name="refresh" color="blue">Refresh</Button>}
+          />
+        </Grid.Row>
       </Grid>
     )
   }
