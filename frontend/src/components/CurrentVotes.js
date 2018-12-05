@@ -71,7 +71,7 @@ export default class CurrentVotes extends Component {
           <Grid.Row className="ptb0">
             <Card
               style={{ margin: 'auto', width: '90%' }}
-              header={<Button disabled name="refresh" fluid color="blue">Try Again</Button>}
+              header={<Button disabled name="refresh" fluid color="red">Try Again</Button>}
             />
           </Grid.Row>
           <Grid.Row className="ptb0">
