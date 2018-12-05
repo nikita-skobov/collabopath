@@ -42,6 +42,14 @@ custom:
     voteCheck: "${self:service}-${self:provider.stage}-voteCheck-role"
     addSuggestion: "${self:service}-${self:provider.stage}-addSuggestion-role"
   policies:
+    putItemCurrentVoteTable:
+      PolicyName: "${self:service}-putItemCurrentVoteTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:PutItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.current_vote}"
     putItemSuggestionTable:
       PolicyName: "${self:service}-putItemSuggestionTable-policy"
       PolicyDocument:
@@ -495,6 +503,7 @@ resources:
                   - lambda.amazonaws.com
               Action: sts:AssumeRole
         Policies:
+          - ${self:custom.policies.putItemCurrentVoteTable}
           - ${self:custom.policies.getItemMainTable}
           - ${self:custom.policies.putItemMainTable}
           - ${self:custom.policies.queryMainTable}
