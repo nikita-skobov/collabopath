@@ -28,6 +28,7 @@ export default class CurrentVotes extends Component {
     const { name } = e.target
     if (name === 'refresh') {
       this.setState({ currentlyFetching: true })
+      this.fetchList()
     }
   }
 
