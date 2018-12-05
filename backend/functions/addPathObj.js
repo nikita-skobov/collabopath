@@ -45,7 +45,7 @@ module.exports = function addPathObj(pathId, obj, ip) {
           QueueUrl: process.env.QUEUE_URL,
           DelaySeconds: process.env.QUEUE_DELAY,
         }
-        await functions.sendMessage(queueParams)
+        const p1 = functions.sendMessage(queueParams)
 
         // if first vote, add an entry to the current vote table
         // so the getVotes route can easily scan that table and return all the path IDs
@@ -61,7 +61,11 @@ module.exports = function addPathObj(pathId, obj, ip) {
           },
           TableName: process.env.DYNAMO_CURRENT_VOTE_TABLE,
         }
-        await functions.putObject(currentVoteParams)
+        const p2 = functions.putObject(currentVoteParams)
+
+        // p1 and p2 are 2 seperate AWS requests that dont depend on each other
+        // they can be done at the same time
+        await Promise.all([p1, p2])
       }
       await functions.putObject(params)
       return res(voteID)
