@@ -8,6 +8,8 @@ export default class CurrentVotes extends Component {
   constructor(props) {
     super(props)
 
+    this.dataStore = props.dataStore
+
     this.state = {
       list: [],
       error: false,
@@ -63,4 +65,8 @@ export default class CurrentVotes extends Component {
       </div>
     )
   }
+}
+
+CurrentVotes.propTypes = {
+  dataStore: PropTypes.instanceOf(Object).isRequired,
 }
