@@ -14,13 +14,13 @@ export default class CurrentVotesPage extends Component {
 
   render() {
     return (
-      <Grid className="ms0 mtb0 h88">
-        <Grid.Row className="mh100">
+      <Grid stackable columns={2} className="ms0 mtb0 h88">
+        <Grid.Column>
           <CurrentVotes dataStore={this.dataStore} />
-        </Grid.Row>
-        <Grid.Row>
+        </Grid.Column>
+        <Grid.Column>
           <div>chat</div>
-        </Grid.Row>
+        </Grid.Column>
       </Grid>
     )
   }
