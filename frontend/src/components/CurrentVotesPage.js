@@ -14,7 +14,7 @@ export default class CurrentVotesPage extends Component {
 
   render() {
     return (
-      <Grid className="ms0">
+      <Grid className="ms0 mtb0">
         <Grid.Row>
           <CurrentVotes dataStore={this.dataStore} />
         </Grid.Row>

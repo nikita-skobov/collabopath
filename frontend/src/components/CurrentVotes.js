@@ -59,13 +59,13 @@ export default class CurrentVotes extends Component {
     }
 
     return (
-      <Grid className="ms0">
+      <Grid className="ms0 mtb0">
         {list.map((item) => {
           const timeNow = new Date(new Date().getTime()).getTime()
           const timeThen = new Date(parseInt(item.dateNum, 10)).getTime()
           const minDiff = Math.ceil((timeNow - timeThen) / 1000 / 60)
           return (
-            <Grid.Row>
+            <Grid.Row className="ptb0">
               <Card header={`Path ID: ${item.pathId}`} description={`Voting started about ${minDiff} minutes ago`} />
             </Grid.Row>
           )
