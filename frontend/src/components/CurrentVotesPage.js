@@ -20,7 +20,7 @@ export default class CurrentVotesPage extends Component {
     const chatMarginTop = maxHeight === 'mh50' ? 'mtn20vh' : ''
 
     return (
-      <Grid stackable columns={2} className="ms0 mtb0 h88">
+      <Grid stackable columns={2} className="ms0 mtb0 h75">
         <Grid.Column className={maxHeight}>
           <CurrentVotes dataStore={this.dataStore} />
         </Grid.Column>
