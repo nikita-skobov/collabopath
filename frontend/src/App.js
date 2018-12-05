@@ -13,6 +13,7 @@ import LandingPage from './components/LandingPage'
 import GameBar from './components/GameBar'
 import PathViewer from './components/PathViewer'
 import Concept from './components/Concept'
+import CurrentVotesPage from './components/CurrentVotesPage'
 
 import { PathViewer as pathViewerVars } from './dynamicVars'
 
@@ -77,7 +78,7 @@ export default class App extends Component {
     this.setState({ page: 'LandingPage' })
   }
 
-  nextPage(which, page = 'Warning') {
+  nextPage(which, page) {
     this.setState({ startChoice: which, page })
   }
 
@@ -106,12 +107,19 @@ export default class App extends Component {
   }
 
   render() {
+    console.log('rendering app')
     const { page, modalOpen, conceptType, transitionVisible } = this.state
+    console.log(page)
     if (page === 'LandingPage') {
       return (
         <div>
           <LandingPage callback={this.nextPage} />
         </div>
+      )
+    }
+    if (page === 'current') {
+      return (
+        <CurrentVotesPage dataStore={this.dataStore} />
       )
     }
     if (page === 'Warning') {
