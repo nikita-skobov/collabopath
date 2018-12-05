@@ -2,6 +2,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+import { Grid, Button, Card } from 'semantic-ui-react'
+
 import { getVotesEndpoint } from '../dynamicVars'
 
 export default class CurrentVotes extends Component {
@@ -57,12 +59,13 @@ export default class CurrentVotes extends Component {
     }
 
     return (
-      <div>
-        <p>here are the items:</p>
+      <Grid>
         {list.map(item => (
-          <div>{item.pathId}, {item.dateNum}</div>
+          <Grid.Row>
+            <Card header={`Path ID: ${item.pathId}`} description={`Voting started about ${item.dateNum}`} />
+          </Grid.Row>
         ))}
-      </div>
+      </Grid>
     )
   }
 }
