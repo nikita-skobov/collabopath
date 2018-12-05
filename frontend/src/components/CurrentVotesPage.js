@@ -21,6 +21,10 @@ export default class CurrentVotesPage extends Component {
     window.addEventListener('resize', this.shouldResize)
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.shouldResize)
+  }
+
   shouldResize() {
     const { isMobile } = this.state
     const newIsMobile = window.innerHeight > window.innerWidth
