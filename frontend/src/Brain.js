@@ -135,6 +135,10 @@ function Brain() {
     startGame: () => {
       gameRunning = true
     },
+    setJumpId: (id) => {
+      viewJump = id
+    },
+    getJumpId: () => viewJump,
     dangerouslySetStage: (s) => {
       stage = s
     },
