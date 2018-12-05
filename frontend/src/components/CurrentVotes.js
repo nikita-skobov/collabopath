@@ -74,7 +74,7 @@ export default class CurrentVotes extends Component {
               header={<Button disabled name="refresh" fluid color="blue">Try Again</Button>}
             />
           </Grid.Row>
-          <Grid.Row>
+          <Grid.Row className="ptb0">
             <Card
               style={{ margin: 'auto', width: '90%' }}
               header="Oops! There was some kind of error"
@@ -88,12 +88,15 @@ export default class CurrentVotes extends Component {
       return (
         <Grid className="ms0 mtb0">
           <Grid.Row className="ptb0">
-            <h1>There are no paths currently being voted on</h1>
+            <Card
+              style={{ margin: 'auto', width: '90%' }}
+              header={<Button disabled name="refresh" fluid color="blue">Refresh</Button>}
+            />
           </Grid.Row>
           <Grid.Row className="ptb0">
             <Card
               style={{ margin: 'auto', width: '90%' }}
-              header={<Button fluid name="refresh" color="blue">Refresh</Button>}
+              header="There are no paths currently being voted on"
             />
           </Grid.Row>
         </Grid>
