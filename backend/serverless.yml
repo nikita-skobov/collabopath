@@ -158,6 +158,21 @@ custom:
     delay: 900 # 15 minutes
   bucketName: "${self:provider.stage}.${self:service}.com"
 functions:
+  getVotes:
+    timeout: 10
+    memorySize: 2048
+    role: getVotesRole
+    handler: handler.getVotes
+    environment:
+      DOMAIN: ${self:service}
+      DYNAMO_REGION: ${self:provider.region}
+      DYNAMO_TABLE: ${self:custom.tables.main}
+    events:
+      - http:
+          path: /path/votes
+          method: GET
+          private: true
+          cors: true
   getPath:
     timeout: 5
     memorySize: 2048
