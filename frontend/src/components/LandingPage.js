@@ -64,7 +64,7 @@ export default class LandingPage extends Component {
     if (this.pageChoice === 'current') {
       this.dataStore.tell('App').changeToCurrent()
     } else {
-      this.callback(this.pageChoice)
+      this.callback(this.pageChoice, 'Warning')
     }
   }
 
