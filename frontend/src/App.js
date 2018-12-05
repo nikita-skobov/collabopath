@@ -77,8 +77,8 @@ export default class App extends Component {
     this.setState({ page: 'LandingPage' })
   }
 
-  nextPage(which) {
-    this.setState({ startChoice: which, page: 'Warning' })
+  nextPage(which, page = 'Warning') {
+    this.setState({ startChoice: which, page })
   }
 
   changeGameBarState(obj) {
