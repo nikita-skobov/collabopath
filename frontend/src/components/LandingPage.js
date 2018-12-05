@@ -93,6 +93,13 @@ export default class LandingPage extends Component {
                 Click Here to start from a specific id
               </Button>
             </Grid.Row>
+            <Grid.Row className="ps3em" centered columns={1}>
+              <NavLink to="/currentvotes">
+                <Button size="big" name="any" color="gray">
+                  Click Here to view the most recent paths
+                </Button>
+              </NavLink>
+            </Grid.Row>
             <Grid.Row centered columns={1}>
               <Button name="suggestions" color="grey" onClick={this.handleButton}>
                 Suggestions?
