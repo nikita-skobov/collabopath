@@ -59,7 +59,7 @@ export default class CurrentVotes extends Component {
     }
 
     return (
-      <Grid className="ms0 mtb0">
+      <Grid className="ms0 mtb0 mh100">
         {list.map((item) => {
           const timeNow = new Date(new Date().getTime()).getTime()
           const timeThen = new Date(parseInt(item.dateNum, 10)).getTime()
