@@ -25,6 +25,7 @@ export default class LandingPage extends Component {
       suggestions: false,
     }
 
+    this.dataStore = props.dataStore
     this.callback = props.callback
 
     this.handleButton = this.handleButton.bind(this)
@@ -50,13 +51,21 @@ export default class LandingPage extends Component {
       this.pageChoice = name
       const { visible } = this.state
       this.setState({ visible: !visible })
+    } else if (name === 'current') {
+      this.pageChoice = name
+      const { visible } = this.state
+      this.setState({ visible: !visible })
     }
   }
 
   pageDone() {
     // switch to the 'Initial' page
     // where the users stats are allocated
-    this.callback(this.pageChoice)
+    if (this.pageChoice === 'current') {
+      this.dataStore.tell('App').changeToCurrent()
+    } else {
+      this.callback(this.pageChoice)
+    }
   }
 
   render() {
@@ -94,11 +103,9 @@ export default class LandingPage extends Component {
               </Button>
             </Grid.Row>
             <Grid.Row className="ps3em" centered columns={1}>
-              <NavLink to="/currentvotes">
-                <Button size="big" name="any" color="gray">
-                  Click Here to view the most recent paths
-                </Button>
-              </NavLink>
+              <Button size="big" name="current" color="gray" onClick={this.handleButton}>
+                Click Here to view the most recent paths
+              </Button>
             </Grid.Row>
             <Grid.Row centered columns={1}>
               <Button name="suggestions" color="grey" onClick={this.handleButton}>
@@ -123,4 +130,5 @@ export default class LandingPage extends Component {
 
 LandingPage.propTypes = {
   callback: PropTypes.func.isRequired,
+  dataStore: PropTypes.instanceOf(Object).isRequired,
 }

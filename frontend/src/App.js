@@ -35,7 +35,7 @@ export default class App extends Component {
 
     this.nextPage = this.nextPage.bind(this)
     this.changeGameBarState = this.changeGameBarState.bind(this)
-
+    this.changeToCurrent = this.changeToCurrent.bind(this)
     this.resetGame = this.resetGame.bind(this)
     this.newConceptModal = this.newConceptModal.bind(this)
     this.closeConceptModal = this.closeConceptModal.bind(this)
@@ -73,6 +73,9 @@ export default class App extends Component {
     this.setState({ warningChoice: name, transitionVisible: false })
   }
 
+  changeToCurrent() {
+    this.setState({ page: 'current' })
+  }
 
   resetGame() {
     this.setState({ page: 'LandingPage' })
