@@ -69,10 +69,20 @@ module.exports.getVotes = async (event, context) => {
   let body = { error: 'Unable to complete request: getVotes' }
 
   try {
-    statusCode = 200
-    body = await functions.scanTable({
+    const currentVotes = await functions.scanTable({
       TableName: process.env.DYNAMO_CURRENT_VOTE_TABLE,
     })
+
+    body = []
+
+    currentVotes.Items.forEach((item) => {
+      const voteItem = {
+        pathId: item.pathId.S,
+        dateNum: item.dateNum.N,
+      }
+      body.push(voteItem)
+    })
+    statusCode = 200    
   } catch (e) {
     headers = e.headers || headers
     statusCode = e.statusCode || statusCode
