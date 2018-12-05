@@ -57,6 +57,45 @@ module.exports.addSuggestion = async (event, context) => {
   }
 }
 
+// api route for getting a list of all path ids that are currently being voted on
+module.exports.getVotes = async (event, context) => {
+  let headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': `https://${process.env.DOMAIN}.com`, // Required for CORS support to work
+    'Access-Control-Allow-Credentials': true, // Required for cookies, authorization headers with HTTPS
+    'Cache-Control': 'max-age=30', // this route shouldnt be cached for very long
+  }
+  let statusCode = 500
+  let body = { error: 'Unable to complete request: getVotes' }
+
+  try {
+    const currentVotes = await functions.scanTable({
+      TableName: process.env.DYNAMO_CURRENT_VOTE_TABLE,
+    })
+
+    body = []
+
+    currentVotes.Items.forEach((item) => {
+      const voteItem = {
+        pathId: item.pathId.S,
+        dateNum: item.dateNum.N,
+      }
+      body.push(voteItem)
+    })
+    statusCode = 200
+  } catch (e) {
+    headers = e.headers || headers
+    statusCode = e.statusCode || statusCode
+    body = e.body || body
+  }
+
+  return {
+    statusCode,
+    headers,
+    body: JSON.stringify(body),
+  }
+}
+
 // api route for adding a path to the game.
 // there are two types of path additions: a path addition when its
 // the first path at a given path ID, or a path addition when the path

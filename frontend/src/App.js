@@ -13,6 +13,7 @@ import LandingPage from './components/LandingPage'
 import GameBar from './components/GameBar'
 import PathViewer from './components/PathViewer'
 import Concept from './components/Concept'
+import CurrentVotesPage from './components/CurrentVotesPage'
 
 import { PathViewer as pathViewerVars } from './dynamicVars'
 
@@ -34,7 +35,7 @@ export default class App extends Component {
 
     this.nextPage = this.nextPage.bind(this)
     this.changeGameBarState = this.changeGameBarState.bind(this)
-
+    this.changeToCurrent = this.changeToCurrent.bind(this)
     this.resetGame = this.resetGame.bind(this)
     this.newConceptModal = this.newConceptModal.bind(this)
     this.closeConceptModal = this.closeConceptModal.bind(this)
@@ -72,13 +73,16 @@ export default class App extends Component {
     this.setState({ warningChoice: name, transitionVisible: false })
   }
 
+  changeToCurrent() {
+    this.setState({ page: 'current' })
+  }
 
   resetGame() {
     this.setState({ page: 'LandingPage' })
   }
 
-  nextPage(which) {
-    this.setState({ startChoice: which, page: 'Warning' })
+  nextPage(which, page) {
+    this.setState({ startChoice: which, page })
   }
 
   changeGameBarState(obj) {
@@ -106,12 +110,19 @@ export default class App extends Component {
   }
 
   render() {
+    console.log('rendering app')
     const { page, modalOpen, conceptType, transitionVisible } = this.state
+    console.log(page)
     if (page === 'LandingPage') {
       return (
         <div>
-          <LandingPage callback={this.nextPage} />
+          <LandingPage dataStore={this.dataStore} callback={this.nextPage} />
         </div>
+      )
+    }
+    if (page === 'current') {
+      return (
+        <CurrentVotesPage dataStore={this.dataStore} />
       )
     }
     if (page === 'Warning') {

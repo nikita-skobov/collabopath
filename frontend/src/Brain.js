@@ -50,6 +50,8 @@ function Brain() {
   let isCoveredInGasoline = false
   let lastRefresh = null
   let voteList = []
+  let viewJump = false // special flag to tell pathViewer
+  // to start at a specific pathID without having to ask for it via input
   let activeConcept = null
   let userHasDied = false
   let dontShowConcepts = false
@@ -79,6 +81,7 @@ function Brain() {
       gameRunning = false
       pathDirection = null
       previousDirection = null
+      viewJump = false
       previousStage = null
       notFinalIndex = null
       allocatePointsRemaining = StatAllocate.totalPoints
@@ -132,6 +135,10 @@ function Brain() {
     startGame: () => {
       gameRunning = true
     },
+    setJumpId: (id) => {
+      viewJump = id
+    },
+    getJumpId: () => viewJump,
     dangerouslySetStage: (s) => {
       stage = s
     },

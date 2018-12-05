@@ -34,6 +34,7 @@ custom:
   certid: ${opt:certid}
   logbucket: ${opt:logbucket}
   roles:
+    getVotes: "${self:service}-${self:provider.stage}-getVotes-role"
     getPath: "${self:service}-${self:provider.stage}-getPath-role"
     votePath: "${self:service}-${self:provider.stage}-votePath-role"
     addPath: "${self:service}-${self:provider.stage}-addPath-role"
@@ -41,6 +42,30 @@ custom:
     voteCheck: "${self:service}-${self:provider.stage}-voteCheck-role"
     addSuggestion: "${self:service}-${self:provider.stage}-addSuggestion-role"
   policies:
+    scanCurrentVoteTable:
+      PolicyName: "${self:service}-deleteItemCurrentVoteTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:Scan
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.current_vote}"
+    deleteItemCurrentVoteTable:
+      PolicyName: "${self:service}-deleteItemCurrentVoteTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:DeleteItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.current_vote}"
+    putItemCurrentVoteTable:
+      PolicyName: "${self:service}-putItemCurrentVoteTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:PutItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.current_vote}"
     putItemSuggestionTable:
       PolicyName: "${self:service}-putItemSuggestionTable-policy"
       PolicyDocument:
@@ -153,11 +178,28 @@ custom:
     main: "${self:service}-${self:provider.stage}-pathobjects"
     vote: "${self:service}-${self:provider.stage}-votes"
     suggestion: "${self:service}-${self:provider.stage}-suggestion"
+    current_vote: "${self:service}-${self:provider.stage}-current-votes"
   queues:
     vote: "${self:service}-${self:provider.stage}-votes"
     delay: 900 # 15 minutes
   bucketName: "${self:provider.stage}.${self:service}.com"
 functions:
+  getVotes:
+    timeout: 10
+    memorySize: 2048
+    role: getVotesRole
+    handler: handler.getVotes
+    environment:
+      DOMAIN: ${self:service}
+      DYNAMO_REGION: ${self:provider.region}
+      DYNAMO_TABLE: ${self:custom.tables.main}
+      DYNAMO_CURRENT_VOTE_TABLE: ${self:custom.tables.current_vote}
+    events:
+      - http:
+          path: /path/votes
+          method: GET
+          private: true
+          cors: true
   getPath:
     timeout: 5
     memorySize: 2048
@@ -214,6 +256,7 @@ functions:
       LAMBDA_VOTE_FUNCTION: "${self:service}-${self:provider.stage}-votePath"
       LAMBDA_REGION: ${self:provider.region}
       DYNAMO_TABLE: ${self:custom.tables.main}
+      DYNAMO_CURRENT_VOTE_TABLE: ${self:custom.tables.current_vote}
       SQS_REGION: ${self:provider.region}
       QUEUE_DELAY: ${self:custom.queues.delay}
       QUEUE_URL: "https://sqs.${self:provider.region}.amazonaws.com/${self:custom.account}/${self:custom.queues.vote}"
@@ -231,6 +274,7 @@ functions:
     environment:
       DYNAMO_REGION: ${self:provider.region}
       DYNAMO_TABLE: ${self:custom.tables.main}
+      DYNAMO_CURRENT_VOTE_TABLE: ${self:custom.tables.current_vote}
       DYNAMO_VOTE_TABLE: ${self:custom.tables.vote}
       QUEUE_URL: "https://sqs.${self:provider.region}.amazonaws.com/${self:custom.account}/${self:custom.queues.vote}"
       SQS_REGION: ${self:provider.region}
@@ -477,6 +521,7 @@ resources:
                   - lambda.amazonaws.com
               Action: sts:AssumeRole
         Policies:
+          - ${self:custom.policies.putItemCurrentVoteTable}
           - ${self:custom.policies.getItemMainTable}
           - ${self:custom.policies.putItemMainTable}
           - ${self:custom.policies.queryMainTable}
@@ -511,10 +556,25 @@ resources:
                   - lambda.amazonaws.com
               Action: sts:AssumeRole
         Policies:
+          - ${self:custom.policies.deleteItemCurrentVoteTable}
           - ${self:custom.policies.deleteMessageVoteQueue}
           - ${self:custom.policies.putItemMainTable}
           - ${self:custom.policies.queryVoteTable}
           - ${self:custom.policies.queryMainTable}
+    getVotesRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.roles.getVotes}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - ${self:custom.policies.scanCurrentVoteTable}
     votePathRole:
       Type: AWS::IAM::Role
       Properties:
@@ -570,6 +630,27 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:custom.tables.suggestion}
+    CurrentVotes:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: pathId
+            AttributeType: "S"
+          -
+            AttributeName: dateNum
+            AttributeType: "N"
+        KeySchema:
+          -
+            AttributeName: pathId
+            KeyType: HASH
+          -
+            AttributeName: dateNum
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tables.current_vote}
     Vote:
       Type: 'AWS::DynamoDB::Table'
       Properties:

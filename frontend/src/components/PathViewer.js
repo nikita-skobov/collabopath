@@ -40,9 +40,15 @@ export default class PathViewer extends Component {
     this.invalidPathId = false
     this.startAtPathId = null
 
+    const jumpId = this.dataStore.getJumpId()
+    if (jumpId) {
+      this.fetchObjectsAndSetPath(jumpId)
+    }
+
     this.formSubmit = this.formSubmit.bind(this)
     this.onHideInner = this.onHideInner.bind(this)
     this.onHideOuter = this.onHideOuter.bind(this)
+    this.fetchObjectsAndSetPath = this.fetchObjectsAndSetPath.bind(this)
 
     const {
       intelligenceMax,
@@ -150,43 +156,12 @@ export default class PathViewer extends Component {
         // if the decodePath was successful, but we DONT
         // have the path then we need to fetch it
 
-        this.dataStore.dangerouslySetDontShowConcepts(true)
-        // dont show concept on the following fetch object call
-        // checking if path exists in the database
         waitingForResponse = true
-        this.dataStore.fetchObject(this.inputValue, (err) => {
-          if (!err) {
-            // set the path in the datastore to contain
-            // the full path history of each step
-            path.forEach((str) => {
-              str.split('').forEach((char) => {
-                this.dataStore.appendPath(char)
-              })
-            })
-
-            // then get the PREVIOUS path from the users input
-            // by removing the last element, and encoding it
-            const dir = this.dataStore.popPath()
-            const previousId = this.dataStore.getEncodedPath()
-            this.dataStore.appendPath(dir)
-
-            // then download the PREVIOUS path so we have it in
-            // memory to display the text/image intiially
-            this.dataStore.fetchObject(previousId, (err2) => {
-              if (!err2) {
-                this.invalidPathId = false
-                this.startAtPathId = this.inputValue
-              } else {
-                this.invalidPathId = true
-              }
-              this.dataStore.dangerouslySetDontShowConcepts(false)
-              this.setState({ visible: false })
-            })
-          } else {
-            this.invalidPathId = true
-            this.dataStore.dangerouslySetDontShowConcepts(false)
-            this.setState({ visible: false })
-          }
+        this.fetchObjectsAndSetPath(this.inputValue, () => {
+          // usually the end of onHideInner will set visible
+          // to false, but since we are using an asynchronous call
+          // we need to set it false here after it finishes fetching
+          this.setState({ visible: false })
         })
       } else {
         // set the path in the datastore to contain
@@ -251,6 +226,7 @@ export default class PathViewer extends Component {
     }
   }
 
+
   onHideOuter() {
     // this gets called when the outer transition fades away
     // upon finishing fading away, we should increment the state to render the next
@@ -297,6 +273,55 @@ export default class PathViewer extends Component {
       }
       this.dataStore.setStage(stage)
       return { stage, visible: true, inputVisible: true }
+    })
+  }
+
+  fetchObjectsAndSetPath(id, cb) {
+    const path = decodePath(id)
+
+    this.dataStore.dangerouslySetDontShowConcepts(true)
+    // dont show concept on the following fetch object call
+    // checking if path exists in the database
+
+    this.dataStore.fetchObject(id, (err) => {
+      if (!err) {
+        // set the path in the datastore to contain
+        // the full path history of each step
+        path.forEach((str) => {
+          str.split('').forEach((char) => {
+            this.dataStore.appendPath(char)
+          })
+        })
+
+        // then get the PREVIOUS path from the users input
+        // by removing the last element, and encoding it
+        const dir = this.dataStore.popPath()
+        const previousId = this.dataStore.getEncodedPath()
+        this.dataStore.appendPath(dir)
+
+        // then download the PREVIOUS path so we have it in
+        // memory to display the text/image intiially
+        this.dataStore.fetchObject(previousId, (err2) => {
+          if (!err2) {
+            this.invalidPathId = false
+            this.startAtPathId = id
+          } else {
+            this.invalidPathId = true
+          }
+          this.dataStore.dangerouslySetDontShowConcepts(false)
+          if (cb) {
+            // callback is only necessary if starting with stage 911
+            cb()
+          }
+        })
+      } else {
+        this.invalidPathId = true
+        this.dataStore.dangerouslySetDontShowConcepts(false)
+        if (cb) {
+          // callback is only necessary if starting with stage 911
+          cb()
+        }
+      }
     })
   }
 

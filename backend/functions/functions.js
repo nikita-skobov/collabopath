@@ -146,6 +146,15 @@ function putObject(params) {
   })
 }
 
+function deleteItem(params) {
+  return new Promise((res, rej) => {
+    dynamodb.deleteItem(params, (err) => {
+      if (err) return rej(err)
+      return res(1)
+    })
+  })
+}
+
 function getItem(params, pathID) {
   return new Promise((res, rej) => {
     dynamodb.query(params, (err, data) => {
@@ -156,6 +165,15 @@ function getItem(params, pathID) {
           body: { error: `Path ID: ${pathID} not found` },
         })
       }
+      return res(data)
+    })
+  })
+}
+
+function scanTable(params) {
+  return new Promise((res, rej) => {
+    dynamodb.scan(params, (err, data) => {
+      if (err) return rej(err)
       return res(data)
     })
   })
@@ -291,6 +309,9 @@ function getVoteItems({ body, receipt }) {
       // others from voting on that pathId
       voteWinner.votes.S = '.'
 
+      // save this because we overwrite it later
+      const oldNum = voteWinner.dateNum.N
+
       // adds time of vote to the finalized object
       const rightNow = new Date()
       voteWinner.dateStr = {}
@@ -304,13 +325,37 @@ function getVoteItems({ body, receipt }) {
       }
       await functions.putObject(putParams)
 
+      // params to delete message from queue
       const deleteParams = {
         QueueUrl: process.env.QUEUE_URL,
         ReceiptHandle: receipt,
       }
 
+      // params to delete item from current vote table
+      const deleteVoteParams = {
+        TableName: process.env.DYNAMO_CURRENT_VOTE_TABLE,
+        Key: {
+          pathId: {
+            S: voteWinner.pathId.S,
+          },
+          dateNum: {
+            N: oldNum, // deleteItem needs both primary and sort key
+            // oldNum is the dateNum from the original entry for this path id
+          },
+        },
+      }
+
       // delete the message so that it doesnt get processed again by the voteCheck handler.
-      await functions.deleteMessage(deleteParams)
+      const p1 = functions.deleteMessage(deleteParams)
+
+      // once item is finalized, remove it from the current vote table because it is
+      // no longer being voted on!
+      const p2 = functions.deleteItem(deleteVoteParams)
+
+      // since p1 and p2 are async calls to different AWS resources
+      // they can be done at the same time
+      await Promise.all([p1, p2])
+
       return res()
     } catch (e) {
       return rej(e)
@@ -389,6 +434,8 @@ module.exports.putObject = putObject
 module.exports.randomString = makeRandomId
 module.exports.getFinalPathObj = getFinalPathObj
 module.exports.getItem = getItem
+module.exports.deleteItem = deleteItem
+module.exports.scanTable = scanTable
 module.exports.makeParams = makeParams
 module.exports.sendMessage = sendMessage
 module.exports.processAllMessages = processAllMessages

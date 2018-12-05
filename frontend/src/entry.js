@@ -19,6 +19,7 @@ import About from './components/About'
 import ErrorPage from './components/ErrorPage'
 import Changelog from './components/Changelog'
 import Support from './components/Support'
+import CurrentVotesPage from './components/CurrentVotesPage'
 
 const reactContainer = document.getElementById('react-container')
 
@@ -59,6 +60,10 @@ const AppRenderer = () => (
   <App dataStore={dataStore} />
 )
 
+const CurrentVotesPageRender = () => (
+  <CurrentVotesPage dataStore={dataStore} />
+)
+
 ReactDOM.render((
   <BrowserRouter>
     <div>
@@ -68,6 +73,7 @@ ReactDOM.render((
         <Route path="/support" render={supportRender} />
         <Route path="/about" render={AboutRender} />
         <Route path="/changelog" component={Changelog} />
+        <Route path="/currentvotes" render={CurrentVotesPageRender} />
         <Route component={ErrorPage} />
       </Switch>
     </div>
