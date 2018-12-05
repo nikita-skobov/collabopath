@@ -82,7 +82,7 @@ module.exports.getVotes = async (event, context) => {
       }
       body.push(voteItem)
     })
-    statusCode = 200    
+    statusCode = 200
   } catch (e) {
     headers = e.headers || headers
     statusCode = e.statusCode || statusCode
