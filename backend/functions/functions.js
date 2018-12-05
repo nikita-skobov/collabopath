@@ -146,6 +146,15 @@ function putObject(params) {
   })
 }
 
+function deleteItem(params) {
+  return new Promise((res, rej) => {
+    dynamodb.deleteItem(params, (err) => {
+      if (err) return rej(err)
+      return res(1)
+    })
+  })
+}
+
 function getItem(params, pathID) {
   return new Promise((res, rej) => {
     dynamodb.query(params, (err, data) => {
@@ -404,6 +413,7 @@ module.exports.putObject = putObject
 module.exports.randomString = makeRandomId
 module.exports.getFinalPathObj = getFinalPathObj
 module.exports.getItem = getItem
+module.exports.deleteItem = deleteItem
 module.exports.makeParams = makeParams
 module.exports.sendMessage = sendMessage
 module.exports.processAllMessages = processAllMessages
