@@ -11,7 +11,10 @@ export default class CurrentVotes extends Component {
     this.state = {
       list: [],
       error: false,
+      currentlyFetching: true,
     }
+
+    this.fetchList()
   }
 
   fetchList() {
@@ -21,10 +24,35 @@ export default class CurrentVotes extends Component {
     fetch(getVotesEndpoint)
       .then(res => res.json())
       .then((list) => {
-        this.setState({ list, error: false })
+        this.setState({ list, error: false, currentlyFetching: false })
       }).catch((err) => {
         console.log(err)
-        this.setState({ error: true })
+        this.setState({ error: true, currentlyFetching: false })
       })
+  }
+
+  render() {
+    const { error, list, currentlyFetching } = this.state
+
+    if (currentlyFetching) {
+      return (
+        <div>Loading....</div>
+      )
+    }
+
+    if (error) {
+      return (
+        <div>oopsies there was an error</div>
+      )
+    }
+
+    return (
+      <div>
+        <p>here are the items:</p>
+        {list.map(item => (
+          <div>{item.pathId}, {item.dateNum}</div>
+        ))}
+      </div>
+    )
   }
 }
