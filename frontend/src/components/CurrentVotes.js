@@ -95,7 +95,7 @@ export default class CurrentVotes extends Component {
           <Grid.Row className="ptb0">
             <Card
               style={{ margin: 'auto', width: '90%' }}
-              header={<Button name="refresh" fluid color="blue">Refresh</Button>}
+              header={<Button onClick={this.handleButton} name="refresh" fluid color="blue">Refresh</Button>}
             />
           </Grid.Row>
           <Grid.Row className="ptb0">
@@ -115,7 +115,12 @@ export default class CurrentVotes extends Component {
         <Grid.Row className="ptb0">
           <Card
             style={{ margin: 'auto', width: '90%' }}
-            header={<Button onClick={this.handleButton} name="refresh" fluid color="blue">Refresh</Button>}
+            header={(
+              <Button.Group fluid>
+                <Button onClick={this.handleButton} name="back" color="blue">Back</Button>
+                <Button onClick={this.handleButton} name="refresh" color="blue">Refresh</Button>
+              </Button.Group>
+            )}
           />
         </Grid.Row>
         {list.map((item) => {
