@@ -170,6 +170,15 @@ function getItem(params, pathID) {
   })
 }
 
+function scanTable(params) {
+  return new Promise((res, rej) => {
+    dynamodb.scan(params, (err, data) => {
+      if (err) return rej(err)
+      return res(data)
+    })
+  })
+}
+
 function isFirstVote(pathId, ip) {
   return new Promise((res, rej) => {
     const params = {
@@ -426,6 +435,7 @@ module.exports.randomString = makeRandomId
 module.exports.getFinalPathObj = getFinalPathObj
 module.exports.getItem = getItem
 module.exports.deleteItem = deleteItem
+module.exports.scanTable = scanTable
 module.exports.makeParams = makeParams
 module.exports.sendMessage = sendMessage
 module.exports.processAllMessages = processAllMessages
