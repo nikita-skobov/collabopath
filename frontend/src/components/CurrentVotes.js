@@ -61,12 +61,6 @@ export default class CurrentVotes extends Component {
           <Grid.Row>
             <Loader style={{ margin: 'auto' }} active inline> Loading Recent Paths </Loader>
           </Grid.Row>
-          <Grid.Row className="ptb0">
-            <Card
-              style={{ margin: 'auto', width: '90%' }}
-              header={<Button disabled fluid name="refresh" color="blue">Refresh</Button>}
-            />
-          </Grid.Row>
         </Grid>
       )
     }
