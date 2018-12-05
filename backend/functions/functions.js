@@ -300,6 +300,9 @@ function getVoteItems({ body, receipt }) {
       // others from voting on that pathId
       voteWinner.votes.S = '.'
 
+      // save this because we overwrite it later
+      const oldNum = voteWinner.dateNum.N
+
       // adds time of vote to the finalized object
       const rightNow = new Date()
       voteWinner.dateStr = {}
@@ -325,6 +328,10 @@ function getVoteItems({ body, receipt }) {
         Key: {
           pathId: {
             S: voteWinner.pathId.S,
+          },
+          dateNum: {
+            N: oldNum, // deleteItem needs both primary and sort key
+            // oldNum is the dateNum from the original entry for this path id
           },
         },
       }
