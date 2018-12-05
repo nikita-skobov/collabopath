@@ -279,6 +279,7 @@ export default class PathViewer extends Component {
   fetchObjectsAndSetPath(id, cb) {
     const path = decodePath(id)
 
+    const userDontShowConcepts = this.dataStore.dangerouslyGetDontShowConcepts()
     this.dataStore.dangerouslySetDontShowConcepts(true)
     // dont show concept on the following fetch object call
     // checking if path exists in the database
@@ -308,7 +309,7 @@ export default class PathViewer extends Component {
           } else {
             this.invalidPathId = true
           }
-          this.dataStore.dangerouslySetDontShowConcepts(false)
+          this.dataStore.dangerouslySetDontShowConcepts(userDontShowConcepts)
           if (cb) {
             // callback is only necessary if starting with stage 911
             cb()
@@ -316,7 +317,7 @@ export default class PathViewer extends Component {
         })
       } else {
         this.invalidPathId = true
-        this.dataStore.dangerouslySetDontShowConcepts(false)
+        this.dataStore.dangerouslySetDontShowConcepts(userDontShowConcepts)
         if (cb) {
           // callback is only necessary if starting with stage 911
           cb()
