@@ -330,11 +330,16 @@ function getVoteItems({ body, receipt }) {
       }
 
       // delete the message so that it doesnt get processed again by the voteCheck handler.
-      await functions.deleteMessage(deleteParams)
+      const p1 = functions.deleteMessage(deleteParams)
 
       // once item is finalized, remove it from the current vote table because it is
       // no longer being voted on!
-      await functions.deleteItem(deleteVoteParams)
+      const p2 = functions.deleteItem(deleteVoteParams)
+
+      // since p1 and p2 are async calls to different AWS resources
+      // they can be done at the same time
+      await Promise.all([p1, p2])
+
       return res()
     } catch (e) {
       return rej(e)
