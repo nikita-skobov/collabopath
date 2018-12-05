@@ -304,13 +304,28 @@ function getVoteItems({ body, receipt }) {
       }
       await functions.putObject(putParams)
 
+      // params to delete message from queue
       const deleteParams = {
         QueueUrl: process.env.QUEUE_URL,
         ReceiptHandle: receipt,
       }
 
+      // params to delete item from current vote table
+      const deleteVoteParams = {
+        TableName: process.env.DYNAMO_CURRENT_VOTE_TABLE,
+        Key: {
+          pathId: {
+            S: voteWinner.pathId.S,
+          },
+        },
+      }
+
       // delete the message so that it doesnt get processed again by the voteCheck handler.
       await functions.deleteMessage(deleteParams)
+
+      // once item is finalized, remove it from the current vote table because it is
+      // no longer being voted on!
+      await functions.deleteItem(deleteVoteParams)
       return res()
     } catch (e) {
       return rej(e)
