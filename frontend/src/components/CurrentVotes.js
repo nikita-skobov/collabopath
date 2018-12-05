@@ -68,6 +68,7 @@ export default class CurrentVotes extends Component {
           return (
             <Grid.Row className="ptb0">
               <Card
+                style={{ margin: 'auto', width: '90%' }}
                 header={`Path ID: ${item.pathId}`}
                 meta={`Voting started about ${minDiff} minutes ago`}
                 description={<Button size="mini" color="blue">View</Button>}
