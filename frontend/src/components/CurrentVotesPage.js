@@ -11,13 +11,35 @@ export default class CurrentVotesPage extends Component {
     super(props)
 
     this.dataStore = props.dataStore
+
+    this.state = {
+      isMobile: window.innerHeight > window.innerWidth,
+    }
+
+    this.shouldResize = this.shouldResize.bind(this)
+
+    window.addEventListener('resize', this.shouldResize)
+  }
+
+  shouldResize() {
+    const { isMobile } = this.state
+    const newIsMobile = window.innerHeight > window.innerWidth
+
+    if (isMobile && !newIsMobile) {
+      // if previous state was mobile, but new state is not mobile
+      this.setState({ isMobile: false })
+    } else if (!isMobile && newIsMobile) {
+      // if previous state was not mobile, but new state is mobile
+      this.setState({ isMobile: true })
+    }
   }
 
   render() {
-    const maxHeight = window.innerHeight > window.innerWidth ? 'mh50' : 'mh100'
+    const { isMobile } = this.state
+
+    const maxHeight = isMobile ? 'mh50' : 'mh100'
     // if mobile, max height of this grid should take 50% of screen, otherwise 100
 
-    const isMobile = maxHeight === 'mh50'
     const chatMarginTop = isMobile ? 'mtn20vh' : ''
 
     return (
