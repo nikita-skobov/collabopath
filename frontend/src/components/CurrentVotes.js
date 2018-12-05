@@ -2,7 +2,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { Grid, Button, Card } from 'semantic-ui-react'
+import { Grid, Button, Card, Loader } from 'semantic-ui-react'
 
 import { getVotesEndpoint } from '../dynamicVars'
 
@@ -40,7 +40,23 @@ export default class CurrentVotes extends Component {
 
     if (currentlyFetching) {
       return (
-        <div>Loading....</div>
+        <Grid className="ms0 mtb0">
+          <Grid.Row className="ptb0">
+            <Card
+              style={{ margin: 'auto', width: '90%' }}
+              header={<Button name="refresh" fluid color="blue">Refresh</Button>}
+            />
+          </Grid.Row>
+          <Grid.Row>
+            <Loader active inline> Loading Next Path </Loader>
+          </Grid.Row>
+          <Grid.Row className="ptb0">
+            <Card
+              style={{ margin: 'auto', width: '90%' }}
+              header={<Button fluid name="refresh" color="blue">Refresh</Button>}
+            />
+          </Grid.Row>
+        </Grid>
       )
     }
 
