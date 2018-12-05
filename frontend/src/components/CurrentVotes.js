@@ -29,6 +29,8 @@ export default class CurrentVotes extends Component {
     if (name === 'refresh') {
       this.setState({ currentlyFetching: true })
       this.fetchList()
+    } else if (name === 'back') {
+      this.dataStore.tell('App').nextPage(null, 'LandingPage')
     } else {
       console.log(name)
       // name is the path id
