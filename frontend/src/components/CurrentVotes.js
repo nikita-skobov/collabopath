@@ -67,7 +67,20 @@ export default class CurrentVotes extends Component {
 
     if (error) {
       return (
-        <div>oopsies there was an error</div>
+        <Grid className="ms0 mtb0">
+          <Grid.Row className="ptb0">
+            <Card
+              style={{ margin: 'auto', width: '90%' }}
+              header={<Button disabled name="refresh" fluid color="blue">Try Again</Button>}
+            />
+          </Grid.Row>
+          <Grid.Row>
+            <Card
+              style={{ margin: 'auto', width: '90%' }}
+              header="Oops! There was some kind of error"
+            />
+          </Grid.Row>
+        </Grid>
       )
     }
 
