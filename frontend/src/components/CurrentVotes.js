@@ -18,7 +18,17 @@ export default class CurrentVotes extends Component {
       currentlyFetching: true,
     }
 
+    this.fetchList = this.fetchList.bind(this)
+    this.handleButton = this.handleButton.bind(this)
     this.fetchList()
+  }
+
+  handleButton(e) {
+    e.preventDefault()
+    const { name } = e.target
+    if (name === 'refresh') {
+      this.setState({ currentlyFetching: true })
+    }
   }
 
   fetchList() {
@@ -44,7 +54,7 @@ export default class CurrentVotes extends Component {
           <Grid.Row className="ptb0">
             <Card
               style={{ margin: 'auto', width: '90%' }}
-              header={<Button name="refresh" fluid color="blue">Refresh</Button>}
+              header={<Button disabled name="refresh" fluid color="blue">Refresh</Button>}
             />
           </Grid.Row>
           <Grid.Row>
@@ -53,7 +63,7 @@ export default class CurrentVotes extends Component {
           <Grid.Row className="ptb0">
             <Card
               style={{ margin: 'auto', width: '90%' }}
-              header={<Button fluid name="refresh" color="blue">Refresh</Button>}
+              header={<Button disabled fluid name="refresh" color="blue">Refresh</Button>}
             />
           </Grid.Row>
         </Grid>
@@ -87,7 +97,7 @@ export default class CurrentVotes extends Component {
         <Grid.Row className="ptb0">
           <Card
             style={{ margin: 'auto', width: '90%' }}
-            header={<Button name="refresh" fluid color="blue">Refresh</Button>}
+            header={<Button onClick={this.handleButton} name="refresh" fluid color="blue">Refresh</Button>}
           />
         </Grid.Row>
         {list.map((item) => {
@@ -109,7 +119,7 @@ export default class CurrentVotes extends Component {
         <Grid.Row className="ptb0">
           <Card
             style={{ margin: 'auto', width: '90%' }}
-            header={<Button fluid name="refresh" color="blue">Refresh</Button>}
+            header={<Button onClick={this.handleButton} fluid name="refresh" color="blue">Refresh</Button>}
           />
         </Grid.Row>
       </Grid>
