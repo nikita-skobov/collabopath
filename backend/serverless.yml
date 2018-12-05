@@ -193,6 +193,7 @@ functions:
       DOMAIN: ${self:service}
       DYNAMO_REGION: ${self:provider.region}
       DYNAMO_TABLE: ${self:custom.tables.main}
+      DYNAMO_CURRENT_VOTE_TABLE: ${self:custom.tables.current_vote}
     events:
       - http:
           path: /path/votes

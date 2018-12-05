@@ -71,7 +71,7 @@ module.exports.getVotes = async (event, context) => {
   try {
     statusCode = 200
     body = await functions.scanTable({
-      TableName: process.env.DYNAMO_CURRENT_VOTES_TABLE,
+      TableName: process.env.DYNAMO_CURRENT_VOTE_TABLE,
     })
   } catch (e) {
     headers = e.headers || headers
