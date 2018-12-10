@@ -144,6 +144,7 @@ privateio.on('connection', (socket) => {
 
   socket.on('auth', (msg) => {
     if (msg === 'abc12345') {
+      // note this is not the actual auth code :)
       socket.authYes = true
     }
   })
