@@ -1,0 +1,44 @@
+# I want to keep the socket servers a seperate stack because it doesnt need
+# to be updated as frequently as the main stack. Also for testing purposes
+# its easy to tear down ec2 servers seperately if they are a seperate stack.
+
+service: collabopath-sockets # NOTE: update this with your service name
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region, 'us-east-1'}
+  endpointType: REGIONAL
+custom:
+  ec2-autoscaling:
+    autoscalename: myautoscalingname12345
+    cooldown: 300
+    initialDesiredCapacity: 1
+    maxCapacity: 3
+    minCapacity: 1
+    userData: "${file(startscript.sh)}"
+    amiId: ami-125b3cba5fcb21df7 # this is not a real ami id...
+    targetCPU: 60.0
+    instanceType: t2.micro
+    keyName: mySSHkey
+resources:
+  Resources:
+    vpc: ${file(ec2-autoscaling.yml):vpc}
+    subnet1: ${file(ec2-autoscaling.yml):subnet1}
+    subnet2: ${file(ec2-autoscaling.yml):subnet2}
+    subnet3: ${file(ec2-autoscaling.yml):subnet3}
+    securityGroup: ${file(ec2-autoscaling.yml):securityGroup}
+    autoScalingGroup: ${file(ec2-autoscaling.yml):autoScalingGroup}
+    launchConfiguration: ${file(ec2-autoscaling.yml):launchConfiguration}
+    scalingScaleGroupSize: ${file(ec2-autoscaling.yml):scalingScaleGroupSize}
+    routeTable: ${file(ec2-autoscaling.yml):routeTable}
+    myRoute: ${file(ec2-autoscaling.yml):myRoute}
+    MyInternetGateway: ${file(ec2-autoscaling.yml):MyInternetGateway}
+    Gateway2Internet: ${file(ec2-autoscaling.yml):Gateway2Internet}
+    mySubnetRouteTableAssociation1: ${file(ec2-autoscaling.yml):mySubnetRouteTableAssociation1}
+    mySubnetRouteTableAssociation2: ${file(ec2-autoscaling.yml):mySubnetRouteTableAssociation2}
+    mySubnetRouteTableAssociation3: ${file(ec2-autoscaling.yml):mySubnetRouteTableAssociation3}
+    RootInstanceProfile: ${file(ec2-autoscaling.yml):RootInstanceProfile}
+    myAutoScaleRole: ${file(ec2-autoscaling.yml):myAutoScaleRole}
+    ingressHTTP: ${file(ec2-autoscaling.yml):ingressHTTP}
+    egress1: ${file(ec2-autoscaling.yml):egress1}

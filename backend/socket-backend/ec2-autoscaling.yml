@@ -1,0 +1,276 @@
+##Author: Nikita Skobov
+##Email me if you have any questions: equilateralllc@gmail.com
+
+##Description:
+# I used this template to easily deploy and remove an autoscaling group
+# with 1 ec2 instance by default, and a scaling policy to scale up/down based on
+# average CPU usage
+
+##REQUIREMENTS:
+# provider:
+#   region
+# custom:
+#   ec2-autoscaling:
+#     autoscalename (any name you want)
+#     cooldown (eg: 300)
+#     initialDesiredCapacity (number of instances to begin with)
+#     maxCapacity (max number of instances)
+#     minCapacity (min number of instances)
+#     userData (anything you want to be passed initially to the instance. see Usage for examples)
+#     amiId (the ID of the ami you wish to use)
+#     targetCPU (autoscalinggroup scales based on this value. must be boolean eg: 75.0)
+#     instanceType (example: t2.micro)
+#     keyName (the name of an ssh key you want to use if you want to ssh into the instances)
+
+
+##USAGE:
+# service: my-service-name2 # NOTE: update this with your service name
+# provider:
+#   name: aws
+#   runtime: nodejs8.10
+#   stage: ${opt:stage,'dev'}
+#   region: ${opt:region, 'us-east-1'}
+#   endpointType: REGIONAL
+# custom:
+#   ec2-autoscaling:
+#     autoscalename: myautoscalingname12345
+#     cooldown: 300
+#     initialDesiredCapacity: 1
+#     maxCapacity: 3
+#     minCapacity: 1
+#     userData: blahblahblah,12345,aaaaaaabbbbbccccc,ffff
+#     # OR if you want your instance to immediately run a script use a bash file:
+#     #userData: "${file(startscript.sh)}"
+#     amiId: ami-125b3cba5fcb21df7
+#     targetCPU: 60.0
+#     instanceType: t2.micro
+#     keyName: mySSHkey
+# resources:
+#   Resources:
+#     vpc: ${file(ec2-autoscaling.yml):vpc}
+#     subnet1: ${file(ec2-autoscaling.yml):subnet1}
+#     subnet2: ${file(ec2-autoscaling.yml):subnet2}
+#     subnet3: ${file(ec2-autoscaling.yml):subnet3}
+#     securityGroup: ${file(ec2-autoscaling.yml):securityGroup}
+#     autoScalingGroup: ${file(ec2-autoscaling.yml):autoScalingGroup}
+#     launchConfiguration: ${file(ec2-autoscaling.yml):launchConfiguration}
+#     scalingScaleGroupSize: ${file(ec2-autoscaling.yml):scalingScaleGroupSize}
+#     routeTable: ${file(ec2-autoscaling.yml):routeTable}
+#     myRoute: ${file(ec2-autoscaling.yml):myRoute}
+#     MyInternetGateway: ${file(ec2-autoscaling.yml):MyInternetGateway}
+#     Gateway2Internet: ${file(ec2-autoscaling.yml):Gateway2Internet}
+#     mySubnetRouteTableAssociation1: ${file(ec2-autoscaling.yml):mySubnetRouteTableAssociation1}
+#     mySubnetRouteTableAssociation2: ${file(ec2-autoscaling.yml):mySubnetRouteTableAssociation2}
+#     mySubnetRouteTableAssociation3: ${file(ec2-autoscaling.yml):mySubnetRouteTableAssociation3}
+#     RootInstanceProfile: ${file(ec2-autoscaling.yml):RootInstanceProfile}
+#     myAutoScaleRole: ${file(ec2-autoscaling.yml):myAutoScaleRole}
+#     ingressHTTP: ${file(ec2-autoscaling.yml):ingressHTTP}
+#     egress1: ${file(ec2-autoscaling.yml):egress1}
+
+vpc:
+  Type: 'AWS::EC2::VPC'
+  Properties:
+    CidrBlock: 172.30.0.0/16 # change this as necessary, but the first 2 must
+    # match your subnets (ie: 172.30.X.X/16 must match your subnet: 172.30.X.X/20)
+    InstanceTenancy: default
+    EnableDnsSupport: 'true'
+    EnableDnsHostnames: 'true'
+# You can have many subnets. I just use 3 by default, but you can add or subtract
+# as necessary. NOTE that just because there are 3 subnets in the file that DOES NOT
+# mean that they get created for you automatically. You must reference these subnets
+# in your serverless.yml file under the resource section. Take a look at the usage guide above
+subnet1:
+  Type: 'AWS::EC2::Subnet'
+  Properties:
+    CidrBlock: 172.30.80.0/20
+    AvailabilityZone: "${self:provider.region}a" # eg: us-east-1a. change the a if you want
+    VpcId:
+      Ref: vpc #NOTE this refers to the vpc above. if the vpc was named MyVPC1234
+      # then this refernece would need to change to: Ref: MyVPC1234
+subnet2:
+  Type: 'AWS::EC2::Subnet'
+  Properties:
+    CidrBlock: 172.30.16.0/20
+    AvailabilityZone: "${self:provider.region}c"
+    VpcId:
+      Ref: vpc
+subnet3:
+  Type: 'AWS::EC2::Subnet'
+  Properties:
+    CidrBlock: 172.30.0.0/20
+    AvailabilityZone: "${self:provider.region}b"
+    VpcId:
+      Ref: vpc
+securityGroup:
+  Type: 'AWS::EC2::SecurityGroup'
+  Properties:
+    GroupDescription: 'serverless-created security group'
+    VpcId:
+      Ref: vpc
+autoScalingGroup:
+  Type: 'AWS::AutoScaling::AutoScalingGroup'
+  Properties:
+    AutoScalingGroupName: ${self:custom.ec2-autoscaling.autoscalename}
+    AvailabilityZones:
+      - "${self:provider.region}a"
+      - "${self:provider.region}b"
+      - "${self:provider.region}c"
+      # must match the subnets. if you are using a subnet in zone us-east-1d, then
+      # you must include us-east-1d in this list
+    Cooldown: '${self:custom.ec2-autoscaling.cooldown}' # The number of seconds after a scaling activity is completed before any further scaling activities can start.
+    DesiredCapacity: '${self:custom.ec2-autoscaling.initialDesiredCapacity}'
+    HealthCheckGracePeriod: '300'
+    HealthCheckType: EC2
+    MaxSize: '${self:custom.ec2-autoscaling.maxCapacity}'
+    MinSize: '${self:custom.ec2-autoscaling.minCapacity}'
+    VPCZoneIdentifier:
+      # NOTE you must change this if you want to use more or less subnets
+      # also the name must match exactly
+      - Ref: subnet1
+      - Ref: subnet2
+      - Ref: subnet3
+    LaunchConfigurationName:
+      Ref: launchConfiguration
+    Tags:
+      - Key: test2
+        Value: 'yes2'
+        PropagateAtLaunch: true
+    TerminationPolicies:
+      - Default
+launchConfiguration:
+  DependsOn:
+    - Gateway2Internet
+  Type: 'AWS::AutoScaling::LaunchConfiguration'
+  Properties:
+    UserData:
+      Fn::Base64: ${self:custom.ec2-autoscaling.userData}
+    AssociatePublicIpAddress: true
+    ImageId: ${self:custom.ec2-autoscaling.amiId} # this needs to be updated with your ami
+    IamInstanceProfile:
+      Ref: RootInstanceProfile
+    InstanceType: ${self:custom.ec2-autoscaling.instanceType}
+    KeyName: ${self:custom.ec2-autoscaling.keyName}
+    SecurityGroups:
+      - Ref: securityGroup
+scalingScaleGroupSize:
+  Type: 'AWS::AutoScaling::ScalingPolicy'
+  Properties:
+    PolicyType: TargetTrackingScaling
+    TargetTrackingConfiguration:
+      PredefinedMetricSpecification:
+        PredefinedMetricType: ASGAverageCPUUtilization
+      TargetValue: '${self:custom.ec2-autoscaling.targetCPU}'
+    AutoScalingGroupName:
+      Ref: autoScalingGroup
+routeTable:
+  Type: AWS::EC2::RouteTable
+  Properties:
+    VpcId:
+      Ref: vpc
+# important. this custom route allows your vpc access to the internet via
+# an internet gateway. by default creating a vpc does not include an internet
+# gateway, so you must make one manually as I do here
+myRoute:
+  Type: AWS::EC2::Route
+  DependsOn:
+    - Gateway2Internet
+  Properties:
+    RouteTableId:
+      Ref: routeTable
+    DestinationCidrBlock: 0.0.0.0/0
+    GatewayId:
+      Ref: MyInternetGateway
+MyInternetGateway:
+  Type: AWS::EC2::InternetGateway
+  Properties:
+    Tags:
+      - Key: test
+        Value: a1
+Gateway2Internet:
+  Type: AWS::EC2::VPCGatewayAttachment
+  Properties:
+    VpcId:
+      Ref: vpc
+    InternetGatewayId:
+      Ref: MyInternetGateway
+# NOTE: by default, cloudformation creates a main route table, however
+# this route table does not contain access to an internet gateway, thus unable
+# to receive/send traffic over the public internet. Even though above I define my own route
+# table, there is no way (AFAIK) to set my custom route table as the main route table
+# therefore, you must associate each subnet with the custom route table if you want
+# the subnets to have access to the internet
+mySubnetRouteTableAssociation1:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties:
+    SubnetId:
+      Ref: subnet1
+    RouteTableId:
+      Ref: routeTable
+mySubnetRouteTableAssociation2:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties:
+    SubnetId:
+      Ref: subnet2
+    RouteTableId:
+      Ref: routeTable
+mySubnetRouteTableAssociation3:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties:
+    SubnetId:
+      Ref: subnet3
+    RouteTableId:
+      Ref: routeTable
+RootInstanceProfile:
+  Type: "AWS::IAM::InstanceProfile"
+  Properties:
+    Roles:
+      - Ref: myAutoScaleRole
+myAutoScaleRole:
+  Type: AWS::IAM::Role
+  Properties:
+    RoleName: 'myautoscalerolename'
+    AssumeRolePolicyDocument:
+      Version: "2012-10-17"
+      Statement: 
+        - 
+          Effect: "Allow"
+          Principal: 
+            Service: 
+              - "ec2.amazonaws.com"
+          Action: 
+            - "sts:AssumeRole"
+    Policies:
+    # add any policies you want here. these policies
+    # allow the ec2 instance to do specific tasks on your AWS account
+      # - ${self:custom.policies.routeChange}
+      # - ${self:custom.policies.s3Download}
+      # - ${self:custom.policies.describeInstances}
+      # - ${self:custom.policies.describeGroups}
+# allows all http traffic port 80
+ingressHTTP:
+  Type: 'AWS::EC2::SecurityGroupIngress'
+  Properties:
+    GroupId:
+      Ref: securityGroup
+    IpProtocol: tcp
+    FromPort: '80'
+    ToPort: '80'
+    CidrIp: 0.0.0.0/0
+# allows SSH access (NOTE the CirdIP is 0.0.0.0/0. you will want to change this to your IP)
+# ingressSSH:
+#   Type: 'AWS::EC2::SecurityGroupIngress'
+#   Properties:
+#     GroupId:
+#       Ref: securityGroup
+#     IpProtocol: tcp
+#     FromPort: '22'
+#     ToPort: '22'
+#     CidrIp: 0.0.0.0/0
+# allows access out to internet
+egress1:
+  Type: 'AWS::EC2::SecurityGroupEgress'
+  Properties:
+    GroupId:
+      Ref: securityGroup
+    IpProtocol: '-1'
+    CidrIp: 0.0.0.0/0
