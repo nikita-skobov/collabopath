@@ -8,3 +8,6 @@ frontend/dist/about
 frontend/dist/support
 frontend/dist/index.html
 frontend/dist/scripts/**
+backend/socket-cloudfront/.serverless
+backend/socket-backend/.serverless
+backend/socket-backend/start.zip
