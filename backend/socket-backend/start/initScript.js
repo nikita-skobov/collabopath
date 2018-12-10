@@ -3,10 +3,10 @@ const AWS = require('aws-sdk')
 const myconfig = require('./myconfig.json')
 
 const autoscale = new AWS.AutoScaling({
-  region: 'us-east-1',
+  region: myconfig.region,
 })
 const ec2 = new AWS.EC2({
-  region: 'us-east-1',
+  region: myconfig.region,
 })
 const r53 = new AWS.Route53()
 
