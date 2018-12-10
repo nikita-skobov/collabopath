@@ -205,6 +205,13 @@ server.listen(3000, () => {
 
 
 async function main() {
+  const invokeParams = {
+    FunctionName,
+    InvokeArgs: JSON.stringify({}),
+  }
+
+  await invokeAsync(invokeParams)
+
   const myInstanceId = await getMetaData('meta-data/instance-id')
   const myPrivateDnsName = await getMetaData('meta-data/local-hostname')
   const instanceData = await describeAutoScalingInstances(myInstanceId)
