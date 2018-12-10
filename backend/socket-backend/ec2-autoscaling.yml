@@ -242,7 +242,6 @@ myAutoScaleRole:
     Policies:
     # add any policies you want here. these policies
     # allow the ec2 instance to do specific tasks on your AWS account
-      - ${self:custom.policies.routeChange}
       - ${self:custom.policies.s3Download}
       - ${self:custom.policies.describeInstances}
       - ${self:custom.policies.describeGroups}
