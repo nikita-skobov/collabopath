@@ -10,6 +10,8 @@ provider:
   region: ${opt:region, 'us-east-1'}
   endpointType: REGIONAL
 custom:
+  bucketName: ${opt:bucket}
+  hostedzoneid: ${opt:hostedzone}
   ec2-autoscaling:
     autoscalename: myautoscalingname12345
     cooldown: 300
@@ -17,10 +19,49 @@ custom:
     maxCapacity: 3
     minCapacity: 1
     userData: "${file(startscript.sh)}"
-    amiId: ami-125b3cba5fcb21df7 # this is not a real ami id...
+    amiId: ${opt:ami} # this is not a real ami id...
     targetCPU: 60.0
     instanceType: t2.micro
-    keyName: mySSHkey
+    keyName: ${opt:sshkey}
+  policies:
+    routeChange:
+      PolicyName: "${self:service}-routechange-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: route53:ChangeResourceRecordSets
+            Resource: "arn:aws:route53:::hostedzone/${self:custom.hostedzoneid}"
+    s3Download:
+      PolicyName: "${self:service}-s3download-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: s3:GetObject
+            Resource: "arn:aws:s3:::${self:custom.bucketName}/*"
+          - Effect: Allow
+            Action: s3:ListBucket
+            Resource: "arn:aws:s3:::${self:custom.bucketName}"
+    describeInstances:
+      PolicyName: "${self:service}-describeinstances-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: ec2:DescribeInstances
+            Resource: "*"
+    describeGroups:
+      PolicyName: "${self:service}-describeautoscalegroups-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: autoscaling:DescribeAutoScalingInstances
+            Resource: "*"
+          - Effect: Allow
+            Action: autoscaling:DescribeAutoScalingGroups
+            Resource: "*"
 resources:
   Resources:
     vpc: ${file(ec2-autoscaling.yml):vpc}
