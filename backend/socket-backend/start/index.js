@@ -10,6 +10,7 @@ const ec2 = new AWS.EC2({
   region: 'us-east-1',
 })
 
+const socketioclient = require('socket.io-client')
 
 const Filter = require('bad-words')
 const filter = new Filter({ emptyList: true })
@@ -145,10 +146,11 @@ async function main() {
   console.log('asdsadas')
 
   myFriendsIps.forEach((ip) => {
-    pSockets.push(require('socket.io-client')(`http://${ip}`))
+    const url = `http://${ip}`
+    console.log(url)
+    pSockets.push(socketioclient.connect(url, { 'force new connection': true }))
     console.log(pSockets)
   })
-
 }
 
 main()
