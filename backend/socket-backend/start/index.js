@@ -10,7 +10,6 @@ const ec2 = new AWS.EC2({
   region: 'us-east-1',
 })
 
-const socketioclient = require('socket.io-client')
 
 const Filter = require('bad-words')
 const filter = new Filter({ emptyList: true })
@@ -74,6 +73,15 @@ const io = require('socket.io')(server, {
   transports: ['websocket', 'xhr-polling']
 })
 
+const pSockets = []
+
+const privateio = io.of('/private')
+
+privateio.on('connection', (socket) => {
+  console.log('got friend connection')
+  console.log(socket)
+})
+
 
 io.on('connection', (socket) => {
   console.log('blabadshsda')
@@ -135,6 +143,12 @@ async function main() {
   console.log(myPrivateIp)
   console.log(myFriendsIps)
   console.log('asdsadas')
+
+  myFriendsIps.forEach((ip) => {
+    pSockets.push(require('socket.io-client')(`http://${ip}`))
+    console.log(pSockets)
+  })
+
 }
 
 main()
