@@ -2,6 +2,13 @@ const request = require('request')
 const express = require('express')
 const http = require('http')
 const path = require('path')
+const AWS = require('aws-sdk')
+const autoscale = new AWS.AutoScaling({
+  region: 'us-east-1',
+})
+const ec2 = new AWS.EC2({
+  region: 'us-east-1',
+})
 
 const socketioclient = require('socket.io-client')
 
@@ -13,13 +20,51 @@ const containsBadWords = (text) => {
   return filter.isProfane(text)
 }
 
-const {
-  getMetaData,
-  describeInstances,
-  describeAutoScalingGroups,
-  describeAutoScalingInstances,
-} = require('./initScript')
+function getMetaData(type) {
+  return new Promise((res, rej) => {
+    request(`http://169.254.169.254/latest/${type}`, (err, resp, body) => {
+      if (err) return rej(err)
+      return res(body)
+    })
+  })
+}
 
+function describeInstances(ids) {
+  return new Promise((res, rej) => {
+    const params = {
+      InstanceIds: ids,
+    }
+
+    ec2.describeInstances(params, (err, data) => {
+      if (err) return rej(err)
+      return res(data)
+    })
+  })
+}
+
+function describeAutoScalingGroups(name) {
+  return new Promise((res, rej) => {
+    const params = {
+      AutoScalingGroupNames: [name],
+    }
+    autoscale.describeAutoScalingGroups(params, (err, data) => {
+      if (err) return rej(err)
+      return res(data)
+    })
+  })
+}
+
+function describeAutoScalingInstances(id) {
+  return new Promise((res, rej) => {
+    const params = {
+      InstanceIds: [id],
+    }
+    autoscale.describeAutoScalingInstances(params, (err, data) => {
+      if (err) return rej(err)
+      return res(data)
+    })
+  })
+}
 
 const serverName = require('os').hostname()
 const app = express()
@@ -31,6 +76,7 @@ const io = require('socket.io')(server, {
 
 
 io.on('connection', (socket) => {
+  console.log('blabadshsda')
   console.log('got connection pih')
   socket.on('msgi2', (msg) => {
     socket.broadcast.emit('msgo2', msg)
@@ -60,7 +106,7 @@ server.listen(3000, () => {
 
 async function main() {
   const myInstanceId = await getMetaData('meta-data/instance-id')
-  const myPublicIp = await getMetaData('meta-data/public-ipv4')
+  const myPrivateIp = await getMetaData('meta-data/local-ipv4')
   const instanceData = await describeAutoScalingInstances(myInstanceId)
   const { AutoScalingGroupName } = instanceData.AutoScalingInstances[0]
   const autoScaleData = await describeAutoScalingGroups(AutoScalingGroupName)
@@ -80,17 +126,15 @@ async function main() {
   })
 
   instances2.forEach((item) => {
-    const { PublicIpAddress } = item
-    myFriendsIps.push(PublicIpAddress)
-    console.log(item)
+    const { PrivateIpAddress } = item
+    if (PrivateIpAddress !== myPrivateIp) {
+      myFriendsIps.push(PrivateIpAddress)
+    }
   })
 
-  console.log('')
-  console.log(ids)
-  console.log(myPublicIp)
-  console.log(myInstanceId)
-  console.log(AutoScalingGroupName)
+  console.log(myPrivateIp)
   console.log(myFriendsIps)
+  console.log('asdsadas')
 }
 
 main()
