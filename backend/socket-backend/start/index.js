@@ -174,12 +174,14 @@ privateio.on('connection', (socket) => {
 publ.on('connection', (socket) => {
   console.log('got public connection')
   socket.on('msgi2', (msg) => {
-    socket.broadcast.emit('msgo2', msg)
-    socket.emit('msgo2', msg)
+    if (!containsBadWords(msg)) {
+      socket.broadcast.emit('msgo2', msg)
+      socket.emit('msgo2', msg)
 
-    Object.keys(pSockets).forEach((key) => {
-      pSockets[key].emit('msg', { type: 'msgo2', body: msg })
-    })
+      Object.keys(pSockets).forEach((key) => {
+        pSockets[key].emit('msg', { type: 'msgo2', body: msg })
+      })
+    }
   })
 
   socket.emit('servername', serverName)
