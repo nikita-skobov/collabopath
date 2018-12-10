@@ -104,7 +104,7 @@ resources:
     RootInstanceProfile: ${file(ec2-autoscaling.yml):RootInstanceProfile}
     myAutoScaleRole: ${file(ec2-autoscaling.yml):myAutoScaleRole}
     ingressHTTP: ${file(ec2-autoscaling.yml):ingressHTTP}
-    ingressSSH: ${file(ec2-autoscaling.yml):ingressSSH}
+    # ingressSSH: ${file(ec2-autoscaling.yml):ingressSSH}
     egress1: ${file(ec2-autoscaling.yml):egress1}
     routeCheckRole:
       Type: AWS::IAM::Role
