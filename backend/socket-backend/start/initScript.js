@@ -119,3 +119,8 @@ async function main() {
 }
 
 main()
+
+module.exports.getMetaData = getMetaData
+module.exports.describeInstances = describeInstances
+module.exports.describeAutoScalingGroups = describeAutoScalingGroups
+module.exports.describeAutoScalingInstances = describeAutoScalingInstances
