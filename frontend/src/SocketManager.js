@@ -9,13 +9,22 @@ function SocketManager(datastore) {
   let socket = null
 
   const retObj = {
+    on: (type, cb) => {
+      socket.on(type, cb)
+    },
+
     connect: () => {
       socket = io.connect(socketEndpoint, {
         transports: ['websocket', 'xhr-polling'],
       })
     },
+
     disconnect: () => {
       socket.disconnect()
+    },
+
+    emit: (type, msg) => {
+      socket.emit(type, msg)
     },
   }
 

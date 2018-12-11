@@ -16,6 +16,19 @@ export default class ChatBox extends Component {
 
     this.dataStore = props.dataStore
 
+    this.socket = this.dataStore.tell('Sockets')
+    this.socket.connect()
+
+    this.socket.on('connect', () => {
+      console.log('conencted')
+      this.socket.emit('i', 'abcd123435')
+
+      this.socket.on('o', (msg) => {
+        console.log('got msg')
+        console.log(msg)
+      })
+    })
+
     this.state = {
       list: [],
       colorIndex: 0,
