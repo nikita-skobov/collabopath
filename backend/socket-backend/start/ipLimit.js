@@ -12,6 +12,15 @@ module.exports = (function ips() {
 
     getBanList: () => bannedList,
 
+    mergeBanList: (list) => {
+      list.forEach((item) => {
+        if (bannedList.indexOf(item) === -1) {
+          // current bannedList does not contain that item, so add it
+          bannedList.push(item)
+        }
+      })
+    },
+
     recordIpAction: (ip) => {
       const rightNow = new Date().getTime()
       lastIpAction[ip] = rightNow
