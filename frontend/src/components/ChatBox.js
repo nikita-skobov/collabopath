@@ -25,9 +25,18 @@ export default class ChatBox extends Component {
     e.preventDefault()
     const { name } = e.target
     if (name === 'chat') {
-      console.log(this.myInput)
-      // this.setState({ currentlyFetching: true })
-      // this.fetchList()
+      const { value } = this.myInput
+      console.log(value)
+      this.myInput.value = ''
+      this.setState((prevState) => {
+        const tempState = prevState
+        tempState.list.push({
+          author: 'im an author',
+          sent: new Date().getTime(),
+          text: value,
+        })
+        return tempState
+      })
     }
   }
 
