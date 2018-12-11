@@ -10,6 +10,8 @@ module.exports = (function ips() {
       bannedList.push(ip)
     },
 
+    getBanList: () => bannedList,
+
     recordIpAction: (ip) => {
       const rightNow = new Date().getTime()
       lastIpAction[ip] = rightNow

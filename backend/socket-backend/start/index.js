@@ -15,6 +15,7 @@ const {
   banIP,
   rememberId,
   getIpFromId,
+  getBanList,
 } = require('./ipLimit')
 
 const autoscale = new AWS.AutoScaling({
@@ -244,6 +245,7 @@ app.post('/ban/id', (req, res) => {
     const ip = getIpFromId(id)
     if (ip) {
       banIP(ip)
+      const list = getBanList()
       giveFriendsBanList(list)
       res.send('banned')
     } else {
@@ -257,6 +259,7 @@ app.post('/ban/id', (req, res) => {
 app.post('/ban/ip', (req, res) => {
   try {
     const { ip } = req.body
+    const list = getBanList()
     giveFriendsBanList(list)
     banIP(ip)
     res.send('banned')
