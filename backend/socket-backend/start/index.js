@@ -252,12 +252,7 @@ app.use((req, res, next) => {
   next()
 })
 
-// used for debugging
-// app.get('/', (req, res) => {
-//   res.send(`please stop. server name: ${serverName}`)
-// })
-
-app.post('/getip', (req, res) => {
+app2.post('/getip', (req, res) => {
   // there is more security checks here...
   // dont worry, this endpoint is not accessible to the public on the live site
   try {
@@ -273,7 +268,7 @@ app.post('/getip', (req, res) => {
   }
 })
 
-app.post('/ban/ip', (req, res) => {
+app2.post('/ban/ip', (req, res) => {
   // there is more security checks here...
   // dont worry, this endpoint is not accessible to the public on the live site
   try {
@@ -287,6 +282,7 @@ app.post('/ban/ip', (req, res) => {
   }
 })
 
+// used for debugging
 app.get('/', (req, res) => {
   console.log(req.headers)
   console.log('app')
