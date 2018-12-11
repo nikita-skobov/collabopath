@@ -166,6 +166,7 @@ privateio.on('connection', (socket) => {
     console.log(msg)
     if (socket.authYes) {
       publ.emit(msg.type, msg.body)
+      recordIpAction(msg.ip)
     }
   })
 
