@@ -30,6 +30,8 @@ const lambda = new AWS.Lambda({
 })
 
 const app = express()
+const app2 = express()
+const server2 = http.createServer(app2)
 const server = http.createServer(app)
 const has = Object.prototype.hasOwnProperty
 const pSockets = {}
@@ -285,9 +287,24 @@ app.post('/ban/ip', (req, res) => {
   }
 })
 
+app.get('/', (req, res) => {
+  console.log(req.headers)
+  console.log('app')
+  res.send('yur on 3000')
+})
+
+app2.get('/', (req, res) => {
+  console.log(req.headers)
+  console.log('app2')
+  res.send('yur on 3001')
+})
 
 server.listen(3000, () => {
   console.log('listening on 3000')
+})
+
+server2.listen(3001, () => {
+  console.log('listening on 3001')
 })
 
 
