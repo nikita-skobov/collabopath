@@ -38,8 +38,8 @@ export default class ChatItem extends Component {
     return (
       <Comment>
         <Comment.Content>
-          <Comment.Author className="ilb">{author}</Comment.Author>
-          <Comment.Text>{text}</Comment.Text>
+          <img style={{ width: '7%', display: 'inline-block' }} alt="svg could not load" src={author} />
+          <Comment.Text style={{ display: 'inline-block', wordBreak: 'break-word' }}>{text}</Comment.Text>
           <Comment.Actions>
             <a href="#">mute</a>
             <a href="#">report</a>

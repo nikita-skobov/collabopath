@@ -2,9 +2,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
+import Avatars from '@dicebear/avatars'
+import SpriteCollection from '@dicebear/avatars-identicon-sprites'
 import { Input, Button, Card, Loader, Comment } from 'semantic-ui-react'
 
 import ChatItem from './ChatItem'
+
+const avatars = new Avatars(SpriteCollection)
 
 export default class ChatBox extends Component {
   constructor(props) {
@@ -27,10 +31,13 @@ export default class ChatBox extends Component {
     if (name === 'chat') {
       const { value } = this.myInput
       this.myInput.value = ''
+      const svg = avatars.create('im an author')
+      const svgstr = encodeURIComponent(svg)
+      const dataUri = `data:image/svg+xml,${svgstr}`
       this.setState((prevState) => {
         const tempState = prevState
         tempState.list.unshift({
-          author: 'im an author',
+          author: dataUri,
           sent: new Date().getTime(),
           text: value,
         })
