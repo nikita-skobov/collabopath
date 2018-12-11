@@ -106,7 +106,9 @@ export default class ChatBox extends Component {
           </form>
           <div className="h80 ofya">
             {!connected && (
-              <Loader active inline> Connecting to Chat </Loader>
+              <div style={{ width: '25%', margin: 'auto', marginTop: '30px' }}>
+                <Loader active inline> Connecting to Chat </Loader>
+              </div>
             )}
             {connected && list.map((item) => {
               const { author, sent, text, color } = item
