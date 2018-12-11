@@ -35,11 +35,13 @@ const io = socketio(server, {
   transports: ['websocket', 'xhr-polling'],
 })
 
+const privateNameSpace = '/private'
 // private namespace only used for local ip connections
-const privateio = io.of('/private')
+const privateio = io.of(privateNameSpace)
 
+const publicNameSpace = '/b'
 // public namepsace used for public chat messaging
-const publ = io.of('/b')
+const publ = io.of(publicNameSpace)
 
 // ========= HELPER FUNCTIONS ==================================
 function invokeAsync(params) {
@@ -143,7 +145,6 @@ privateio.on('connection', (socket) => {
     console.log(`got a message from FRIEND: ${friendIP}`)
     console.log(msg)
     if (socket.authYes) {
-      recordIpAction(msg.ip)
       publ.emit(msg.type, msg.body)
     }
   })
@@ -188,9 +189,12 @@ privateio.on('connection', (socket) => {
 
 // public sockets! this is where the chat actually happens
 publ.on('connection', (socket) => {
-  console.log('got public connection')
+  console.log('got public connection2')
+  const { id } = socket.client
+  const socketIP = socket.handshake.headers['x-real-ip']
+  rememberId(id, socketIP)
+
   socket.on('msgi2', (msg) => {
-    const socketIP = socket.handshake.headers['x-real-ip']
     if (!containsBadWords(msg) && ipIsAllowed(socketIP)) {
       socket.broadcast.emit('msgo2', msg)
       socket.emit('msgo2', msg)
