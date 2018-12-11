@@ -24,15 +24,10 @@ export default class ChatBox extends Component {
   handleButton(e) {
     e.preventDefault()
     const { name } = e.target
-    if (name === 'refresh') {
-      this.setState({ currentlyFetching: true })
-      this.fetchList()
-    } else if (name === 'back') {
-      this.dataStore.tell('App').nextPage(null, 'LandingPage')
-    } else {
-      // name is the path id
-      this.dataStore.setJumpId(name)
-      this.dataStore.tell('App').nextPage(null, 'Initial')
+    if (name === 'chat') {
+      console.log(this.myInput)
+      // this.setState({ currentlyFetching: true })
+      // this.fetchList()
     }
   }
 
@@ -42,8 +37,8 @@ export default class ChatBox extends Component {
       <div>
         <Comment.Group minimal>
           <Input style={{ width: '100%' }} action type="text" placeholder="chat">
-            <input />
-            <Button color="blue" type="submit">Send Chat</Button>
+            <input ref={(myInput) => { this.myInput = myInput }} />
+            <Button name="chat" onClick={this.handleButton} color="blue" type="submit">Send Chat</Button>
           </Input>
           {list.map(item => (
             <ChatItem author={item.author} sent={item.sent} text={item.text} />
