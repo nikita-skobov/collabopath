@@ -22,15 +22,15 @@ export default class ChatItem extends Component {
   handleButton(e) {
     e.preventDefault()
     const { name } = e.target
-    if (name === 'refresh') {
-      this.setState({ currentlyFetching: true })
-      this.fetchList()
-    } else if (name === 'back') {
-      this.dataStore.tell('App').nextPage(null, 'LandingPage')
-    } else {
-      // name is the path id
-      this.dataStore.setJumpId(name)
-      this.dataStore.tell('App').nextPage(null, 'Initial')
+    const { author, sent, text } = this.state
+    if (name === 'mute') {
+      console.log('muting')
+      console.log(sent)
+      console.log(text)
+    } else if (name === 'report') {
+      console.log('reporting')
+      console.log(sent)
+      console.log(text)
     }
   }
 
@@ -43,8 +43,8 @@ export default class ChatItem extends Component {
           <img style={{ width: '7%', display: 'inline-block' }} alt="svg could not load" src={author} />
           <Comment.Text style={{ display: 'inline-block', wordBreak: 'break-word' }}>{text}</Comment.Text>
           <Comment.Actions>
-            <a href="#">mute</a>
-            <a href="#">report</a>
+            <Button name="mute" onClick={this.handleButton} compact size="mini">Mute</Button>
+            <Button name="report" onClick={this.handleButton} compact size="mini">Report</Button>
           </Comment.Actions>
         </Comment.Content>
       </Comment>
