@@ -13,6 +13,7 @@ export default class ChatItem extends Component {
       author: props.author,
       sent: props.sent,
       text: props.text,
+      color: props.color,
     }
 
     this.handleButton = this.handleButton.bind(this)
@@ -34,9 +35,10 @@ export default class ChatItem extends Component {
   }
 
   render() {
-    const { author, text } = this.state
+    const { author, text, color } = this.state
+
     return (
-      <Comment style={{ padding: '1%' }}>
+      <Comment style={{ padding: '1%', backgroundColor: color }}>
         <Comment.Content>
           <img style={{ width: '7%', display: 'inline-block' }} alt="svg could not load" src={author} />
           <Comment.Text style={{ display: 'inline-block', wordBreak: 'break-word' }}>{text}</Comment.Text>
@@ -54,4 +56,5 @@ ChatItem.propTypes = {
   text: PropTypes.string.isRequired,
   author: PropTypes.string.isRequired,
   sent: PropTypes.number.isRequired,
+  color: PropTypes.string.isRequired,
 }

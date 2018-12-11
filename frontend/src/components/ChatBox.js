@@ -18,6 +18,7 @@ export default class ChatBox extends Component {
 
     this.state = {
       list: [],
+      colorIndex: 0,
       error: false,
       currentlyFetching: true,
     }
@@ -36,10 +37,19 @@ export default class ChatBox extends Component {
       const dataUri = `data:image/svg+xml,${svgstr}`
       this.setState((prevState) => {
         const tempState = prevState
+        const { colorIndex } = tempState
+        let color = 'white'
+        if (colorIndex) {
+          color = '#e4e4e4'
+          tempState.colorIndex = 0
+        } else {
+          tempState.colorIndex = 1
+        }
         tempState.list.unshift({
           author: dataUri,
           sent: new Date().getTime(),
           text: value,
+          color,
         })
         return tempState
       })
@@ -59,8 +69,8 @@ export default class ChatBox extends Component {
           </form>
           <div className="h80 ofya">
             {list.map((item) => {
-              const { author, sent, text } = item
-              return <ChatItem key={sent} author={author} sent={sent} text={text} />
+              const { author, sent, text, color } = item
+              return <ChatItem key={sent} color={color} author={author} sent={sent} text={text} />
             })}
             <div style={{ height: '30px' }} />
           </div>
