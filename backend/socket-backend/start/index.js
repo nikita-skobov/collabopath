@@ -274,9 +274,9 @@ app.post('/ban/id', (req, res) => {
 app.post('/ban/ip', (req, res) => {
   try {
     const { ip } = req.body
+    banIP(ip)
     const list = getBanList()
     giveFriendsBanList(list)
-    banIP(ip)
     res.send('banned')
   } catch (e) {
     res.send(e)
