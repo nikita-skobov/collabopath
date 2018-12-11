@@ -59,6 +59,12 @@ function invokeAsync(params) {
   })
 }
 
+function giveFriendsBanList(list) {
+  Object.keys(pSockets).forEach((key) => {
+    pSockets[key].emit('banlist', list)
+  })
+}
+
 function connectToFriend(hostname, pSockets, auth) {
   const url = `http://${hostname}/private`
   console.log(`connecting to friend: ${url}`)
@@ -238,6 +244,7 @@ app.post('/ban/id', (req, res) => {
     const ip = getIpFromId(id)
     if (ip) {
       banIP(ip)
+      giveFriendsBanList(list)
       res.send('banned')
     } else {
       res.send(`cannot find ip for id: ${id}`)
@@ -250,6 +257,7 @@ app.post('/ban/id', (req, res) => {
 app.post('/ban/ip', (req, res) => {
   try {
     const { ip } = req.body
+    giveFriendsBanList(list)
     banIP(ip)
     res.send('banned')
   } catch (e) {
