@@ -55,6 +55,7 @@ export default class ChatBox extends Component {
               const { author, sent, text } = item
               return <ChatItem key={sent} author={author} sent={sent} text={text} />
             })}
+            <div style={{ height: '30px' }} />
           </div>
         </Comment.Group>
       </div>
