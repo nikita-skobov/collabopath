@@ -30,7 +30,6 @@ export default class ChatBox extends Component {
       })
 
       this.socket.on('o', this.handleNewChat)
-      this.socket.emit('i', 'dsadsa')
     })
 
     this.authors = {}
@@ -93,28 +92,8 @@ export default class ChatBox extends Component {
     const { name } = e.target
     if (name === 'chat') {
       const { value } = this.myInput
+      this.socket.emit('i', value)
       this.myInput.value = ''
-      const svg = avatars.create('im an author')
-      const svgstr = encodeURIComponent(svg)
-      const dataUri = `data:image/svg+xml,${svgstr}`
-      this.setState((prevState) => {
-        const tempState = prevState
-        const { colorIndex } = tempState
-        let color = 'white'
-        if (colorIndex) {
-          color = '#e4e4e4'
-          tempState.colorIndex = 0
-        } else {
-          tempState.colorIndex = 1
-        }
-        tempState.list.unshift({
-          author: dataUri,
-          sent: new Date().getTime(),
-          text: value,
-          color,
-        })
-        return tempState
-      })
     }
   }
 
