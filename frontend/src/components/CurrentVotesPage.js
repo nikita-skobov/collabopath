@@ -52,8 +52,8 @@ export default class CurrentVotesPage extends Component {
         <Grid.Column style={isMobile ? {} : { maxWidth: '50%' }} className={maxHeight}>
           <CurrentVotes dataStore={this.dataStore} />
         </Grid.Column>
-        <Grid.Column style={isMobile ? {} : { maxWidth: '50%' }} className={maxHeight}>
-          <div>
+        <Grid.Column style={isMobile ? { overflowY: 'hidden' } : { maxWidth: '50%', overflowY: 'hidden' }} className={maxHeight}>
+          <div className="h100">
             <ChatBox dataStore={this.dataStore} />
           </div>
         </Grid.Column>

@@ -42,18 +42,20 @@ export default class ChatBox extends Component {
   render() {
     const { list } = this.state
     return (
-      <div className="ps5">
-        <Comment.Group className="bcwr" minimal>
+      <div className="ps5 h100">
+        <Comment.Group className="bcwr h120" minimal>
           <form name="chat" action="#" onSubmit={this.handleButton}>
             <Input style={{ width: '100%' }} action type="text" placeholder="Chat...">
               <input ref={(myInput) => { this.myInput = myInput }} />
               <Button compact name="chat" onClick={this.handleButton} color="blue" type="submit">Send</Button>
             </Input>
           </form>
-          {list.map((item) => {
-            const { author, sent, text } = item
-            return <ChatItem key={sent} author={author} sent={sent} text={text} />
-          })}
+          <div className="h100 ofya">
+            {list.map((item) => {
+              const { author, sent, text } = item
+              return <ChatItem key={sent} author={author} sent={sent} text={text} />
+            })}
+          </div>
         </Comment.Group>
       </div>
     )
