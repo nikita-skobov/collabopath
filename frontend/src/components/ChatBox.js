@@ -51,7 +51,7 @@ export default class ChatBox extends Component {
               <Button name="chat" onClick={this.handleButton} color="blue" type="submit">Send Chat</Button>
             </Input>
           </form>
-          {list.map(item => (
+          {list.slice(0).reverse().map(item => (
             <ChatItem author={item.author} sent={item.sent} text={item.text} />
           ))}
         </Comment.Group>
