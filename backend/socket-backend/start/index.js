@@ -223,13 +223,13 @@ publ.on('connection', (socket) => {
   const socketIP = socket.handshake.headers['x-forwarded-for']
   rememberId(id, socketIP)
 
-  socket.on('msgi2', (msg) => {
+  socket.on('i', (msg) => {
     if (!containsBadWords(msg) && ipIsAllowed(socketIP)) {
-      socket.broadcast.emit('msgo2', msg)
-      socket.emit('msgo2', msg)
+      socket.broadcast.emit('o', msg)
+      socket.emit('o', msg)
 
       Object.keys(pSockets).forEach((key) => {
-        pSockets[key].emit('msg', { type: 'msgo2', body: msg, ip: socketIP })
+        pSockets[key].emit('msg', { type: 'o', body: msg, ip: socketIP })
       })
 
       recordIpAction(socketIP)
