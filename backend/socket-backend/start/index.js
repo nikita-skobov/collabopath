@@ -9,7 +9,7 @@ const socketio = require('socket.io')
 
 const myconfig = require('./myconfig.json')
 const containsBadWords = require('./containsBadWords')
-const { ipIsAllowed, recordIpAction, banIP } = require('./ipLimit')
+const { ipIsAllowed, recordIpAction, banIP, rememberId } = require('./ipLimit')
 
 const autoscale = new AWS.AutoScaling({
   region: myconfig.region,
