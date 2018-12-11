@@ -6,22 +6,41 @@ const socketioclient = require('socket.io-client')
 const AWS = require('aws-sdk')
 const serverName = require('os').hostname()
 const socketio = require('socket.io')
-const myconfig = require('./myconfig.json')
-const REGION = myconfig.region
 
+const myconfig = require('./myconfig.json')
 const containsBadWords = require('./containsBadWords')
 
-let FunctionName = ''
-
 const autoscale = new AWS.AutoScaling({
-  region: REGION,
+  region: myconfig.region,
 })
 const ec2 = new AWS.EC2({
-  region: REGION,
+  region: myconfig.region,
+})
+const lambda = new AWS.Lambda({
+  region: myconfig.region,
 })
 
-const lambda = new AWS.Lambda({ region: REGION })
+const app = express()
+const server = http.createServer(app)
+const has = Object.prototype.hasOwnProperty
+const pSockets = {}
+const badActorList = []
+const FunctionName = myconfig.functionname
 
+// for some reason it refuses to work cross-origin without
+// explicitly setting these transport options. However I assumed
+// that these were defaults?? So why should this matter????
+const io = socketio(server, {
+  transports: ['websocket', 'xhr-polling'],
+})
+
+// private namespace only used for local ip connections
+const privateio = io.of('/private')
+
+// public namepsace used for public chat messaging
+const publ = io.of('/b')
+
+// ========= HELPER FUNCTIONS ==================================
 function invokeAsync(params) {
   return new Promise((res, rej) => {
     lambda.invokeAsync(params, (err) => {
@@ -36,6 +55,7 @@ function connectToFriend(hostname, pSockets, auth) {
   console.log(`connecting to friend: ${url}`)
 
   const s = socketioclient.connect(url, { 'force new connection': true, transports: ['websocket', 'xhr-polling'], reconnection: false })
+
   s.on('connect', () => {
     pSockets[hostname] = s
     s.emit('auth', auth)
@@ -45,12 +65,11 @@ function connectToFriend(hostname, pSockets, auth) {
     console.log(`WE DISCONNECTED FROM ${hostname}!`)
     delete pSockets[hostname]
 
-    const invokeParams = {
-      FunctionName,
-      InvokeArgs: JSON.stringify({}),
-    }
-
     try {
+      const invokeParams = {
+        FunctionName,
+        InvokeArgs: JSON.stringify({}),
+      }
       setTimeout(async () => {
         // wait 2 minutes in case it is still terminating
         await invokeAsync(invokeParams)
@@ -107,22 +126,7 @@ function describeAutoScalingInstances(id) {
     })
   })
 }
-
-
-const app = express()
-const server = http.createServer(app)
-const has = Object.prototype.hasOwnProperty
-const pSockets = {}
-const badActorList = []
-FunctionName = myconfig.functionname
-
-
-const io = socketio(server, {
-  transports: ['websocket', 'xhr-polling']
-})
-
-const privateio = io.of('/private')
-const publ = io.of('/b')
+// =============== END OF HELPER FUNCTIONS ==================================
 
 privateio.on('connection', (socket) => {
   console.log('got friend connection')
@@ -150,6 +154,9 @@ privateio.on('connection', (socket) => {
   })
 
   setTimeout(() => {
+    // anyone connecting to private endpoint only has about
+    // 2 seconds to authorize, otherwise they wont be allowed to connect
+    // again.
     if (!socket.authYes) {
       const socketIP = socket.handshake.headers['x-real-ip']
       socket.disconnect()
@@ -158,7 +165,12 @@ privateio.on('connection', (socket) => {
   }, 2200)
 
   try {
+    // spl is an ipv4 array eg: 169.200.14.108 becomes: ['169', '200', '14', '108']
     const spl = host.split('.')
+
+    // this is an ec2 internal hostname. its used to connect to instances locally
+    // without having to go over the public internet, thus the socket connections
+    // should be faster.
     const hostname = `ip-${spl[0]}-${spl[1]}-${spl[2]}-${spl[3]}.ec2.internal`
     if (!has.call(pSockets, hostname)) {
       // only connect if not already connected
@@ -171,6 +183,7 @@ privateio.on('connection', (socket) => {
 })
 
 
+// public sockets! this is where the chat actually happens
 publ.on('connection', (socket) => {
   console.log('got public connection')
   socket.on('msgi2', (msg) => {
@@ -188,6 +201,7 @@ publ.on('connection', (socket) => {
 })
 
 
+// for some reason this is needed for CORS to work.
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Headers', 'X-Requested-With')
@@ -208,6 +222,9 @@ server.listen(3000, () => {
 
 
 async function main() {
+  // this function starts by calling the route check function.
+  // that lambda function changes route53 records to include all IPs from the
+  // auto scaling group
   const invokeParams = {
     FunctionName,
     InvokeArgs: JSON.stringify({}),
@@ -215,6 +232,11 @@ async function main() {
 
   await invokeAsync(invokeParams)
 
+  // next, this function finds its instance id, from that it finds
+  // the AutoScalingGroupName, and from that it calls describeAutoScalingGroups
+  // to find all instances in the autoscaling group. After it
+  // gets all the instances, it connects to every one of them via their
+  // hostname
   const myInstanceId = await getMetaData('meta-data/instance-id')
   const myPrivateDnsName = await getMetaData('meta-data/local-hostname')
   const instanceData = await describeAutoScalingInstances(myInstanceId)
