@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { Grid } from 'semantic-ui-react'
 
 import CurrentVotes from './CurrentVotes'
+import ChatBox from './ChatBox'
 
 export default class CurrentVotesPage extends Component {
   constructor(props) {
@@ -53,7 +54,7 @@ export default class CurrentVotesPage extends Component {
         </Grid.Column>
         <Grid.Column style={isMobile ? {} : { maxWidth: '50%' }}>
           <div className={chatMarginTop}>
-            <div>chat</div>
+            <ChatBox dataStore={this.dataStore} />
           </div>
         </Grid.Column>
       </Grid>
