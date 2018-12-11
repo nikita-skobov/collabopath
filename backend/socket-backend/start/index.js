@@ -16,6 +16,7 @@ const {
   rememberId,
   getIpFromId,
   getBanList,
+  mergeBanList,
 } = require('./ipLimit')
 
 const autoscale = new AWS.AutoScaling({
@@ -75,6 +76,11 @@ function connectToFriend(hostname, pSockets, auth) {
   s.on('connect', () => {
     pSockets[hostname] = s
     s.emit('auth', auth)
+  })
+
+  s.on('banlist', (list) => {
+    console.log(list)
+    mergeBanList(list)
   })
 
   s.on('disconnect', () => {
@@ -162,10 +168,17 @@ privateio.on('connection', (socket) => {
     }
   })
 
+  socket.on('banlist', (list) => {
+    console.log(list)
+    mergeBanList(list)
+  })
+
   socket.on('auth', (msg) => {
     if (msg === 'abc12345') {
       // note this is not the actual auth code :)
       socket.authYes = true
+      const list = getBanList()
+      socket.emit('banlist', list)
     }
   })
 
