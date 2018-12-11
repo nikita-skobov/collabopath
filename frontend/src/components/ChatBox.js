@@ -17,18 +17,16 @@ export default class ChatBox extends Component {
     this.dataStore = props.dataStore
 
     this.socket = this.dataStore.tell('Sockets')
-    setTimeout(() => {
-      this.socket.connect(() => {
-        this.setState({ connected: true })
-        this.socket.emit('sni', '')
+    this.socket.connect(() => {
+      this.setState({ connected: true })
+      this.socket.emit('sni', '')
 
-        this.socket.on('sno', (sn) => {
-          this.serverName = sn
-        })
-
-        this.socket.on('o', this.handleNewChat)
+      this.socket.on('sno', (sn) => {
+        this.serverName = sn
       })
-    }, 60000)
+
+      this.socket.on('o', this.handleNewChat)
+    })
 
 
     this.authors = {}
