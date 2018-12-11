@@ -34,12 +34,11 @@ export default class ChatItem extends Component {
   }
 
   render() {
-    const { author, sent, text } = this.state
+    const { author, text } = this.state
     return (
       <Comment>
         <Comment.Content>
           <Comment.Author className="ilb">{author}</Comment.Author>
-          <Comment.Metadata><span>{sent}</span></Comment.Metadata>
           <Comment.Text>{text}</Comment.Text>
           <Comment.Actions>
             <a href="#">mute</a>
