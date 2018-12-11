@@ -113,7 +113,7 @@ export default class ChatBox extends Component {
         <Comment.Group className="bcwr h120" minimal>
           <form name="chat" action="#" onSubmit={this.handleButton}>
             <Input style={{ width: '100%' }} action type="text" placeholder="Chat...">
-              <input ref={(myInput) => { this.myInput = myInput }} />
+              <input maxLength="600" ref={(myInput) => { this.myInput = myInput }} />
               <Button disabled={!connected} compact name="chat" onClick={this.handleButton} color="blue" type="submit">Send</Button>
             </Input>
           </form>
