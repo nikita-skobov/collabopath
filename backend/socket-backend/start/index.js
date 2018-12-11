@@ -143,6 +143,7 @@ privateio.on('connection', (socket) => {
     console.log(`got a message from FRIEND: ${friendIP}`)
     console.log(msg)
     if (socket.authYes) {
+      recordIpAction(msg.ip)
       publ.emit(msg.type, msg.body)
     }
   })
