@@ -50,7 +50,7 @@ export default class ChatBox extends Component {
               <Button compact name="chat" onClick={this.handleButton} color="blue" type="submit">Send</Button>
             </Input>
           </form>
-          <div className="h100 ofya">
+          <div className="h80 ofya">
             {list.map((item) => {
               const { author, sent, text } = item
               return <ChatItem key={sent} author={author} sent={sent} text={text} />
