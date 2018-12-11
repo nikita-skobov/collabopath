@@ -72,6 +72,7 @@ export default class ChatBox extends Component {
         tempState.colorIndex = 1
       }
       tempState.list.unshift({
+        authorId: i,
         sent: d,
         text: t,
         color,
@@ -109,8 +110,24 @@ export default class ChatBox extends Component {
               </div>
             )}
             {connected && list.map((item) => {
-              const { author, sent, text, color } = item
-              return <ChatItem key={sent} color={color} author={author} sent={sent} text={text} />
+              const {
+                author,
+                sent,
+                text,
+                color,
+                authorId,
+              } = item
+
+              return (
+                <ChatItem
+                  key={sent}
+                  color={color}
+                  authorId={authorId}
+                  author={author}
+                  sent={sent}
+                  text={text}
+                />
+              )
             })}
             <div style={{ height: '30px' }} />
           </div>

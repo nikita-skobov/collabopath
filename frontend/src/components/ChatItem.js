@@ -10,6 +10,7 @@ export default class ChatItem extends Component {
     super(props)
 
     this.state = {
+      authorId: props.authorId,
       author: props.author,
       sent: props.sent,
       text: props.text,
@@ -55,6 +56,7 @@ export default class ChatItem extends Component {
 ChatItem.propTypes = {
   text: PropTypes.string.isRequired,
   author: PropTypes.string.isRequired,
+  authorId: PropTypes.string.isRequired,
   sent: PropTypes.number.isRequired,
   color: PropTypes.string.isRequired,
 }
