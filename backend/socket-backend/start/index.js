@@ -41,7 +41,7 @@ const FunctionName = myconfig.functionname
 // for some reason it refuses to work cross-origin without
 // explicitly setting these transport options. However I assumed
 // that these were defaults?? So why should this matter????
-const io = socketio(server, {
+const publ = socketio(server, {
   transports: ['websocket', 'xhr-polling'],
 })
 
@@ -53,10 +53,6 @@ const privatesocketio = socketio(server2, {
 const privateNameSpace = '/private'
 // private namespace only used for local ip connections
 const privateio = privatesocketio.of(privateNameSpace)
-
-const publicNameSpace = '/b'
-// public namepsace used for public chat messaging
-const publ = io.of(publicNameSpace)
 
 // ========= HELPER FUNCTIONS ==================================
 function invokeAsync(params) {
