@@ -45,9 +45,14 @@ const io = socketio(server, {
   transports: ['websocket', 'xhr-polling'],
 })
 
+// server 2 listens on a port not accessible to outter internet
+const privatesocketio = socketio(server2, {
+  transports: ['websocket', 'xhr-polling'],
+})
+
 const privateNameSpace = '/private'
 // private namespace only used for local ip connections
-const privateio = io.of(privateNameSpace)
+const privateio = privatesocketio.of(privateNameSpace)
 
 const publicNameSpace = '/b'
 // public namepsace used for public chat messaging
