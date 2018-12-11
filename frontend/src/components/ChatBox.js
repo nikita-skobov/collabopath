@@ -1,10 +1,9 @@
-/* global fetch window */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import Avatars from '@dicebear/avatars'
 import SpriteCollection from '@dicebear/avatars-identicon-sprites'
-import { Input, Button, Card, Loader, Comment } from 'semantic-ui-react'
+import { Input, Button, Comment } from 'semantic-ui-react'
 
 import ChatItem from './ChatItem'
 
@@ -35,8 +34,6 @@ export default class ChatBox extends Component {
     this.state = {
       list: [],
       colorIndex: 0,
-      error: false,
-      currentlyFetching: true,
     }
 
     this.handleNewChat = this.handleNewChat.bind(this)
