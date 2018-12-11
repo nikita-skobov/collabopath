@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import Avatars from '@dicebear/avatars'
 import SpriteCollection from '@dicebear/avatars-identicon-sprites'
-import { Input, Button, Comment } from 'semantic-ui-react'
+import { Input, Button, Comment, Loader } from 'semantic-ui-react'
 
 import ChatItem from './ChatItem'
 
@@ -17,21 +17,24 @@ export default class ChatBox extends Component {
     this.dataStore = props.dataStore
 
     this.socket = this.dataStore.tell('Sockets')
-    this.socket.connect()
+    setTimeout(() => {
+      this.socket.connect(() => {
+        this.setState({ connected: true })
+        this.socket.emit('sni', '')
 
-    this.socket.on('connect', () => {
-      this.socket.emit('sni', '')
+        this.socket.on('sno', (sn) => {
+          this.serverName = sn
+        })
 
-      this.socket.on('sno', (sn) => {
-        this.serverName = sn
+        this.socket.on('o', this.handleNewChat)
       })
+    }, 60000)
 
-      this.socket.on('o', this.handleNewChat)
-    })
 
     this.authors = {}
 
     this.state = {
+      connected: false,
       list: [],
       colorIndex: 0,
     }
@@ -91,7 +94,7 @@ export default class ChatBox extends Component {
   }
 
   render() {
-    const { list } = this.state
+    const { list, connected } = this.state
     return (
       <div className="ps5 h100">
         <Comment.Group className="bcwr h120" minimal>
@@ -102,7 +105,10 @@ export default class ChatBox extends Component {
             </Input>
           </form>
           <div className="h80 ofya">
-            {list.map((item) => {
+            {!connected && (
+              <Loader active inline> Connecting to Chat </Loader>
+            )}
+            {connected && list.map((item) => {
               const { author, sent, text, color } = item
               return <ChatItem key={sent} color={color} author={author} sent={sent} text={text} />
             })}

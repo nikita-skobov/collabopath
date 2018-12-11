@@ -13,9 +13,13 @@ function SocketManager(datastore) {
       socket.on(type, cb)
     },
 
-    connect: () => {
+    connect: (cb) => {
       socket = io.connect(socketEndpoint, {
         transports: ['websocket', 'xhr-polling'],
+      })
+
+      socket.on('connect', () => {
+        cb()
       })
     },
 
