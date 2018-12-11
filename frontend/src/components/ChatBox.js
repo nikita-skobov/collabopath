@@ -21,11 +21,9 @@ export default class ChatBox extends Component {
     this.socket.connect()
 
     this.socket.on('connect', () => {
-      console.log('conencted')
       this.socket.emit('sni', '')
 
       this.socket.on('sno', (sn) => {
-        console.log(`server name: ${sn}`)
         this.serverName = sn
       })
 
@@ -83,8 +81,6 @@ export default class ChatBox extends Component {
       })
       return tempState
     })
-    console.log('got new chat')
-    console.log(msg)
   }
 
   handleButton(e) {
