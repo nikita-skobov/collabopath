@@ -21,7 +21,12 @@ export default class ChatBox extends Component {
 
     this.socket.on('connect', () => {
       console.log('conencted')
-      this.socket.emit('i', 'abcd123435')
+      this.socket.emit('sni', '')
+
+      this.socket.on('sno', (sn) => {
+        console.log(`server name: ${sn}`)
+        this.serverName = sn
+      })
 
       this.socket.on('o', (msg) => {
         console.log('got msg')
