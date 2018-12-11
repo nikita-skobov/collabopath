@@ -79,6 +79,7 @@ function connectToFriend(hostname, pSockets, auth) {
   })
 
   s.on('banlist', (list) => {
+    console.log('friend told me the ban list: ')
     console.log(list)
     mergeBanList(list)
   })
@@ -169,6 +170,7 @@ privateio.on('connection', (socket) => {
   })
 
   socket.on('banlist', (list) => {
+    console.log('got ban list from friend: ')
     console.log(list)
     mergeBanList(list)
   })
@@ -217,7 +219,7 @@ privateio.on('connection', (socket) => {
 publ.on('connection', (socket) => {
   console.log('got public connection2')
   const { id } = socket.client
-  const socketIP = socket.handshake.headers['x-real-ip']
+  const socketIP = socket.handshake.headers['x-forwarded-for']
   rememberId(id, socketIP)
 
   socket.on('msgi2', (msg) => {
