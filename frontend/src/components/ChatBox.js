@@ -39,6 +39,10 @@ export default class ChatBox extends Component {
     this.handleButton = this.handleButton.bind(this)
   }
 
+  componentWillUnmount() {
+    this.socket.disconnect()
+  }
+
   handleButton(e) {
     e.preventDefault()
     const { name } = e.target
