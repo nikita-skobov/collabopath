@@ -9,6 +9,7 @@ import { Input, Button, Card, Loader, Comment } from 'semantic-ui-react'
 import ChatItem from './ChatItem'
 
 const avatars = new Avatars(SpriteCollection)
+const has = Object.prototype.hasOwnProperty
 
 export default class ChatBox extends Component {
   constructor(props) {
@@ -28,11 +29,11 @@ export default class ChatBox extends Component {
         this.serverName = sn
       })
 
-      this.socket.on('o', (msg) => {
-        console.log('got msg')
-        console.log(msg)
-      })
+      this.socket.on('o', this.handleNewChat)
+      this.socket.emit('i', 'dsadsa')
     })
+
+    this.authors = {}
 
     this.state = {
       list: [],
@@ -41,11 +42,50 @@ export default class ChatBox extends Component {
       currentlyFetching: true,
     }
 
+    this.handleNewChat = this.handleNewChat.bind(this)
     this.handleButton = this.handleButton.bind(this)
   }
 
   componentWillUnmount() {
     this.socket.disconnect()
+  }
+
+  handleNewChat(msg) {
+    // i is id, d is date (epoch), t is the text
+    const { i, d, t } = msg
+    let author = ''
+    if (has.call(this.authors, i)) {
+      // we already have the svg for the authors id
+      author = this.authors[i]
+    } else {
+      // we need to make an svg:
+      const svg = avatars.create(i)
+      const svgstr = encodeURIComponent(svg)
+      const dataUri = `data:image/svg+xml,${svgstr}`
+      this.authors[i] = dataUri
+      author = dataUri
+    }
+
+    this.setState((prevState) => {
+      const tempState = prevState
+      const { colorIndex } = tempState
+      let color = 'white'
+      if (colorIndex) {
+        color = '#e4e4e4'
+        tempState.colorIndex = 0
+      } else {
+        tempState.colorIndex = 1
+      }
+      tempState.list.unshift({
+        sent: d,
+        text: t,
+        color,
+        author,
+      })
+      return tempState
+    })
+    console.log('got new chat')
+    console.log(msg)
   }
 
   handleButton(e) {
