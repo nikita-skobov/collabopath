@@ -26,11 +26,10 @@ export default class ChatBox extends Component {
     const { name } = e.target
     if (name === 'chat') {
       const { value } = this.myInput
-      console.log(value)
       this.myInput.value = ''
       this.setState((prevState) => {
         const tempState = prevState
-        tempState.list.push({
+        tempState.list.unshift({
           author: 'im an author',
           sent: new Date().getTime(),
           text: value,
@@ -51,9 +50,10 @@ export default class ChatBox extends Component {
               <Button name="chat" onClick={this.handleButton} color="blue" type="submit">Send Chat</Button>
             </Input>
           </form>
-          {list.slice(0).reverse().map(item => (
-            <ChatItem author={item.author} sent={item.sent} text={item.text} />
-          ))}
+          {list.map((item) => {
+            const { author, sent, text } = item
+            return <ChatItem key={sent} author={author} sent={sent} text={text} />
+          })}
         </Comment.Group>
       </div>
     )
