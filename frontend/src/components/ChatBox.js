@@ -30,9 +30,8 @@ export default class ChatBox extends Component {
       this.socket.on('o', this.handleNewChat)
     })
 
-
     this.authors = {}
-    this.mutedList = []
+    this.mutedList = this.dataStore.getMutedList()
 
     this.state = {
       connected: false,

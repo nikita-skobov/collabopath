@@ -63,6 +63,8 @@ function Brain() {
     sanity: 0,
   }
 
+  const mutedList = []
+
   const getEndpoint = getPathObjEndpoint // the lambda endpoint
   const voteEndpoint = votePathObjEndpoint
   const addEndpoint = addPathObjEndpoint
@@ -107,6 +109,12 @@ function Brain() {
       components[name] = reference
     },
     tell: name => components[name],
+
+    muteUser: (id) => {
+      mutedList.push(id)
+    },
+
+    getMutedList: () => [...mutedList],
 
     gameOver: () => {
       if (!DEV) {

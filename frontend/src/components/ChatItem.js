@@ -27,10 +27,7 @@ export default class ChatItem extends Component {
     const { name } = e.target
     const { authorId, sent, text } = this.state
     if (name === 'mute') {
-      console.log('muting')
-      console.log(authorId)
-      console.log(sent)
-      console.log(text)
+      this.dataStore.muteUser(authorId)
       this.dataStore.tell('ChatBox').muteUser(authorId)
     } else if (name === 'report') {
       console.log('reporting')
