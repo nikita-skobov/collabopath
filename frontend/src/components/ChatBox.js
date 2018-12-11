@@ -2,7 +2,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-import { Grid, Button, Card, Loader } from 'semantic-ui-react'
+import { Input, Button, Card, Loader, Comment } from 'semantic-ui-react'
+
+import ChatItem from './ChatItem'
 
 export default class ChatBox extends Component {
   constructor(props) {
@@ -35,8 +37,19 @@ export default class ChatBox extends Component {
   }
 
   render() {
+    const { list } = this.state
     return (
-      <div>dsadsa</div>
+      <div>
+        <Comment.Group minimal>
+          <Input style={{ width: '100%' }} action type="text" placeholder="chat">
+            <input />
+            <Button color="blue" type="submit">Send Chat</Button>
+          </Input>
+          {list.map(item => (
+            <ChatItem author={item.author} sent={item.sent} text={item.text} />
+          ))}
+        </Comment.Group>
+      </div>
     )
   }
 }
