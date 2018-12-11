@@ -45,15 +45,15 @@ export default class CurrentVotesPage extends Component {
     const maxHeight = isMobile ? 'mh50' : 'mh100'
     // if mobile, max height of this grid should take 50% of screen, otherwise 100
 
-    const chatMarginTop = isMobile ? 'mtn18vh' : ''
+    // const chatMarginTop = isMobile ? 'mtn18vh' : ''
 
     return (
       <Grid stackable columns={2} className="ms0 mtb0 h75">
         <Grid.Column style={isMobile ? {} : { maxWidth: '50%' }} className={maxHeight}>
           <CurrentVotes dataStore={this.dataStore} />
         </Grid.Column>
-        <Grid.Column style={isMobile ? {} : { maxWidth: '50%' }}>
-          <div className={chatMarginTop}>
+        <Grid.Column style={isMobile ? {} : { maxWidth: '50%' }} className={maxHeight}>
+          <div>
             <ChatBox dataStore={this.dataStore} />
           </div>
         </Grid.Column>
