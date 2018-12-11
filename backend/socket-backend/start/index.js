@@ -29,6 +29,7 @@ const lambda = new AWS.Lambda({
   region: myconfig.region,
 })
 
+const maxInputLength = 600
 const serverNameId = getServerId(serverName)
 const app = express()
 const app2 = express()
@@ -240,7 +241,7 @@ publ.on('connection', (socket) => {
   rememberId(id, socketIP)
 
   socket.on('i', (m) => {
-    if (!containsBadWords(m) && ipIsAllowed(socketIP)) {
+    if (!containsBadWords(m) && ipIsAllowed(socketIP) && m.length <= maxInputLength) {
       const msg = {
         t: m,
         i: id,
