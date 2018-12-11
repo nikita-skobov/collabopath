@@ -246,7 +246,7 @@ publ.on('connection', (socket) => {
   socket.emit('servername', serverName)
 })
 
-app.use(express.json())
+app2.use(express.json())
 
 // for some reason this is needed for CORS to work.
 app.use((req, res, next) => {
