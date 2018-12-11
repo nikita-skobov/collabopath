@@ -9,7 +9,7 @@ const socketio = require('socket.io')
 
 const myconfig = require('./myconfig.json')
 const containsBadWords = require('./containsBadWords')
-const { ipIsAllowed, recordIpAction } = require('./ipLimit')
+const { ipIsAllowed, recordIpAction, banIP } = require('./ipLimit')
 
 const autoscale = new AWS.AutoScaling({
   region: myconfig.region,
@@ -161,6 +161,7 @@ privateio.on('connection', (socket) => {
     if (!socket.authYes) {
       const socketIP = socket.handshake.headers['x-real-ip']
       socket.disconnect()
+      banIP(socketIP)
       badActorList.push(socketIP)
     }
   }, 2200)
