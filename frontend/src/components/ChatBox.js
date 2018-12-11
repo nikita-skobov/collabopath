@@ -43,8 +43,8 @@ export default class ChatBox extends Component {
   render() {
     const { list } = this.state
     return (
-      <div className="ps5bcw">
-        <Comment.Group minimal>
+      <div className="ps5">
+        <Comment.Group className="bcwr" minimal>
           <form name="chat" action="#" onSubmit={this.handleButton}>
             <Input style={{ width: '100%' }} action type="text" placeholder="chat">
               <input ref={(myInput) => { this.myInput = myInput }} />
