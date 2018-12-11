@@ -254,15 +254,12 @@ app.use((req, res, next) => {
 //   res.send(`please stop. server name: ${serverName}`)
 // })
 
-app.post('/ban/id', (req, res) => {
+app.post('/getip', (req, res) => {
   try {
     const { id } = req.body
     const ip = getIpFromId(id)
     if (ip) {
-      banIP(ip)
-      const list = getBanList()
-      giveFriendsBanList(list)
-      res.send('banned')
+      res.send(ip)
     } else {
       res.send(`cannot find ip for id: ${id}`)
     }
