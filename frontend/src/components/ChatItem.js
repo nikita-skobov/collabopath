@@ -9,6 +9,8 @@ export default class ChatItem extends Component {
   constructor(props) {
     super(props)
 
+    this.dataStore = props.dataStore
+
     this.state = {
       authorId: props.authorId,
       author: props.author,
@@ -23,14 +25,17 @@ export default class ChatItem extends Component {
   handleButton(e) {
     e.preventDefault()
     const { name } = e.target
-    const { author, sent, text } = this.state
+    const { authorId, sent, text } = this.state
     if (name === 'mute') {
       console.log('muting')
+      console.log(authorId)
       console.log(sent)
       console.log(text)
+      this.dataStore.tell('ChatBox').muteUser(authorId)
     } else if (name === 'report') {
       console.log('reporting')
       console.log(sent)
+      console.log(authorId)
       console.log(text)
     }
   }
@@ -54,6 +59,7 @@ export default class ChatItem extends Component {
 }
 
 ChatItem.propTypes = {
+  dataStore: PropTypes.instanceOf(Object).isRequired,
   text: PropTypes.string.isRequired,
   author: PropTypes.string.isRequired,
   authorId: PropTypes.string.isRequired,

@@ -16,6 +16,8 @@ export default class ChatBox extends Component {
 
     this.dataStore = props.dataStore
 
+    this.dataStore.rememberMe('ChatBox', this)
+
     this.socket = this.dataStore.tell('Sockets')
     this.socket.connect(() => {
       this.setState({ connected: true })
@@ -30,6 +32,7 @@ export default class ChatBox extends Component {
 
 
     this.authors = {}
+    this.mutedList = []
 
     this.state = {
       connected: false,
@@ -39,15 +42,26 @@ export default class ChatBox extends Component {
 
     this.handleNewChat = this.handleNewChat.bind(this)
     this.handleButton = this.handleButton.bind(this)
+    this.muteUser = this.muteUser.bind(this)
   }
 
   componentWillUnmount() {
     this.socket.disconnect()
   }
 
+  muteUser(id) {
+    this.mutedList.push(id)
+  }
+
   handleNewChat(msg) {
     // i is id, d is date (epoch), t is the text
     const { i, d, t } = msg
+
+    if (this.mutedList.indexOf(i) !== -1) {
+      // if the id exists in the muted list. dont add a new chat
+      return null
+    }
+
     let author = ''
     if (has.call(this.authors, i)) {
       // we already have the svg for the authors id
@@ -80,6 +94,7 @@ export default class ChatBox extends Component {
       })
       return tempState
     })
+    return null
   }
 
   handleButton(e) {
@@ -120,6 +135,7 @@ export default class ChatBox extends Component {
 
               return (
                 <ChatItem
+                  dataStore={this.dataStore}
                   key={sent}
                   color={color}
                   authorId={authorId}
