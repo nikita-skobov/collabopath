@@ -1,6 +1,7 @@
 module.exports = (function ips() {
   const has = Object.prototype.hasOwnProperty
   const lastIpAction = {}
+  const idIpMap = {}
   const bannedList = []
   const ipRateLimit = 1000 * 2 // 2 seconds
 
@@ -33,6 +34,19 @@ module.exports = (function ips() {
 
       // otherwise return false
       return false
+    },
+
+    rememberId: (id, ip) => {
+      idIpMap[id] = ip
+    },
+
+    getIpFromId: (id) => {
+      if (has.call(idIpMap, id)) {
+        return idIpMap[id]
+      }
+
+      // otherwise does not exist, return null
+      return null
     },
   }
 }())
