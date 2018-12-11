@@ -36,7 +36,7 @@ export default class ChatItem extends Component {
   render() {
     const { author, text } = this.state
     return (
-      <Comment>
+      <Comment style={{ padding: '1%' }}>
         <Comment.Content>
           <img style={{ width: '7%', display: 'inline-block' }} alt="svg could not load" src={author} />
           <Comment.Text style={{ display: 'inline-block', wordBreak: 'break-word' }}>{text}</Comment.Text>
