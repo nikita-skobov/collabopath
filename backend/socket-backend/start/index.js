@@ -192,7 +192,7 @@ publ.on('connection', (socket) => {
   console.log('got public connection2')
   const { id } = socket.client
   const socketIP = socket.handshake.headers['x-real-ip']
-  rememberId(id, socketIP)
+  // rememberId(id, socketIP)
 
   socket.on('msgi2', (msg) => {
     if (!containsBadWords(msg) && ipIsAllowed(socketIP)) {
@@ -210,6 +210,7 @@ publ.on('connection', (socket) => {
   socket.emit('servername', serverName)
 })
 
+app.use(express.json())
 
 // for some reason this is needed for CORS to work.
 app.use((req, res, next) => {
@@ -224,6 +225,31 @@ app.use((req, res, next) => {
 // app.get('/', (req, res) => {
 //   res.send(`please stop. server name: ${serverName}`)
 // })
+
+app.post('/ban/id', (req, res) => {
+  try {
+    const { id } = req.body
+    const ip = getIpFromId(id)
+    if (ip) {
+      banIP(ip)
+      res.send('banned')
+    } else {
+      res.send(`cannot find ip for id: ${id}`)
+    }
+  } catch (e) {
+    res.send(e)
+  }
+})
+
+app.post('/ban/ip', (req, res) => {
+  try {
+    const { ip } = req.body
+    banIP(ip)
+    res.send('banned')
+  } catch (e) {
+    res.send(e)
+  }
+})
 
 
 server.listen(3000, () => {
