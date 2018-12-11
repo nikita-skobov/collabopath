@@ -29,6 +29,7 @@ const lambda = new AWS.Lambda({
   region: myconfig.region,
 })
 
+const serverNameId = getServerId(serverName)
 const app = express()
 const app2 = express()
 const server2 = http.createServer(app2)
@@ -55,6 +56,19 @@ const privateNameSpace = '/private'
 const privateio = privatesocketio.of(privateNameSpace)
 
 // ========= HELPER FUNCTIONS ==================================
+function getServerId(arr) {
+  let id = 0
+  // item array: [ip, 172, 30, 10, 100]
+  arr.split('-').forEach((item, index) => {
+    if (index) {
+      // dont count index 0: ip
+      id += parseInt(item, 10)
+    }
+  })
+
+  return id
+}
+
 function invokeAsync(params) {
   return new Promise((res, rej) => {
     lambda.invokeAsync(params, (err) => {
@@ -239,7 +253,9 @@ publ.on('connection', (socket) => {
     }
   })
 
-  socket.emit('servername', serverName)
+  socket.on('sni', () => {
+    socket.emit('sno', serverNameId)
+  })
 })
 
 app2.use(express.json())
