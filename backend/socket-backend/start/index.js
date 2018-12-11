@@ -240,8 +240,14 @@ publ.on('connection', (socket) => {
   const socketIP = socket.handshake.headers['x-forwarded-for']
   rememberId(id, socketIP)
 
-  socket.on('i', (msg) => {
-    if (!containsBadWords(msg) && ipIsAllowed(socketIP)) {
+  socket.on('i', (m) => {
+    if (!containsBadWords(m) && ipIsAllowed(socketIP)) {
+      const msg = {
+        t: m,
+        i: id,
+        d: new Date().getTime(),
+      }
+
       socket.broadcast.emit('o', msg)
       socket.emit('o', msg)
 
