@@ -9,6 +9,7 @@ const socketio = require('socket.io')
 
 const myconfig = require('./myconfig.json')
 const containsBadWords = require('./containsBadWords')
+const { ipIsAllowed, recordIpAction } = require('./ipLimit')
 
 const autoscale = new AWS.AutoScaling({
   region: myconfig.region,
@@ -187,13 +188,16 @@ privateio.on('connection', (socket) => {
 publ.on('connection', (socket) => {
   console.log('got public connection')
   socket.on('msgi2', (msg) => {
-    if (!containsBadWords(msg)) {
+    const socketIP = socket.handshake.headers['x-real-ip']
+    if (!containsBadWords(msg) && ipIsAllowed(socketIP)) {
       socket.broadcast.emit('msgo2', msg)
       socket.emit('msgo2', msg)
 
       Object.keys(pSockets).forEach((key) => {
-        pSockets[key].emit('msg', { type: 'msgo2', body: msg })
+        pSockets[key].emit('msg', { type: 'msgo2', body: msg, ip: socketIP })
       })
+
+      recordIpAction(socketIP)
     }
   })
 
