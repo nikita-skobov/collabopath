@@ -47,7 +47,7 @@ export default class ChatBox extends Component {
           <form name="chat" action="#" onSubmit={this.handleButton}>
             <Input style={{ width: '100%' }} action type="text" placeholder="chat">
               <input ref={(myInput) => { this.myInput = myInput }} />
-              <Button name="chat" onClick={this.handleButton} color="blue" type="submit">Send Chat</Button>
+              <Button compact name="chat" onClick={this.handleButton} color="blue" type="submit">Send Chat</Button>
             </Input>
           </form>
           {list.map((item) => {
