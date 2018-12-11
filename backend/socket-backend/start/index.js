@@ -255,6 +255,8 @@ app.use((req, res, next) => {
 // })
 
 app.post('/getip', (req, res) => {
+  // there is more security checks here...
+  // dont worry, this endpoint is not accessible to the public on the live site
   try {
     const { id } = req.body
     const ip = getIpFromId(id)
@@ -269,6 +271,8 @@ app.post('/getip', (req, res) => {
 })
 
 app.post('/ban/ip', (req, res) => {
+  // there is more security checks here...
+  // dont worry, this endpoint is not accessible to the public on the live site
   try {
     const { ip } = req.body
     banIP(ip)
