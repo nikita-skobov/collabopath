@@ -111,7 +111,10 @@ function Brain() {
     tell: name => components[name],
 
     muteUser: (id) => {
-      mutedList.push(id)
+      if (mutedList.indexOf(id) === -1) {
+        // only add id if not already in list
+        mutedList.push(id)
+      }
     },
 
     getMutedList: () => [...mutedList],

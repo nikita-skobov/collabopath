@@ -54,7 +54,10 @@ export default class ChatBox extends Component {
   }
 
   muteUser(id) {
-    this.mutedList.push(id)
+    if (this.mutedList.indexOf(id) === -1) {
+      // only add id if it is not already in this list
+      this.mutedList.push(id)
+    }
   }
 
   handleNewChat(msg) {
