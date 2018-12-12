@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import {
   Header,
@@ -16,6 +17,9 @@ import { Changelog as changeLogVars } from '../dynamicVars'
 class Changelog extends Component {
   constructor(props) {
     super(props)
+
+    this.dataStore = props.dataStore
+
     this.state = {
       activeIndex: -1,
     }
@@ -78,6 +82,10 @@ class Changelog extends Component {
       </Grid>
     )
   }
+}
+
+Changelog.propTypes = {
+  dataStore: PropTypes.instanceOf(Object).isRequired,
 }
 
 export default Changelog

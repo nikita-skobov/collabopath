@@ -58,6 +58,10 @@ const supportRender = () => (
   <Support body={supportVars.body} patreon={supportVars.patreon} />
 )
 
+const ChangelogRender = () => (
+  <Changelog dataStore={dataStore} />
+)
+
 const AppRenderer = () => (
   <App dataStore={dataStore} />
 )
@@ -74,7 +78,7 @@ ReactDOM.render((
         <Route path="/" render={AppRenderer} exact />
         <Route path="/support" render={supportRender} />
         <Route path="/about" render={AboutRender} />
-        <Route path="/changelog" component={Changelog} />
+        <Route path="/changelog" render={ChangelogRender} />
         <Route path="/currentvotes" render={CurrentVotesPageRender} />
         <Route component={ErrorPage} />
       </Switch>
