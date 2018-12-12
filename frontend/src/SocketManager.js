@@ -14,7 +14,8 @@ function SocketManager(datastore) {
     },
 
     connect: (cb) => {
-      socket = io.connect(socketEndpoint, {
+      const ua = brain.getUA()
+      socket = io.connect(`${socketEndpoint}?ua=${ua}`, {
         transports: ['websocket', 'xhr-polling'],
       })
 
