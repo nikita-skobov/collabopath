@@ -383,6 +383,44 @@ function countVotes(voteID) {
   })
 }
 
+function addReport(body, ip) {
+  return new Promise(async (res, rej) => {
+    try {
+      const { type } = body
+      const tempBody = body
+      delete tempBody.type
+
+      const rightNow = new Date()
+
+      const params = {
+        TableName: process.env.DYNAMO_REPORT_TABLE,
+        Item: {
+          ip: {
+            S: ip,
+          },
+          type: {
+            S: type,
+          },
+          dateStr: {
+            S: rightNow.toISOString(),
+          },
+          dateNum: {
+            N: rightNow.getTime().toString(),
+          },
+          body: {
+            S: JSON.stringify(tempBody),
+          },
+        },
+      }
+
+      await putObject(params)
+      return res()
+    } catch (e) {
+      return rej(e)
+    }
+  })
+}
+
 function addSuggestion(text, ip) {
   return new Promise(async (res, rej) => {
     try {
@@ -446,6 +484,7 @@ module.exports.getVoteItems = getVoteItems
 module.exports.countVotes = countVotes
 module.exports.deleteMessage = deleteMessage
 module.exports.addSuggestion = addSuggestion
+module.exports.addReport = addReport
 
 module.exports.isValidImage = dynamicVars.isValidImage
 module.exports.isValidEffect = dynamicVars.isValidEffect
