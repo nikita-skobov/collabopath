@@ -1,3 +1,4 @@
+/* global window */
 import {
   pathObjects as pathObjs,
   encodePath as encodeP,
@@ -22,6 +23,12 @@ function Brain() {
     stamina: -1,
     inventory: -1,
   }
+
+  const ua1 = window.navigator.userAgent
+  const ua2 = ua1.replace(/,/g, '') // strip commas
+  const ua3 = ua2.replace(/\//g, '') // strip slashes
+  const ua4 = ua3.replace(/;/g, '') // strip semicolons
+  const ua = ua4.replace(/\s/g, '') // strip empty space
 
   const components = {} // object to keep track of different components
   // each component is stored where the key is the component name, and the value
@@ -118,6 +125,8 @@ function Brain() {
     },
 
     getMutedList: () => [...mutedList],
+
+    getUA: () => ua,
 
     gameOver: () => {
       if (!DEV) {
