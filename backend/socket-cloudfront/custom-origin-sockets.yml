@@ -1,0 +1,89 @@
+##Author: Nikita Skobov
+##Email me if you have any questions: equilateralllc@gmail.com
+
+##Description:
+# I used this yaml template to deploy a cloudfront distribution so I have
+# a single endpoint for my websocket nodes. The idea is that a user can connect
+# to websocketapi.mydomainname.com (which would be an entry in ${self:custom.custom-origin-sockets.aliases})
+# then cloudfront makes a request to the origin which would be private-websocketapi.mydomainnname.com
+# (and this origin domain would come from ${self:custom.custom-origin-sockets.originDomainName})
+# in route 53 i can have multiple values for private-websocketapi.mydomainname.com
+# so a user only needs one endpoint to connect to my websockets, and cloudfront
+# resolves an ip from one of the nodes. This is necessary only if you want to use an ACM
+# certificate. Otherwise you can accomplish a similar idea by using letsencrypt, and then you dont
+# need cloudfront
+
+##REQUIREMENTS:
+# service
+# provider:
+#   stage
+#   region
+# custom:
+#   custom-origin-sockets:
+#     originDomainName (example: mycustom.origin.com)
+#     aliases (a list of aliases that the user can connect to this distribution from. must specify at least 1)
+#     account (the id)
+#     certid (the long string at the end of your ACM ARN example: 2cd2b1b2-c218-ab21-89a3-144a2328ca5b)
+
+##USAGE:
+# service: myservicename
+# provider:
+#   name: aws
+#   runtime: nodejs8.10
+#   stage: ${opt:stage,'dev'}
+#   region: ${opt:region, 'us-east-1'}  
+# custom:
+#   custom-origin-sockets:
+#     account: "263157841358"
+#     certid: "2cd2b1b2-c218-ab21-89a3-144a2328ca5b"
+#     originDomainName: "private-sockets.example.com"
+#     aliases:
+#       - "sockets.example.com"
+# resources:
+#   Resources:
+#     mydis: ${file(custom-origin-sockets.yml):custom-origin-sockets}
+#     ## any other resources you might want
+
+custom-origin-sockets:
+  Type: AWS::CloudFront::Distribution
+  Properties:
+    DistributionConfig:
+      HttpVersion: "http2"
+      Origins:
+        - DomainName: "${self:custom.custom-origin-sockets.originDomainName}"
+          ## An identifier for the origin which must be unique within the distribution
+          Id: "CustomOriginId=${self:service}-${self:provider.stage}"
+          CustomOriginConfig:
+            HTTPPort: 80
+            HTTPSPort: 443
+            OriginProtocolPolicy: http-only # change this if necessary
+      Enabled: 'true'
+      Aliases: ${self:custom.custom-origin-sockets.aliases}
+      DefaultCacheBehavior:
+        AllowedMethods:
+          - GET
+          - HEAD
+        ## The origin id defined above
+        TargetOriginId: "CustomOriginId=${self:service}-${self:provider.stage}"
+        ForwardedValues:
+          QueryStringCacheKeys:
+            - abcdefg # I do not want to cache by query string parameters
+            # so i specify an abcdefg query string. cloudfront will ONLY
+            # cache requests with this query string parameter, otherwise it
+            # will forward all other query strings as they are without caching
+            # modify this as needed
+          QueryString: 'true' # SET TO FALSE IF NECESSARY
+          Cookies:
+            Forward: none
+        ViewerProtocolPolicy: redirect-to-https
+      ## The certificate to use when viewers use HTTPS to request objects.
+      ViewerCertificate:
+        ## this is very important. make sure to specify your account id, region, and the certificate id that you want to use
+        AcmCertificateArn: "arn:aws:acm:${self:provider.region}:${self:custom.custom-origin-sockets.account}:certificate/${self:custom.custom-origin-sockets.certid}"
+        SslSupportMethod: sni-only # the other option is to pay $600 a month... no thanks
+        MinimumProtocolVersion: TLSv1.1_2016 # default recommended
+      # # Logging is optional.
+      # Logging:
+      #   IncludeCookies: 'false'
+      #   Bucket: ${self:custom.logBucket}
+      #   Prefix: "${self:provider.stage}-${self:service}"

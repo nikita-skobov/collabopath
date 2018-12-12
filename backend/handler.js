@@ -7,6 +7,57 @@ const { getPathObj } = functions
 
 const has = Object.prototype.hasOwnProperty
 
+module.exports.report = async (event, context) => {
+  let headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': `https://${process.env.DOMAIN}.com`, // Required for CORS support to work
+    'Access-Control-Allow-Credentials': true, // Required for cookies, authorization headers with HTTPS
+  }
+  let statusCode = 500
+  let body = { error: 'Unable to complete request: addReport' }
+  try {
+    if (!event.body) {
+      const err = { statusCode: 400, body: { error: 'Missing body' } }
+      throw err
+    }
+
+    const userBody = JSON.parse(event.body)
+    const { type } = userBody
+
+    if (!type || (type !== 'chat' && type !== 'path')) {
+      // throw err if type not provided, or if type is invalid
+      const err = { statusCode: 400, body: { error: 'Must suply a report type' } }
+      throw err
+    }
+
+    let userIP = event.headers['X-Forwarded-For']
+    if (userIP.includes(',')) {
+      // get the real user ip, not the CDN ip
+      userIP = userIP.substr(0, userIP.indexOf(','))
+    } else if (userIP.length === 0) {
+      // if x-forwarded-for is empty, use the CDN ip as last resort
+      userIP = event.requestContext.identity.sourceIp
+    }
+    // the last case is if the length is NOT 0, then the
+    // x-forwarded-for string is the entire user ip, no need
+    // for stripping commas
+
+    await functions.addReport(userBody, userIP)
+    body = {}
+    statusCode = 200
+  } catch (e) {
+    headers = e.headers || headers
+    statusCode = e.statusCode || statusCode
+    body = e.body || body
+  }
+
+  return {
+    statusCode,
+    headers,
+    body: JSON.stringify(body),
+  }
+}
+
 // api route for the suggestion form on the front page
 module.exports.addSuggestion = async (event, context) => {
   let headers = {

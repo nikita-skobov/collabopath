@@ -1,0 +1,128 @@
+# I want to keep the socket servers a seperate stack because it doesnt need
+# to be updated as frequently as the main stack. Also for testing purposes
+# its easy to tear down ec2 servers seperately if they are a seperate stack.
+
+service: collabopath-sockets # NOTE: update this with your service name
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region, 'us-east-1'}
+  endpointType: REGIONAL
+custom:
+  siteName: ${opt:sitename}
+  bucketName: ${opt:bucket}
+  hostedzoneid: ${opt:hostedzone}
+  ec2-autoscaling:
+    autoscalename: myautoscalingname12345
+    cooldown: 300
+    initialDesiredCapacity: 2
+    maxCapacity: 3
+    minCapacity: 2
+    userData: "${file(startscript.sh)}"
+    amiId: ${opt:ami} # this is not a real ami id...
+    targetCPU: 60.0
+    instanceType: t2.micro
+    keyName: ${opt:sshkey}
+  policies:
+    invokeAsyncRouteCheck:
+      PolicyName: "${self:service}-invokeAsyncRouteCheck-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 
+              - lambda:InvokeAsync
+              - lambda:InvokeFunction
+            Resource: "arn:aws:lambda:${opt:region, self:provider.region}:*:function:${self:service}-${self:provider.stage}-routeCheck"
+    routeChange:
+      PolicyName: "${self:service}-routechange-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: route53:ChangeResourceRecordSets
+            Resource: "arn:aws:route53:::hostedzone/${self:custom.hostedzoneid}"
+    s3Download:
+      PolicyName: "${self:service}-s3download-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: s3:GetObject
+            Resource: "arn:aws:s3:::${self:custom.bucketName}/*"
+          - Effect: Allow
+            Action: s3:ListBucket
+            Resource: "arn:aws:s3:::${self:custom.bucketName}"
+    describeInstances:
+      PolicyName: "${self:service}-describeinstances-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: ec2:DescribeInstances
+            Resource: "*"
+    describeGroups:
+      PolicyName: "${self:service}-describeautoscalegroups-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: autoscaling:DescribeAutoScalingInstances
+            Resource: "*"
+          - Effect: Allow
+            Action: autoscaling:DescribeAutoScalingGroups
+            Resource: "*"
+functions:
+  routeCheck:
+    timeout: 15
+    memorySize: 1024
+    handler: handler.routeCheck
+    role: routeCheckRole
+    environment:
+      HOSTED_ZONE: ${self:custom.hostedzoneid}
+      SITE_NAME: ${self:custom.siteName}
+      AUTOSCALE_NAME: ${self:custom.ec2-autoscaling.autoscalename}
+      REGION: ${self:provider.region}
+resources:
+  Resources:
+    vpc: ${file(ec2-autoscaling.yml):vpc}
+    subnet1: ${file(ec2-autoscaling.yml):subnet1}
+    subnet2: ${file(ec2-autoscaling.yml):subnet2}
+    subnet3: ${file(ec2-autoscaling.yml):subnet3}
+    securityGroup: ${file(ec2-autoscaling.yml):securityGroup}
+    autoScalingGroup: ${file(ec2-autoscaling.yml):autoScalingGroup}
+    launchConfiguration: ${file(ec2-autoscaling.yml):launchConfiguration}
+    scalingScaleGroupSize: ${file(ec2-autoscaling.yml):scalingScaleGroupSize}
+    routeTable: ${file(ec2-autoscaling.yml):routeTable}
+    myRoute: ${file(ec2-autoscaling.yml):myRoute}
+    MyInternetGateway: ${file(ec2-autoscaling.yml):MyInternetGateway}
+    Gateway2Internet: ${file(ec2-autoscaling.yml):Gateway2Internet}
+    mySubnetRouteTableAssociation1: ${file(ec2-autoscaling.yml):mySubnetRouteTableAssociation1}
+    mySubnetRouteTableAssociation2: ${file(ec2-autoscaling.yml):mySubnetRouteTableAssociation2}
+    mySubnetRouteTableAssociation3: ${file(ec2-autoscaling.yml):mySubnetRouteTableAssociation3}
+    RootInstanceProfile: ${file(ec2-autoscaling.yml):RootInstanceProfile}
+    myAutoScaleRole: ${file(ec2-autoscaling.yml):myAutoScaleRole}
+    ingressHTTP: ${file(ec2-autoscaling.yml):ingressHTTP}
+    # ingressSSH: ${file(ec2-autoscaling.yml):ingressSSH}
+    egress1: ${file(ec2-autoscaling.yml):egress1}
+    routeCheckRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: "${self:service}-${self:provider.stage}-routeCheck-role"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement: 
+            - 
+              Effect: "Allow"
+              Principal: 
+                Service: 
+                  - "lambda.amazonaws.com"
+              Action: 
+                - "sts:AssumeRole"
+        Policies:
+        # add any policies you want here. these policies
+        # allow the ec2 instance to do specific tasks on your AWS account
+          - ${self:custom.policies.routeChange}
+          - ${self:custom.policies.describeInstances}
+          - ${self:custom.policies.describeGroups}

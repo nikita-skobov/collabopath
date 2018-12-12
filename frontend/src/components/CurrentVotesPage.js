@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { Grid } from 'semantic-ui-react'
 
 import CurrentVotes from './CurrentVotes'
+import ChatBox from './ChatBox'
 
 export default class CurrentVotesPage extends Component {
   constructor(props) {
@@ -44,16 +45,16 @@ export default class CurrentVotesPage extends Component {
     const maxHeight = isMobile ? 'mh50' : 'mh100'
     // if mobile, max height of this grid should take 50% of screen, otherwise 100
 
-    const chatMarginTop = isMobile ? 'mtn18vh' : ''
+    // const chatMarginTop = isMobile ? 'mtn18vh' : ''
 
     return (
       <Grid stackable columns={2} className="ms0 mtb0 h75">
         <Grid.Column style={isMobile ? {} : { maxWidth: '50%' }} className={maxHeight}>
           <CurrentVotes dataStore={this.dataStore} />
         </Grid.Column>
-        <Grid.Column style={isMobile ? {} : { maxWidth: '50%' }}>
-          <div className={chatMarginTop}>
-            <div>chat</div>
+        <Grid.Column style={isMobile ? { overflowY: 'hidden' } : { maxWidth: '50%', overflowY: 'hidden' }} className={maxHeight}>
+          <div className="h100">
+            <ChatBox dataStore={this.dataStore} />
           </div>
         </Grid.Column>
       </Grid>

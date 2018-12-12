@@ -34,6 +34,7 @@ custom:
   certid: ${opt:certid}
   logbucket: ${opt:logbucket}
   roles:
+    report: "${self:service}-${self:provider.stage}-report-role"
     getVotes: "${self:service}-${self:provider.stage}-getVotes-role"
     getPath: "${self:service}-${self:provider.stage}-getPath-role"
     votePath: "${self:service}-${self:provider.stage}-votePath-role"
@@ -58,6 +59,14 @@ custom:
           - Effect: Allow
             Action: dynamodb:DeleteItem
             Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.current_vote}"
+    putItemReportTable:
+      PolicyName: "${self:service}-putItemReportTable-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: dynamodb:PutItem
+            Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.tables.report}"
     putItemCurrentVoteTable:
       PolicyName: "${self:service}-putItemCurrentVoteTable-policy"
       PolicyDocument:
@@ -179,6 +188,7 @@ custom:
     vote: "${self:service}-${self:provider.stage}-votes"
     suggestion: "${self:service}-${self:provider.stage}-suggestion"
     current_vote: "${self:service}-${self:provider.stage}-current-votes"
+    report: "${self:service}-${self:provider.stage}-report"
   queues:
     vote: "${self:service}-${self:provider.stage}-votes"
     delay: 900 # 15 minutes
@@ -294,6 +304,20 @@ functions:
       LAMBDA_VOTE_COUNT_FUNCTION: "${self:service}-${self:provider.stage}-voteCount"
       QUEUE_URL: "https://sqs.${self:provider.region}.amazonaws.com/${self:custom.account}/${self:custom.queues.vote}"
       SQS_REGION: ${self:provider.region}
+  reportChat:
+    timeout: 15
+    memorySize: 1024
+    role: reportRole
+    handler: handler.report
+    environment:
+      DYNAMO_REGION: ${self:provider.region}
+      DYNAMO_REPORT_TABLE: ${self:custom.tables.report}
+    events:
+      - http:
+          path: /report/chat
+          private: true
+          method: POST
+          cors: true
 resources:
   Resources:
   ## Specifying the S3 Bucket
@@ -508,6 +532,20 @@ resources:
               Action: sts:AssumeRole
         Policies:
           - ${self:custom.policies.putItemSuggestionTable}
+    reportRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${self:custom.roles.report}
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - ${self:custom.policies.putItemReportTable}
     addPathRole:
       Type: AWS::IAM::Role
       Properties:
@@ -693,3 +731,24 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:custom.tables.main}
+    Report:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: ip
+            AttributeType: S
+          -
+            AttributeName: dateNum
+            AttributeType: "N"
+        KeySchema:
+          -
+            AttributeName: ip
+            KeyType: HASH
+          -
+            AttributeName: dateNum
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.tables.report}

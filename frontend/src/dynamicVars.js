@@ -1168,6 +1168,8 @@ module.exports.encodePath = encodePath
 // if you simply want to mess around with the frontend design, but want
 // to add more path objects, just modify the module.exports.pathObjects object
 // above, and add your own objects there.
+module.exports.socketEndpoint = 'https://sockets.collabopath.com/'
+module.exports.reportChatEndpoint = 'https://api.collabopath.com/report/chat'
 module.exports.getPathObjEndpoint = 'https://api.collabopath.com/path/'
 module.exports.getVotesEndpoint = 'https://api.collabopath.com/path/votes'
 module.exports.votePathObjEndpoint = 'https://api.collabopath.com/path/vote'

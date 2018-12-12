@@ -13,6 +13,7 @@ import {
   Support as supportVars,
 } from './dynamicVars'
 import Brain from './Brain'
+import SocketManager from './SocketManager'
 import App from './App'
 import Navbar from './components/Navbar'
 import About from './components/About'
@@ -24,6 +25,7 @@ import CurrentVotesPage from './components/CurrentVotesPage'
 const reactContainer = document.getElementById('react-container')
 
 const dataStore = Brain()
+const socketManager = SocketManager(dataStore)
 
 if (DEV) {
   if (startingStage === '.') {

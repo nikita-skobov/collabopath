@@ -1,8 +1,10 @@
+/* global window */
 import {
   pathObjects as pathObjs,
   encodePath as encodeP,
   getPathObjEndpoint,
   votePathObjEndpoint,
+  reportChatEndpoint,
   addPathObjEndpoint,
   minimumRefreshDelay,
   StatAllocate,
@@ -22,6 +24,12 @@ function Brain() {
     stamina: -1,
     inventory: -1,
   }
+
+  const ua1 = window.navigator.userAgent
+  const ua2 = ua1.replace(/,/g, '') // strip commas
+  const ua3 = ua2.replace(/\//g, '') // strip slashes
+  const ua4 = ua3.replace(/;/g, '') // strip semicolons
+  const ua = ua4.replace(/\s/g, '') // strip empty space
 
   const components = {} // object to keep track of different components
   // each component is stored where the key is the component name, and the value
@@ -62,6 +70,8 @@ function Brain() {
     stamina: 0,
     sanity: 0,
   }
+
+  const mutedList = []
 
   const getEndpoint = getPathObjEndpoint // the lambda endpoint
   const voteEndpoint = votePathObjEndpoint
@@ -107,6 +117,17 @@ function Brain() {
       components[name] = reference
     },
     tell: name => components[name],
+
+    muteUser: (id) => {
+      if (mutedList.indexOf(id) === -1) {
+        // only add id if not already in list
+        mutedList.push(id)
+      }
+    },
+
+    getMutedList: () => [...mutedList],
+
+    getUA: () => ua,
 
     gameOver: () => {
       if (!DEV) {
@@ -409,6 +430,28 @@ function Brain() {
         // console.log(err)
         callback(err.message)
       })
+    },
+    reportChat: (body) => {
+      fetch(reportChatEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      }).then(resp => resp.json())
+        .then((json) => {
+          if (has.call(json, 'error')) {
+            console.log('failed to report:')
+            console.log(json.error)
+          } else {
+            console.log('successfully reported')
+            console.log(json)
+          }
+        })
+        .catch((err) => {
+          console.log('failed to report:')
+          console.log(err)
+        })
     },
     voteFor: (pathID, voteID, callback) => {
       // console.log(`MAKING A VOTE REQUEST: ${pathID}, voteID: ${voteID}`)

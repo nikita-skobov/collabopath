@@ -1,0 +1,16 @@
+service: collabopath-socket-cloudfront
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage,'dev'}
+  region: ${opt:region, 'us-east-1'}  
+custom:
+  custom-origin-sockets:
+    account: ${opt:account}
+    certid: ${opt:certid}
+    originDomainName: ${opt:origindomain}
+    aliases:
+      - ${opt:clientdomain}
+resources:
+  Resources:
+    mydis: ${file(custom-origin-sockets.yml):custom-origin-sockets}
