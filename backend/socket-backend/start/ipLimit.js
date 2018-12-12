@@ -1,6 +1,6 @@
 module.exports = (function ips() {
   const has = Object.prototype.hasOwnProperty
-  const lastIpAction = {}
+  const lastIdAction = {}
   const idIpMap = {}
   const bannedList = []
   const ipRateLimit = 1000 * 2 // 2 seconds
@@ -21,9 +21,9 @@ module.exports = (function ips() {
       })
     },
 
-    recordIpAction: (ip) => {
+    recordIdAction: (id) => {
       const rightNow = new Date().getTime()
-      lastIpAction[ip] = rightNow
+      lastIdAction[id] = rightNow
     },
 
     ipIsAllowed: (ip) => {
@@ -32,13 +32,13 @@ module.exports = (function ips() {
         return false
       }
 
-      if (!has.call(lastIpAction, ip)) {
+      if (!has.call(lastIdAction, ip)) {
         // if new IP, then yes they are allowed
         return true
       }
 
       const rightNow = new Date().getTime()
-      if (lastIpAction[ip] < rightNow - ipRateLimit) {
+      if (lastIdAction[ip] < rightNow - ipRateLimit) {
         // enough time has passed, so now they can send another message
         return true
       }

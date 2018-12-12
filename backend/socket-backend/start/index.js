@@ -12,7 +12,7 @@ const myconfig = require('./myconfig.json')
 const containsBadWords = require('./containsBadWords')
 const {
   ipIsAllowed,
-  recordIpAction,
+  recordIdAction,
   banIP,
   rememberId,
   getIpFromId,
@@ -266,7 +266,7 @@ publ.on('connection', (socket) => {
         pSockets[key].emit('msg', { type: 'o', body: msg, ip: socketIP })
       })
 
-      recordIpAction(socketIP)
+      recordIdAction(id)
     }
   })
 
