@@ -4,6 +4,7 @@ import {
   encodePath as encodeP,
   getPathObjEndpoint,
   votePathObjEndpoint,
+  reportChatEndpoint,
   addPathObjEndpoint,
   minimumRefreshDelay,
   StatAllocate,
@@ -429,6 +430,23 @@ function Brain() {
         // console.log(err)
         callback(err.message)
       })
+    },
+    reportChat: (body) => {
+      fetch(reportChatEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      }).then(resp => resp.json())
+        .then((json) => {
+          console.log('successfully reported')
+          console.log(json)
+        })
+        .catch((err) => {
+          console.log('failed to report:')
+          console.log(err)
+        })
     },
     voteFor: (pathID, voteID, callback) => {
       // console.log(`MAKING A VOTE REQUEST: ${pathID}, voteID: ${voteID}`)
