@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import {
   Header,
@@ -16,6 +17,11 @@ import { Changelog as changeLogVars } from '../dynamicVars'
 class Changelog extends Component {
   constructor(props) {
     super(props)
+
+    this.dataStore = props.dataStore
+
+    this.dataStore.tell('Navbar').handleItemClick('', { name: 'changelog' })
+
     this.state = {
       activeIndex: -1,
     }
@@ -37,13 +43,17 @@ class Changelog extends Component {
     const { log } = this
     const has = Object.prototype.hasOwnProperty
 
+    const changeToPlay = () => {
+      this.dataStore.tell('Navbar').handleItemClick('', { name: 'play' })
+    }
+
     return (
       <Grid verticalAlign="middle">
         <Grid.Row />
         <Grid.Row columns={14}>
           <Grid.Column />
           <NavLink to="/">
-            <Button name="back" color="blue">Back</Button>
+            <Button onClick={changeToPlay} name="back" color="blue">Back</Button>
           </NavLink>
         </Grid.Row>
         <Grid.Row />
@@ -78,6 +88,10 @@ class Changelog extends Component {
       </Grid>
     )
   }
+}
+
+Changelog.propTypes = {
+  dataStore: PropTypes.instanceOf(Object).isRequired,
 }
 
 export default Changelog
