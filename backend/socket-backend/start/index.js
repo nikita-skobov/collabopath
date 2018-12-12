@@ -238,8 +238,9 @@ privateio.on('connection', (socket) => {
 publ.on('connection', (socket) => {
   console.log('got public connection2')
   const socketIP = socket.handshake.headers['x-forwarded-for']
-  const id_t = crypto.createHash('sha1').update(socketIP).digest('base64')
-  const id = id_t.substr(0, Math.floor(id_t.length * 0.65))
+  const socketUA = socket.handshake.query.ua
+  const idTemp = crypto.createHash('sha1').update(socketIP).update(socketUA).digest('base64')
+  const id = idTemp.substr(0, Math.floor(idTemp.length * 0.65))
   rememberId(id, socketIP)
 
   socket.on('i', (m) => {
