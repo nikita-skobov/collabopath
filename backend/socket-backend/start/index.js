@@ -252,7 +252,7 @@ publ.on('connection', (socket) => {
   rememberId(id, socketIP)
 
   socket.on('i', (m) => {
-    if (!containsBadWords(m) && ipIsAllowed(socketIP) && m.length <= maxInputLength) {
+    if (!containsBadWords(m) && ipIsAllowed(socketIP, id) && m.length <= maxInputLength) {
       const msg = {
         t: m,
         i: id,

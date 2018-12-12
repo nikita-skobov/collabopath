@@ -26,19 +26,19 @@ module.exports = (function ips() {
       lastIdAction[id] = rightNow
     },
 
-    ipIsAllowed: (ip) => {
+    ipIsAllowed: (ip, id) => {
       if (bannedList.indexOf(ip) !== -1) {
         // if the ip is in the bannedList they are NOT allowed
         return false
       }
 
-      if (!has.call(lastIdAction, ip)) {
+      if (!has.call(lastIdAction, id)) {
         // if new IP, then yes they are allowed
         return true
       }
 
       const rightNow = new Date().getTime()
-      if (lastIdAction[ip] < rightNow - ipRateLimit) {
+      if (lastIdAction[id] < rightNow - ipRateLimit) {
         // enough time has passed, so now they can send another message
         return true
       }
