@@ -290,7 +290,10 @@ function Brain() {
     getSanity: () => gameData.sanity,
     getStamina: () => gameData.stamina,
     getInventory: () => gameData.inventory,
-    setName: (n) => { gameData.name = n },
+    setName: (n) => {
+      savedName = n
+      gameData.name = n
+    },
     setHealth: (h) => { gameData.health = h },
     setIntelligence: (i) => { gameData.intelligence = i },
     setSanity: (s) => { gameData.sanity = s },
