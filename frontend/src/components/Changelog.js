@@ -20,6 +20,8 @@ class Changelog extends Component {
 
     this.dataStore = props.dataStore
 
+    this.dataStore.tell('Navbar').handleItemClick('', { name: 'changelog' })
+
     this.state = {
       activeIndex: -1,
     }
@@ -34,6 +36,7 @@ class Changelog extends Component {
     const { activeIndex } = this.state
     const newIndex = activeIndex === index ? -1 : index
     this.setState({ activeIndex: newIndex })
+    this.dataStore.tell('Navbar').handleItemClick('', { name: 'play' })
   }
 
   render() {
