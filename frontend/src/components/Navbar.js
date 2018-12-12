@@ -10,6 +10,8 @@ export default class Navbar extends Component {
 
     this.dataStore = props.dataStore
 
+    this.dataStore.rememberMe('Navbar', this)
+
     try {
       if (window.location.pathname.includes('about')) {
         this.state = { activeItem: 'about' }
