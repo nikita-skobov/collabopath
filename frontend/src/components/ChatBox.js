@@ -23,7 +23,7 @@ export default class ChatBox extends Component {
     this.dataStore.tell('Sockets').connect((socket) => {
       if (!this.socket) {
         this.socket = socket
-        console.log('connected')
+
         this.setState({ connected: true })
         this.socket.emit('sni', '')
 
