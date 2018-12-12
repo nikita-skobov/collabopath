@@ -77,7 +77,7 @@ export default class PathViewer extends Component {
       0: {
         question: 'What is your name?',
         element: [
-          <input key={0} style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter name here" />,
+          <input key={0} defaultValue={this.dataStore.getSavedName()} style={{ textAlign: 'center', width: '100%' }} type="text" placeholder="Enter name here" />,
           <Button compact style={{ marginTop: '1em' }} icon="angle right" />,
         ],
       },
