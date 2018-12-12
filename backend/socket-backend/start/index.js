@@ -245,6 +245,8 @@ publ.on('connection', (socket) => {
 
   const socketIP = socket.handshake.headers['x-forwarded-for']
   const socketUA = socket.handshake.query.ua
+
+  // the production version also uses a secret salt, which is not shown here for obvious reasons
   const idTemp = crypto.createHash('sha1').update(socketIP).update(socketUA).digest('base64')
   const id = idTemp.substr(0, Math.floor(idTemp.length * 0.65))
   rememberId(id, socketIP)
