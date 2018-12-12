@@ -2,12 +2,16 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 import Avatars from '@dicebear/avatars'
-import SpriteCollection from '@dicebear/avatars-identicon-sprites'
+import SpriteCollection1 from '@dicebear/avatars-identicon-sprites'
+import SpriteCollection2 from '@dicebear/avatars-male-sprites'
+import SpriteCollection3 from '@dicebear/avatars-female-sprites'
 import { Input, Button, Comment, Loader } from 'semantic-ui-react'
 
 import ChatItem from './ChatItem'
 
-const avatars = new Avatars(SpriteCollection)
+const avatars1 = new Avatars(SpriteCollection1)
+const avatars2 = new Avatars(SpriteCollection2)
+const avatars3 = new Avatars(SpriteCollection3)
 const has = Object.prototype.hasOwnProperty
 
 export default class ChatBox extends Component {
@@ -81,7 +85,21 @@ export default class ChatBox extends Component {
       author = this.authors[i]
     } else {
       // we need to make an svg:
-      const svg = avatars.create(i)
+
+      // first decide which avatar to use based on first character of id:
+      const isCapital = /^[A-Z]/.test(i)
+      const isLowerCase = /^[a-z]/.test(i)
+      let svg = null
+      if (isCapital) {
+        // use male avatar
+        svg = avatars2.create(i)
+      } else if (isLowerCase) {
+        // use female avatar
+        svg = avatars3.create(i)
+      } else {
+        // use identicon avatar
+        svg = avatars1.create(i)
+      }
       const svgstr = encodeURIComponent(svg)
       const dataUri = `data:image/svg+xml,${svgstr}`
       this.authors[i] = dataUri
