@@ -19,7 +19,7 @@ function SocketManager(datastore) {
       })
 
       socket.on('connect', () => {
-        cb()
+        cb(socket)
       })
     },
 

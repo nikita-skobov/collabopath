@@ -18,16 +18,21 @@ export default class ChatBox extends Component {
 
     this.dataStore.rememberMe('ChatBox', this)
 
-    this.socket = this.dataStore.tell('Sockets')
-    this.socket.connect(() => {
-      this.setState({ connected: true })
-      this.socket.emit('sni', '')
+    this.socket = null
 
-      this.socket.on('sno', (sn) => {
-        this.serverName = sn
-      })
+    this.dataStore.tell('Sockets').connect((socket) => {
+      if (!this.socket) {
+        this.socket = socket
+        console.log('connected')
+        this.setState({ connected: true })
+        this.socket.emit('sni', '')
 
-      this.socket.on('o', this.handleNewChat)
+        this.socket.on('sno', (sn) => {
+          this.serverName = sn
+        })
+
+        this.socket.on('o', this.handleNewChat)
+      }
     })
 
     this.authors = {}
@@ -55,6 +60,7 @@ export default class ChatBox extends Component {
   handleNewChat(msg) {
     // i is id, d is date (epoch), t is the text
     const { i, d, t } = msg
+    console.log(msg)
 
     if (this.mutedList.indexOf(i) !== -1) {
       // if the id exists in the muted list. dont add a new chat
@@ -135,7 +141,7 @@ export default class ChatBox extends Component {
               return (
                 <ChatItem
                   dataStore={this.dataStore}
-                  key={sent}
+                  key={`${sent}${color}`}
                   color={color}
                   authorId={authorId}
                   author={author}
