@@ -1,11 +1,15 @@
 /* global window */
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { Menu, Segment } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
 
 export default class Navbar extends Component {
   constructor(props) {
     super(props)
+
+    this.dataStore = props.dataStore
+
     try {
       if (window.location.pathname.includes('about')) {
         this.state = { activeItem: 'about' }
@@ -69,4 +73,8 @@ export default class Navbar extends Component {
       </Segment>
     )
   }
+}
+
+Navbar.propTypes = {
+  dataStore: PropTypes.instanceOf(Object).isRequired,
 }

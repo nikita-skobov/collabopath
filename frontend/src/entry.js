@@ -73,7 +73,7 @@ const CurrentVotesPageRender = () => (
 ReactDOM.render((
   <BrowserRouter>
     <div>
-      <Navbar />
+      <Navbar dataStore={this.dataStore} />
       <Switch>
         <Route path="/" render={AppRenderer} exact />
         <Route path="/support" render={supportRender} />
