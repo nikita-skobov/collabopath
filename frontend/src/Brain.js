@@ -440,8 +440,13 @@ function Brain() {
         body: JSON.stringify(body),
       }).then(resp => resp.json())
         .then((json) => {
-          console.log('successfully reported')
-          console.log(json)
+          if (has.call(json, 'error')) {
+            console.log('failed to report:')
+            console.log(json.error)
+          } else {
+            console.log('successfully reported')
+            console.log(json)
+          }
         })
         .catch((err) => {
           console.log('failed to report:')
