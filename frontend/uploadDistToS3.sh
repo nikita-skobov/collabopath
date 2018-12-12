@@ -52,8 +52,8 @@ aws s3 cp ./dist/index.html s3://$BUCKET/ --cache-control $TTLINDEX
 # add in all the other files
 if $DEBUG; then
   # use default ttl
-  aws s3 cp ./dist/ s3://$BUCKET --recursive --exclude "index.html" --exclude "scripts/*" --exclude "about/*" --exclude "support/*" --exclude "semantic.min.css" --cache-control $DEFAULT_TTL
+  aws s3 cp ./dist/ s3://$BUCKET --recursive --exclude "index.html" --exclude "scripts/*" --exclude "about/*" --exclude "support/*" --exclude "semantic.min.css" --exclude "semantic.min.css.gz" --cache-control $DEFAULT_TTL
 else
   # dont use any ttl
-  aws s3 cp ./dist/ s3://$BUCKET --recursive --exclude "index.html" --exclude "scripts/*" --exclude "about/*" --exclude "support/*" --exclude "semantic.min.css"
+  aws s3 cp ./dist/ s3://$BUCKET --recursive --exclude "index.html" --exclude "scripts/*" --exclude "about/*" --exclude "support/*" --exclude "semantic.min.css" --exclude "semantic.min.css.gz"
 fi
