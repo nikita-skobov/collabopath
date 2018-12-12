@@ -71,6 +71,7 @@ function Brain() {
     sanity: 0,
   }
 
+  let savedName = ''
   const mutedList = []
 
   const getEndpoint = getPathObjEndpoint // the lambda endpoint
@@ -81,6 +82,7 @@ function Brain() {
 
   return {
     resetGame: () => {
+      savedName = gameData.name
       gameData.name = ''
       gameData.health = -1
       gameData.intelligence = -1
@@ -279,6 +281,8 @@ function Brain() {
       }
       components.GameBar.buyItem(name, price)
     },
+
+    getSavedName: () => savedName,
 
     getName: () => gameData.name,
     getHealth: () => gameData.health,
