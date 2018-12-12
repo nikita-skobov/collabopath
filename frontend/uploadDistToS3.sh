@@ -2,7 +2,7 @@
 
 FILES=()
 
-DEFAULT_TTL=100
+DEFAULT_TTL="public,max-age=100"
 DEBUG=false
 
 # get command line arguments
@@ -37,9 +37,10 @@ if [ -z $TTLINDEX ]; then
   TTLINDEX=$DEFAULT_TTL
 fi
 
+aws s3 cp ./dist/semantic.min.css.gz s3://$BUCKET/semantic.min.css --content-encoding "gzip"
 
 # # add in the script folder, no ttl necessary
-aws s3 cp ./dist/scripts/ s3://$BUCKET/scripts/ --recursive
+aws s3 cp ./dist/scripts/ s3://$BUCKET/scripts/ --recursive --content-encoding "gzip"
 
 # add in the index files with their index specific TTL
 aws s3 cp ./dist/index.html s3://$BUCKET/ --cache-control $TTLINDEX
@@ -51,8 +52,8 @@ aws s3 cp ./dist/index.html s3://$BUCKET/ --cache-control $TTLINDEX
 # add in all the other files
 if $DEBUG; then
   # use default ttl
-  aws s3 cp ./dist/ s3://$BUCKET --recursive --exclude "index.html" --exclude "scripts/*" --exclude "about/*" --exclude "support/*" --cache-control $DEFAULT_TTL
+  aws s3 cp ./dist/ s3://$BUCKET --recursive --exclude "index.html" --exclude "scripts/*" --exclude "about/*" --exclude "support/*" --exclude "semantic.min.css" --cache-control $DEFAULT_TTL
 else
   # dont use any ttl
-  aws s3 cp ./dist/ s3://$BUCKET --recursive --exclude "index.html" --exclude "scripts/*" --exclude "about/*" --exclude "support/*"
+  aws s3 cp ./dist/ s3://$BUCKET --recursive --exclude "index.html" --exclude "scripts/*" --exclude "about/*" --exclude "support/*" --exclude "semantic.min.css"
 fi
