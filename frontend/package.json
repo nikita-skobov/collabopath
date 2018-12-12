@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "webpack --mode production",
+    "build": "rm -r ./dist/scripts/ && webpack --mode production && gzipScriptsAndCss.sh",
     "build:server": "webpack-dev-server --mode production --port 3000 --hot --host 0.0.0.0"
   },
   "keywords": [],

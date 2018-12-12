@@ -5,6 +5,7 @@ backend/.serverless
 issues/**
 clips/**
 frontend/dist/about
+frontend/dist/semantic.min.css.gz
 frontend/dist/support
 frontend/dist/index.html
 frontend/dist/scripts/**
