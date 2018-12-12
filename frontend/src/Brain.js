@@ -71,6 +71,7 @@ function Brain() {
     sanity: 0,
   }
 
+  let savedName = ''
   const mutedList = []
 
   const getEndpoint = getPathObjEndpoint // the lambda endpoint
@@ -81,6 +82,7 @@ function Brain() {
 
   return {
     resetGame: () => {
+      savedName = gameData.name
       gameData.name = ''
       gameData.health = -1
       gameData.intelligence = -1
@@ -94,13 +96,6 @@ function Brain() {
       viewJump = false
       previousStage = null
       notFinalIndex = null
-      allocatePointsRemaining = StatAllocate.totalPoints
-      allocatedPoints = {
-        health: 0,
-        intelligence: 0,
-        stamina: 0,
-        sanity: 0,
-      }
       activeConcept = null
       pathArray = []
       pathObjects2 = {}
@@ -280,13 +275,18 @@ function Brain() {
       components.GameBar.buyItem(name, price)
     },
 
+    getSavedName: () => savedName,
+
     getName: () => gameData.name,
     getHealth: () => gameData.health,
     getIntelligence: () => gameData.intelligence,
     getSanity: () => gameData.sanity,
     getStamina: () => gameData.stamina,
     getInventory: () => gameData.inventory,
-    setName: (n) => { gameData.name = n },
+    setName: (n) => {
+      savedName = n
+      gameData.name = n
+    },
     setHealth: (h) => { gameData.health = h },
     setIntelligence: (i) => { gameData.intelligence = i },
     setSanity: (s) => { gameData.sanity = s },
