@@ -237,6 +237,12 @@ privateio.on('connection', (socket) => {
 // public sockets! this is where the chat actually happens
 publ.on('connection', (socket) => {
   console.log('got public connection2')
+  if (!has.call(socket.handshake.query, 'ua')) {
+    // if they dont provide a ua query parameter, reject connection
+    socket.disconnect()
+    return null
+  }
+
   const socketIP = socket.handshake.headers['x-forwarded-for']
   const socketUA = socket.handshake.query.ua
   const idTemp = crypto.createHash('sha1').update(socketIP).update(socketUA).digest('base64')
@@ -265,6 +271,8 @@ publ.on('connection', (socket) => {
   socket.on('sni', () => {
     socket.emit('sno', serverNameId)
   })
+
+  return null
 })
 
 app2.use(express.json())
