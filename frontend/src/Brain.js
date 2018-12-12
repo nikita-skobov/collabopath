@@ -96,13 +96,6 @@ function Brain() {
       viewJump = false
       previousStage = null
       notFinalIndex = null
-      allocatePointsRemaining = StatAllocate.totalPoints
-      allocatedPoints = {
-        health: 0,
-        intelligence: 0,
-        stamina: 0,
-        sanity: 0,
-      }
       activeConcept = null
       pathArray = []
       pathObjects2 = {}
