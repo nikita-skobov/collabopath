@@ -36,6 +36,13 @@ export default class ChatItem extends Component {
       console.log(sent)
       console.log(authorId)
       console.log(text)
+      this.dataStore.reportChat({
+        type: 'chat',
+        sn,
+        sent,
+        authorId,
+        text,
+      })
     }
   }
 
