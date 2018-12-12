@@ -35,7 +35,9 @@
   },
   "dependencies": {
     "@dicebear/avatars": "^2.0.4",
+    "@dicebear/avatars-female-sprites": "^1.0.4",
     "@dicebear/avatars-identicon-sprites": "^1.0.3",
+    "@dicebear/avatars-male-sprites": "^1.0.4",
     "bad-words": "^3.0.0",
     "promise-polyfill": "^8.1.0",
     "prop-types": "^15.6.2",
