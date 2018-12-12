@@ -740,7 +740,7 @@ resources:
             AttributeType: S
           -
             AttributeName: dateNum
-            AttributeType: S
+            AttributeType: "N"
         KeySchema:
           -
             AttributeName: ip
