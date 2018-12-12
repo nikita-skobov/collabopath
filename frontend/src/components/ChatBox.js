@@ -21,14 +21,19 @@ export default class ChatBox extends Component {
     this.socket = null
 
     this.dataStore.tell('Sockets').connect((socket) => {
+      this.setState({ connected: true })
+
       if (!this.socket) {
         this.socket = socket
 
-        this.setState({ connected: true })
         this.socket.emit('sni', '')
 
         this.socket.on('sno', (sn) => {
           this.serverName = sn
+        })
+
+        this.socket.on('disconnect', () => {
+          this.setState({ connected: false })
         })
 
         this.socket.on('o', this.handleNewChat)
