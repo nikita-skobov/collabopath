@@ -24,7 +24,7 @@ module.exports.report = async (event, context) => {
     const userBody = JSON.parse(event.body)
     const { type } = userBody
 
-    if (!type || (type !== 'chat' || type !== 'path')) {
+    if (!type || (type !== 'chat' && type !== 'path')) {
       // throw err if type not provided, or if type is invalid
       const err = { statusCode: 400, body: { error: 'Must suply a report type' } }
       throw err
