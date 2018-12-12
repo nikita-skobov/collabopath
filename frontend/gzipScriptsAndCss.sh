@@ -2,7 +2,7 @@
 
 gzip -r ./dist/scripts
 
-gzip ./dist/og.semantic.min.css
+gzip -k ./dist/semantic.min.css
 
 for filename in ./dist/scripts/*.gz; do
   newfilename=${filename::-3}
