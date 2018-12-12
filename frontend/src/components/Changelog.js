@@ -36,7 +36,6 @@ class Changelog extends Component {
     const { activeIndex } = this.state
     const newIndex = activeIndex === index ? -1 : index
     this.setState({ activeIndex: newIndex })
-    this.dataStore.tell('Navbar').handleItemClick('', { name: 'play' })
   }
 
   render() {
@@ -44,13 +43,17 @@ class Changelog extends Component {
     const { log } = this
     const has = Object.prototype.hasOwnProperty
 
+    const changeToPlay = () => {
+      this.dataStore.tell('Navbar').handleItemClick('', { name: 'play' })
+    }
+
     return (
       <Grid verticalAlign="middle">
         <Grid.Row />
         <Grid.Row columns={14}>
           <Grid.Column />
           <NavLink to="/">
-            <Button name="back" color="blue">Back</Button>
+            <Button onClick={changeToPlay} name="back" color="blue">Back</Button>
           </NavLink>
         </Grid.Row>
         <Grid.Row />
