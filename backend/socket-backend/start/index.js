@@ -6,6 +6,7 @@ const socketioclient = require('socket.io-client')
 const AWS = require('aws-sdk')
 const serverName = require('os').hostname()
 const socketio = require('socket.io')
+const crypto = require('crypto')
 
 const myconfig = require('./myconfig.json')
 const containsBadWords = require('./containsBadWords')
@@ -236,8 +237,9 @@ privateio.on('connection', (socket) => {
 // public sockets! this is where the chat actually happens
 publ.on('connection', (socket) => {
   console.log('got public connection2')
-  const { id } = socket.client
   const socketIP = socket.handshake.headers['x-forwarded-for']
+  const id_t = crypto.createHash('sha1').update(socketIP).digest('base64')
+  const id = id_t.substr(0, Math.floor(id_t.length * 0.65))
   rememberId(id, socketIP)
 
   socket.on('i', (m) => {
