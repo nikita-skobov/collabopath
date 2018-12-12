@@ -30,7 +30,9 @@ export default class ChatItem extends Component {
       this.dataStore.muteUser(authorId)
       this.dataStore.tell('ChatBox').muteUser(authorId)
     } else if (name === 'report') {
+      const sn = this.dataStore.tell('ChatBox').serverName
       console.log('reporting')
+      console.log(sn)
       console.log(sent)
       console.log(authorId)
       console.log(text)
