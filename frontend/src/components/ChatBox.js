@@ -23,6 +23,7 @@ export default class ChatBox extends Component {
     this.dataStore.rememberMe('ChatBox', this)
 
     this.socket = null
+    this.maxChatItems = 200
 
     this.dataStore.tell('Sockets').connect((socket) => {
       this.setState({ connected: true })
@@ -123,6 +124,11 @@ export default class ChatBox extends Component {
         color,
         author,
       })
+
+      if (tempState.list.length > this.maxChatItems) {
+        tempState.list.splice(0, this.maxChatItems)
+      }
+
       return tempState
     })
     return null
