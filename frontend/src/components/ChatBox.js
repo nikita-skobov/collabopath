@@ -52,6 +52,7 @@ export default class ChatBox extends Component {
       connected: false,
       list: [],
       colorIndex: 0,
+      chatLimit: false,
     }
 
     this.handleNewChat = this.handleNewChat.bind(this)
@@ -141,18 +142,25 @@ export default class ChatBox extends Component {
       const { value } = this.myInput
       this.socket.emit('i', value)
       this.myInput.value = ''
+
+      this.setState({ chatLimit: true }, () => {
+        // after chat limit has been set to true
+        setTimeout(() => {
+          this.setState({ chatLimit: false })
+        }, 2000) // wait 2 seconds before sending another chat
+      })
     }
   }
 
   render() {
-    const { list, connected } = this.state
+    const { list, connected, chatLimit } = this.state
     return (
       <div className="ps5 h100">
         <Comment.Group className="bcwr h120" minimal>
           <form name="chat" action="#" onSubmit={this.handleButton}>
             <Input style={{ width: '100%' }} action type="text" placeholder="Chat...">
               <input maxLength="600" ref={(myInput) => { this.myInput = myInput }} />
-              <Button disabled={!connected} compact name="chat" onClick={this.handleButton} color="blue" type="submit">Send</Button>
+              <Button disabled={!connected || chatLimit} compact name="chat" onClick={this.handleButton} color="blue" type="submit">Send</Button>
             </Input>
           </form>
           <div className="h80 ofya">
