@@ -142,6 +142,13 @@ export default class ChatBox extends Component {
       const { value } = this.myInput
       this.socket.emit('i', value)
       this.myInput.value = ''
+
+      this.setState({ chatLimit: true }, () => {
+        // after chat limit has been set to true
+        setTimeout(() => {
+          this.setState({ chatLimit: false })
+        }, 2000) // wait 2 seconds before sending another chat
+      })
     }
   }
 
