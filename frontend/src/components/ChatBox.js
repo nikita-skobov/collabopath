@@ -126,7 +126,7 @@ export default class ChatBox extends Component {
       })
 
       if (tempState.list.length > this.maxChatItems) {
-        tempState.list.splice(0, this.maxChatItems)
+        tempState.list.pop()
       }
 
       return tempState
