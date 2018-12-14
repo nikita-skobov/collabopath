@@ -17,18 +17,6 @@ module.exports.getPathCount = async (event, context) => {
   let statusCode = 500
   let body = { error: 'Unable to complete request: addReport' }
   try {
-    let userIP = event.headers['X-Forwarded-For']
-    if (userIP.includes(',')) {
-      // get the real user ip, not the CDN ip
-      userIP = userIP.substr(0, userIP.indexOf(','))
-    } else if (userIP.length === 0) {
-      // if x-forwarded-for is empty, use the CDN ip as last resort
-      userIP = event.requestContext.identity.sourceIp
-    }
-    // the last case is if the length is NOT 0, then the
-    // x-forwarded-for string is the entire user ip, no need
-    // for stripping commas
-
     body = await functions.getPathCount()
 
     statusCode = 200
