@@ -20,14 +20,12 @@ module.exports = function getPathCount() {
       const rightNowTime = new Date().getTime()
       const scanAgainDelay = 10 * 60 * 1000 // 10 minutes
       if (rightNowTime - lastScanTime < scanAgainDelay) {
-        // otherwise simply return the results from that item
+        // simply return the results from that item
         const obj = JSON.parse(pathCount.Item.obj.S)
         return res(obj)
       }
 
-      // we should do another scan
-      console.log(pathCount)
-
+      // otherwise we should do another scan
       const scanParams = {
         TableName: process.env.DYNAMO_TABLE,
         ExpressionAttributeValues: {
@@ -66,7 +64,7 @@ module.exports = function getPathCount() {
 
       await functions.putObject(putCountParams)
 
-      return res({ Paths: results.Count, pathCount })
+      return res({ PathCount: results.Count })
     } catch (e) {
       return rej(e)
     }
