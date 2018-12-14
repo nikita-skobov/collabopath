@@ -185,7 +185,7 @@ function scanTable(params, oldResults) {
       const myOldResults = oldResults || { Count: 0, ScannedCount: 0, Items: [] }
       const myParams = params
 
-      const results = await functions.scanTableHelper(myParams)
+      const results = await scanTableHelper(myParams)
       results.Count += myOldResults.Count
       results.ScannedCount += myOldResults.ScannedCount
       results.Items = [...results.Items, ...myOldResults.Items]
