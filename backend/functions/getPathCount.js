@@ -16,6 +16,16 @@ module.exports = function getPathCount() {
       }
 
       const pathCount = await functions.getItemSingle(getItemParams)
+      const lastScanTime = parseInt(pathCount.Item.dateNum.N, 10)
+      const rightNowTime = new Date().getTime()
+      const scanAgainDelay = 10 * 60 * 1000 // 10 minutes
+      if (rightNowTime - lastScanTime < scanAgainDelay) {
+        // otherwise simply return the results from that item
+        const obj = JSON.parse(pathCount.Item.obj.S)
+        return res(obj)
+      }
+
+      // we should do another scan
       console.log(pathCount)
 
       const scanParams = {
