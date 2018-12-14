@@ -555,6 +555,7 @@ resources:
               Action: sts:AssumeRole
         Policies:
           - ${self:custom.policies.scanMainTable}
+          - ${self:custom.policies.getItemMainTable}
     addSuggestionRole:
       Type: AWS::IAM::Role
       Properties:
