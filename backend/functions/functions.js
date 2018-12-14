@@ -259,6 +259,15 @@ function formatAndPick(items) {
   })
 }
 
+function getItemSingle(params) {
+  return new Promise((res, rej) => {
+    dynamodb.getItem(params, (err, data) => {
+      if (err) return rej(err)
+      return res(data)
+    })
+  })
+}
+
 
 function getFinalPathObj(pathID) {
   return new Promise(async (res, rej) => {
@@ -497,6 +506,7 @@ module.exports.putObject = putObject
 module.exports.randomString = makeRandomId
 module.exports.getFinalPathObj = getFinalPathObj
 module.exports.getItem = getItem
+module.exports.getItemSingle = getItemSingle
 module.exports.deleteItem = deleteItem
 module.exports.scanTable = scanTable
 module.exports.makeParams = makeParams
