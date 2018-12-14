@@ -28,7 +28,8 @@ module.exports.getPathCount = async (event, context) => {
     // x-forwarded-for string is the entire user ip, no need
     // for stripping commas
 
-    body = {}
+    body = await functions.getPathCount()
+
     statusCode = 200
   } catch (e) {
     headers = e.headers || headers
