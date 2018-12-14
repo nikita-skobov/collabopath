@@ -464,6 +464,7 @@ module.exports.getPathObj = require('./getPathObj')
 module.exports.voteOnPathObj = require('./voteOnPathObj')
 module.exports.encodePath = require('./encodePath')
 module.exports.decodePath = require('./decodePath')
+module.exports.getPathCount = require('./getPathCount')
 
 module.exports.isFirstVote = isFirstVote
 module.exports.formatAndPick = formatAndPick
