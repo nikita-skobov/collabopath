@@ -36,6 +36,7 @@ module.exports = function getPathCount() {
         FilterExpression: 'votes = :a',
       }
       const results = await functions.scanTable(scanParams)
+      const EndPathCount = await functions.countEndPaths(results.Items)
 
       const rightNow = new Date()
       const putCountParams = {
@@ -47,7 +48,7 @@ module.exports = function getPathCount() {
             S: 'count',
           },
           obj: {
-            S: JSON.stringify({ PathCount: results.Count }),
+            S: JSON.stringify({ PathCount: results.Count, EndPathCount }),
           },
           ip: {
             S: '.',
@@ -64,7 +65,7 @@ module.exports = function getPathCount() {
 
       await functions.putObject(putCountParams)
 
-      return res({ PathCount: results.Count })
+      return res({ PathCount: results.Count, EndPathCount })
     } catch (e) {
       return rej(e)
     }

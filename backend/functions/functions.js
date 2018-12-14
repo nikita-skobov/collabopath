@@ -491,6 +491,7 @@ function addSuggestion(text, ip) {
 
 
 module.exports.addPathObj = require('./addPathObj')
+module.exports.countEndPaths = require('./countEndPaths')
 module.exports.voteOnOwnObj = require('./voteOnOwnObj')
 module.exports.verifyAddPathObj = require('./verifyAddPathObj')
 module.exports.getPathObj = require('./getPathObj')
