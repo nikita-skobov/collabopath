@@ -39,6 +39,33 @@ module.exports = function getPathCount() {
       }
       const results = await functions.scanTable(scanParams)
 
+      const rightNow = new Date()
+      const putCountParams = {
+        Item: {
+          pathId: {
+            S: 'count',
+          },
+          votes: {
+            S: 'count',
+          },
+          obj: {
+            S: JSON.stringify({ PathCount: results.Count }),
+          },
+          ip: {
+            S: '.',
+          },
+          dateStr: {
+            S: rightNow.toISOString(),
+          },
+          dateNum: {
+            N: rightNow.getTime().toString(),
+          },
+        },
+        TableName: process.env.DYNAMO_TABLE,
+      }
+
+      await functions.putObject(putCountParams)
+
       return res({ Paths: results.Count, pathCount })
     } catch (e) {
       return rej(e)
