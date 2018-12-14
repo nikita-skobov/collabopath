@@ -170,12 +170,36 @@ function getItem(params, pathID) {
   })
 }
 
-function scanTable(params) {
+function scanTableHelper(params) {
   return new Promise((res, rej) => {
     dynamodb.scan(params, (err, data) => {
       if (err) return rej(err)
       return res(data)
     })
+  })
+}
+
+function scanTable(params, oldResults) {
+  return new Promise(async (res, rej) => {
+    try {
+      const myOldResults = oldResults || { Count: 0, ScannedCount: 0, Items: [] }
+      const myParams = params
+
+      const results = await functions.scanTableHelper(myParams)
+      results.Count += myOldResults.Count
+      results.ScannedCount += myOldResults.ScannedCount
+      results.Items = [...results.Items, ...myOldResults.Items]
+
+      if (has.call(results, 'LastEvaluatedKey')) {
+        myParams.ExclusiveStartKey = results.LastEvaluatedKey
+        const recursiveResults = await functions.scanTable(myParams, results)
+        return res(recursiveResults)
+      }
+
+      return res(results)
+    } catch (e) {
+      return rej(e)
+    }
   })
 }
 
