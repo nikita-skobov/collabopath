@@ -209,6 +209,7 @@ functions:
     role: getPathCountRole
     handler: handler.getPathCount
     environment:
+      DOMAIN: ${self:service}
       DYNAMO_TABLE: ${self:custom.tables.main}
       DYNAMO_REGION: ${self:provider.region}
     events:
