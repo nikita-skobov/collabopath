@@ -3,6 +3,7 @@ import {
   pathObjects as pathObjs,
   encodePath as encodeP,
   getPathObjEndpoint,
+  getPathCountEndpoint,
   votePathObjEndpoint,
   reportChatEndpoint,
   addPathObjEndpoint,
@@ -50,6 +51,9 @@ function Brain() {
   let pathArray = []
   let pathObjects2 = {}
   const pathObjectSubmissions = {}
+  let lastPathCountRequest = null
+  let lastPathCount = 0
+  const pathCountRequestDelay = 5 * 60 * 1000 // 5 minutes
   let effectDoneArray = []
   let conditionCalculated = {}
   let merchantItems = null
@@ -112,6 +116,43 @@ function Brain() {
       components[name] = reference
     },
     tell: name => components[name],
+
+    getPathCount: (cb) => {
+      const makeRequest = () => {
+        return new Promise((res, rej) => {
+          fetch(getPathCountEndpoint)
+            .then(resp => resp.json())
+            .then(json => res(json.PathCount))
+            .catch(err => rej(err))
+        })
+      }
+
+      let pathCount = lastPathCount
+      if (!lastPathCountRequest) {
+        // if it is null, it hasnt been made yet
+        makeRequest.then((val) => {
+          pathCount = val
+          lastPathCount = val
+          lastPathCountRequest = new Date().getTime()
+          cb(pathCount)
+        })
+      } else {
+        const rightNow = new Date().getTime()
+        const diff = rightNow - lastPathCountRequest
+        if (diff > pathCountRequestDelay) {
+          // if enough time has passed to make another request
+          makeRequest.then((val) => {
+            pathCount = val
+            lastPathCount = val
+            lastPathCountRequest = new Date().getTime()
+            cb(pathCount)
+          })
+        } else {
+          // otherwise just give them the last path count
+          cb(pathCount)
+        }
+      }
+    },
 
     muteUser: (id) => {
       if (mutedList.indexOf(id) === -1) {
