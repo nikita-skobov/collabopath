@@ -149,6 +149,18 @@ module.exports.MakePath = {
 
 module.exports.Changelog = [
   {
+    version: '0.9.4',
+    changes: [
+      'Added a page to view the most recent submitted paths',
+      'Added ability to jump directly to those paths via a button',
+      'Added a live chat page to chat with other users about recent path submissions',
+      'Added feature to save character name, and stat points so you dont have to enter it every time',
+      'Fixed new concept modal error which kept showing the modal even when you clicked "Dont show this again"',
+      'Fixed navbar showing the wrong page sometimes',
+      'Added gzip compression to the css and js files (went from 1.9MB total, to 400kB!)',
+    ],
+  },
+  {
     version: '0.9.3',
     changes: [
       'Fixed some display issues where content would go off screen on mobile devices',
