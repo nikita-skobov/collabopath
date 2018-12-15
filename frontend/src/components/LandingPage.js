@@ -78,7 +78,7 @@ export default class LandingPage extends Component {
   }
 
   render() {
-    const { hide, show, visible, howItWorks, suggestions } = this.state
+    const { hide, show, visible, howItWorks, suggestions, pathCount } = this.state
 
     return (
       <div>
@@ -100,6 +100,9 @@ export default class LandingPage extends Component {
             </Grid.Row>
             <Grid.Row centered columns={1}>
               <Header textAlign="center" className="ps15vw" as="h2" size="small">{landingPageVars.body}</Header>
+            </Grid.Row>
+            <Grid.Row className="ps3em" centered columns={1}>
+              <Header textAlign="center" className="ps15vw" as="h1" size="small">Total Path Count: {pathCount}</Header>
             </Grid.Row>
             <Grid.Row className="ps3em" centered columns={1}>
               <Button size="huge" name="begin" color="green" onClick={this.handleButton}>
