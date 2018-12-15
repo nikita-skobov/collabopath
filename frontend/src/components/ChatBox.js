@@ -76,7 +76,7 @@ export default class ChatBox extends Component {
   handleNewChat(msg) {
     // i is id, d is date (epoch), t is the text
     const { i, d, t } = msg
-    console.log(msg)
+    // console.log(msg)
 
     if (this.mutedList.indexOf(i) !== -1) {
       // if the id exists in the muted list. dont add a new chat
