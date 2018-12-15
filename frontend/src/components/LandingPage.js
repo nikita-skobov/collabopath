@@ -23,6 +23,7 @@ export default class LandingPage extends Component {
       visible: true,
       howItWorks: false,
       suggestions: false,
+      pathCount: 0,
     }
 
     this.dataStore = props.dataStore
@@ -32,6 +33,14 @@ export default class LandingPage extends Component {
     this.pageDone = this.pageDone.bind(this)
 
     this.pageChoice = null
+
+    this.dataStore.getPathCount((val) => {
+      if (typeof val === 'number') {
+        this.setState({ pathCount: val })
+      } else {
+        this.setState({ pathCount: -1 }) // error
+      }
+    })
   }
 
   handleButton(e) {
