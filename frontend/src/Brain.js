@@ -135,7 +135,7 @@ function Brain() {
           lastPathCount = val
           lastPathCountRequest = new Date().getTime()
           cb(pathCount)
-        })
+        }).catch(err => cb(err))
       } else {
         const rightNow = new Date().getTime()
         const diff = rightNow - lastPathCountRequest
@@ -146,7 +146,7 @@ function Brain() {
             lastPathCount = val
             lastPathCountRequest = new Date().getTime()
             cb(pathCount)
-          })
+          }).catch(err => cb(err))
         } else {
           // otherwise just give them the last path count
           cb(pathCount)
