@@ -25,11 +25,15 @@ export default class LandingPage extends Component {
       howItWorks: false,
       suggestions: false,
       pathCount: props.dataStore.getPathCount((val) => {
-        if (typeof val === 'number') {
-          this.setState({ pathCount: val })
-        } else {
-          this.setState({ pathCount: 'Error' }) // error
-        }
+        setTimeout(() => {
+          if (typeof val === 'number') {
+            if (this.state.pathCount !== val) {
+              this.setState({ pathCount: val })
+            }
+          } else {
+            this.setState({ pathCount: 'Error' }) // error
+          }
+        }, 1000)
       }),
     }
 
