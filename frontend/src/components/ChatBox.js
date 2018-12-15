@@ -61,7 +61,9 @@ export default class ChatBox extends Component {
   }
 
   componentWillUnmount() {
-    this.socket.disconnect()
+    if (this.socket) {
+      this.socket.disconnect()
+    }
   }
 
   muteUser(id) {
