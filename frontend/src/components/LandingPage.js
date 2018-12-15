@@ -17,13 +17,20 @@ import Suggestions from './Suggestions'
 export default class LandingPage extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
       hide: 500,
       show: 500,
       visible: true,
       howItWorks: false,
       suggestions: false,
-      pathCount: 0,
+      pathCount: props.dataStore.getPathCount((val) => {
+        if (typeof val === 'number') {
+          this.setState({ pathCount: val })
+        } else {
+          this.setState({ pathCount: 'Error' }) // error
+        }
+      }),
     }
 
     this.dataStore = props.dataStore
@@ -33,14 +40,6 @@ export default class LandingPage extends Component {
     this.pageDone = this.pageDone.bind(this)
 
     this.pageChoice = null
-
-    this.dataStore.getPathCount((val) => {
-      if (typeof val === 'number') {
-        this.setState({ pathCount: val })
-      } else {
-        this.setState({ pathCount: 'Error' }) // error
-      }
-    })
   }
 
   handleButton(e) {
@@ -102,7 +101,7 @@ export default class LandingPage extends Component {
               <Header textAlign="center" className="ps15vw" as="h2" size="small">{landingPageVars.body}</Header>
             </Grid.Row>
             <Grid.Row className="ps3em" centered columns={1}>
-              <Header textAlign="center" className="ps15vw" as="h1" size="small">Total Path Count: {pathCount}</Header>
+              <Header key={pathCount} textAlign="center" className="ps15vw" as="h1" size="small">Total Path Count: {pathCount}</Header>
             </Grid.Row>
             <Grid.Row className="ps3em" centered columns={1}>
               <Button size="huge" name="begin" color="green" onClick={this.handleButton}>
