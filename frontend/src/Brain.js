@@ -130,7 +130,7 @@ function Brain() {
       let pathCount = lastPathCount
       if (!lastPathCountRequest) {
         // if it is null, it hasnt been made yet
-        makeRequest.then((val) => {
+        makeRequest().then((val) => {
           pathCount = val
           lastPathCount = val
           lastPathCountRequest = new Date().getTime()
@@ -141,7 +141,7 @@ function Brain() {
         const diff = rightNow - lastPathCountRequest
         if (diff > pathCountRequestDelay) {
           // if enough time has passed to make another request
-          makeRequest.then((val) => {
+          makeRequest().then((val) => {
             pathCount = val
             lastPathCount = val
             lastPathCountRequest = new Date().getTime()
