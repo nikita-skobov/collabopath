@@ -170,12 +170,36 @@ function getItem(params, pathID) {
   })
 }
 
-function scanTable(params) {
+function scanTableHelper(params) {
   return new Promise((res, rej) => {
     dynamodb.scan(params, (err, data) => {
       if (err) return rej(err)
       return res(data)
     })
+  })
+}
+
+function scanTable(params, oldResults) {
+  return new Promise(async (res, rej) => {
+    try {
+      const myOldResults = oldResults || { Count: 0, ScannedCount: 0, Items: [] }
+      const myParams = params
+
+      const results = await scanTableHelper(myParams)
+      results.Count += myOldResults.Count
+      results.ScannedCount += myOldResults.ScannedCount
+      results.Items = [...results.Items, ...myOldResults.Items]
+
+      if (has.call(results, 'LastEvaluatedKey')) {
+        myParams.ExclusiveStartKey = results.LastEvaluatedKey
+        const recursiveResults = await functions.scanTable(myParams, results)
+        return res(recursiveResults)
+      }
+
+      return res(results)
+    } catch (e) {
+      return rej(e)
+    }
   })
 }
 
@@ -232,6 +256,15 @@ function formatAndPick(items) {
       return res(list)
     }
     return rej(new Error('this should not happen'))
+  })
+}
+
+function getItemSingle(params) {
+  return new Promise((res, rej) => {
+    dynamodb.getItem(params, (err, data) => {
+      if (err) return rej(err)
+      return res(data)
+    })
   })
 }
 
@@ -458,12 +491,14 @@ function addSuggestion(text, ip) {
 
 
 module.exports.addPathObj = require('./addPathObj')
+module.exports.countEndPaths = require('./countEndPaths')
 module.exports.voteOnOwnObj = require('./voteOnOwnObj')
 module.exports.verifyAddPathObj = require('./verifyAddPathObj')
 module.exports.getPathObj = require('./getPathObj')
 module.exports.voteOnPathObj = require('./voteOnPathObj')
 module.exports.encodePath = require('./encodePath')
 module.exports.decodePath = require('./decodePath')
+module.exports.getPathCount = require('./getPathCount')
 
 module.exports.isFirstVote = isFirstVote
 module.exports.formatAndPick = formatAndPick
@@ -472,6 +507,7 @@ module.exports.putObject = putObject
 module.exports.randomString = makeRandomId
 module.exports.getFinalPathObj = getFinalPathObj
 module.exports.getItem = getItem
+module.exports.getItemSingle = getItemSingle
 module.exports.deleteItem = deleteItem
 module.exports.scanTable = scanTable
 module.exports.makeParams = makeParams

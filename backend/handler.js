@@ -7,6 +7,32 @@ const { getPathObj } = functions
 
 const has = Object.prototype.hasOwnProperty
 
+module.exports.getPathCount = async (event, context) => {
+  let headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': `https://${process.env.DOMAIN}.com`, // Required for CORS support to work
+    'Access-Control-Allow-Credentials': true, // Required for cookies, authorization headers with HTTPS
+    'Cache-Control': 'max-age=600', // cache for 10 mins
+  }
+  let statusCode = 500
+  let body = { error: 'Unable to complete request: getPathCount' }
+  try {
+    body = await functions.getPathCount()
+
+    statusCode = 200
+  } catch (e) {
+    headers = e.headers || headers
+    statusCode = e.statusCode || statusCode
+    body = e.body || body
+  }
+
+  return {
+    statusCode,
+    headers,
+    body: JSON.stringify(body),
+  }
+}
+
 module.exports.report = async (event, context) => {
   let headers = {
     'Content-Type': 'application/json',

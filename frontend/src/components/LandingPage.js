@@ -17,12 +17,24 @@ import Suggestions from './Suggestions'
 export default class LandingPage extends Component {
   constructor(props) {
     super(props)
+
     this.state = {
       hide: 500,
       show: 500,
       visible: true,
       howItWorks: false,
       suggestions: false,
+      pathCount: props.dataStore.getPathCount((val) => {
+        setTimeout(() => {
+          if (typeof val === 'number') {
+            if (this.state.pathCount !== val) {
+              this.setState({ pathCount: val })
+            }
+          } else {
+            this.setState({ pathCount: 'Error' }) // error
+          }
+        }, 1000)
+      }),
     }
 
     this.dataStore = props.dataStore
@@ -69,7 +81,7 @@ export default class LandingPage extends Component {
   }
 
   render() {
-    const { hide, show, visible, howItWorks, suggestions } = this.state
+    const { hide, show, visible, howItWorks, suggestions, pathCount } = this.state
 
     return (
       <div>
@@ -91,6 +103,9 @@ export default class LandingPage extends Component {
             </Grid.Row>
             <Grid.Row centered columns={1}>
               <Header textAlign="center" className="ps15vw" as="h2" size="small">{landingPageVars.body}</Header>
+            </Grid.Row>
+            <Grid.Row className="ps3em" centered columns={1}>
+              <Header key={pathCount} textAlign="center" className="ps15vw" as="h1" size="small">Total Path Count: {pathCount}</Header>
             </Grid.Row>
             <Grid.Row className="ps3em" centered columns={1}>
               <Button size="huge" name="begin" color="green" onClick={this.handleButton}>
