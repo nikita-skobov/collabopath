@@ -38,7 +38,7 @@ export default class LandingPage extends Component {
       if (typeof val === 'number') {
         this.setState({ pathCount: val })
       } else {
-        this.setState({ pathCount: -1 }) // error
+        this.setState({ pathCount: 'Error' }) // error
       }
     })
   }
