@@ -15,7 +15,7 @@ module.exports.getPathCount = async (event, context) => {
     'Cache-Control': 'max-age=600', // cache for 10 mins
   }
   let statusCode = 500
-  let body = { error: 'Unable to complete request: addReport' }
+  let body = { error: 'Unable to complete request: getPathCount' }
   try {
     body = await functions.getPathCount()
 
