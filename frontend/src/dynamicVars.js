@@ -153,6 +153,7 @@ module.exports.Changelog = [
     changes: [
       'Added a page to view the most recent submitted paths',
       'Added ability to jump directly to those paths via a button',
+      'Added a counter to show how many total finalized paths there are',
       'Added a live chat page to chat with other users about recent path submissions',
       'Added feature to save character name, and stat points so you dont have to enter it every time',
       'Fixed new concept modal error which kept showing the modal even when you clicked "Dont show this again"',
