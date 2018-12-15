@@ -152,6 +152,7 @@ function Brain() {
           cb(pathCount)
         }
       }
+      return pathCount
     },
 
     muteUser: (id) => {
