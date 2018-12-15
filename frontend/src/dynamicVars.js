@@ -375,9 +375,9 @@ module.exports.allowedItemsPlusGold = [...exports.allowedItems, { name: 'GOLD', 
 module.exports.allowedImages = exports.allowedItemsPlusGold.map(item => (item.src))
 
 module.exports.imageCategories = {
-  scenery: ['RESIZE_tree.jpg', 'RESIZE_grass.jpg', 'RESIZE_table_plant.jpg', 'RESIZE_fastvan.jpg', 'RESIZE_minneapolis.jpg', 'RESIZE_tree.png', 'RESIZE_mystery.jpg'],
+  scenery: ['RESIZE_tree.jpg', 'RESIZE_grass.jpg', 'RESIZE_table_plant.jpg', 'RESIZE_fastvan.jpg', 'RESIZE_minneapolis.jpg', 'RESIZE_tree.png', 'RESIZE_mystery.jpg', 'RESIZE_snowlake.jpg', 'RESIZE_bigcrane.jpg', 'RESIZE_superbowl.jpg'],
   items: exports.allowedImages,
-  misc: ['RESIZE_foot.jpg', 'RESIZE_cereal.jpg', 'RESIZE_tire.jpg', 'RESIZE_creator_flash.jpg', 'RESIZE_clock.jpg', 'RESIZE_some_art.jpg', 'RESIZE_coffee.jpg', 'RESIZE_chocolate_thing.jpg', 'RESIZE_glasses.jpg', 'RESIZE_pupper.jpg', 'RESIZE_emergency.jpg', 'RESIZE_wallet.jpg', 'RESIZE_nowallet.jpg', 'RESIZE_fist.jpg'],
+  misc: ['RESIZE_foot.jpg', 'RESIZE_handicap.jpg', 'RESIZE_toilet.jpg', 'RESIZE_cereal.jpg', 'RESIZE_tire.jpg', 'RESIZE_creator_flash.jpg', 'RESIZE_clock.jpg', 'RESIZE_some_art.jpg', 'RESIZE_coffee.jpg', 'RESIZE_chocolate_thing.jpg', 'RESIZE_glasses.jpg', 'RESIZE_pupper.jpg', 'RESIZE_emergency.jpg', 'RESIZE_wallet.jpg', 'RESIZE_nowallet.jpg', 'RESIZE_fist.jpg'],
   user: ['thadude.jpg', 'RESIZE_weird_monkey.jpg'],
 }
 
